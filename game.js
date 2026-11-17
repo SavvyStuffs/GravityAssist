@@ -77,7 +77,8 @@ const bestOf = (i) => { const v = save.best[keyOf(i)]; return typeof v === 'numb
 function medalFor(i, time) {
   if (time === null) return null;
   const p = LV[i].par || {};
-  return time <= (p.gold || 0) ? 'Gold' : time <= (p.silver || 0) ? 'Silver' : 'Bronze';
+  // Finishing slower than the bronze time earns no medal.
+  return time <= (p.gold || 0) ? 'Gold' : time <= (p.silver || 0) ? 'Silver' : time <= (p.bronze || Infinity) ? 'Bronze' : null;
 }
 const unlocked = () => true; // every level is open: progress is easy to lose between copies of the game
 function nextToFly() {
@@ -162,6 +163,7 @@ function startLevel(i, keepDeaths, needRelease) {
   const bits = [];
   if (par.gold) bits.push('Gold ' + par.gold.toFixed(1));
   if (par.silver) bits.push('Silver ' + par.silver.toFixed(1));
+  if (par.bronze) bits.push('Bronze ' + par.bronze.toFixed(1));
   if (b !== null) bits.push('Best ' + b.toFixed(2));
   bits.forEach((tx) => { const sp = document.createElement('span'); sp.textContent = tx; hp.appendChild(sp); });
   toast('');
@@ -191,7 +193,7 @@ function buildCards() {
     const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = L.name;
     const md = document.createElement('span'); md.className = 'md' + (medal ? ' ' + medal.toLowerCase() : '');
     md.textContent = best === null ? '' : best.toFixed(2);
-    b.setAttribute('aria-label', 'Level ' + (i + 1) + ', ' + L.name + (best === null ? ', not flown' : ', ' + medal + ', best ' + best.toFixed(2) + ' seconds'));
+    b.setAttribute('aria-label', 'Level ' + (i + 1) + ', ' + L.name + (best === null ? ', not flown' : ', ' + (medal || 'no medal') + ', best ' + best.toFixed(2) + ' seconds'));
     b.append(n, nm, md);
     b.addEventListener('click', () => { Sfx.init(); Sfx.play('click'); startLevel(i); });
     wrap.appendChild(b);
@@ -228,9 +230,10 @@ function showResult() {
   const L = LV[levelIdx], medal = medalFor(levelIdx, finalTime), b = bestOf(levelIdx);
   $('r-title').textContent = levelIdx === LV.length - 1 ? 'Last gate reached' : 'Gate reached';
   $('r-time').textContent = finalTime.toFixed(2) + ' s';
-  $('r-medal').textContent = medal + ' medal' + (newBest ? ', new best' : '');
+  $('r-medal').textContent = medal ? medal + ' medal' + (newBest ? ', new best' : '') : (newBest ? 'New best' : '');
   $('r-gold').textContent = ((L.par && L.par.gold) || 0).toFixed(1) + ' s';
   $('r-silver').textContent = ((L.par && L.par.silver) || 0).toFixed(1) + ' s';
+  $('r-bronze').textContent = ((L.par && L.par.bronze) || 0).toFixed(1) + ' s';
   $('r-best').textContent = b !== null ? b.toFixed(2) + ' s' : 'none';
   $('r-fuel').textContent = Math.round(100 * sim.ship.fuel / L.fuel) + '%';
   $('r-deaths').textContent = String(deaths);

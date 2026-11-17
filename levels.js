@@ -16,7 +16,7 @@
   var K = 1.3; // gravity of stars, planets and moons was raised 30% after the first playtest
   var BIN = TAU * Math.sqrt(160 * 160 * 160 / (3.5e6 * K / 4)); // the twin suns' period
 
-  // Pars were reset from the owner's first real runs: silver = 1.35 x that time, gold = the recorded solution time plus 50% (the owner's call).
+  // Medal times: gold = 1.5x the recorded solution time, silver 2x, bronze 3x (the owner's call); slower finishes get no medal.
   return [
     // 1
     {
@@ -29,7 +29,7 @@
       cells: [],
       asteroids: [],
       gate: { x: -330, y: 260 },
-      par: { gold: 13.7, silver: 25.0 }  // optimizer best 9.36 s, fuel used 51.7 of 85; proxy 21/24 (88%) median 12.3 s best 10.6 s
+      par: { gold: 13.7, silver: 18.3, bronze: 27.4 }  // optimizer best 9.36 s, fuel used 51.7 of 85; proxy 21/24 (88%) median 12.3 s best 10.6 s
     },
     // 2
     {
@@ -42,7 +42,7 @@
       cells: [],
       asteroids: [],
       gate: { x: -450, y: 450 },
-      par: { gold: 17.0, silver: 24.5 }  // optimizer best 11.61 s, fuel used 65.3 of 82; proxy 16/24 (67%) median 15.5 s best 14.2 s
+      par: { gold: 17.0, silver: 22.7, bronze: 34.0 }  // optimizer best 11.61 s, fuel used 65.3 of 82; proxy 16/24 (67%) median 15.5 s best 14.2 s
     },
     // 3
     {
@@ -55,7 +55,7 @@
       cells: [],
       asteroids: [],
       gate: { x: 460, y: -420 },
-      par: { gold: 24.7, silver: 74.1 }  // optimizer best 14.34 s, fuel used 66.7 of 105; proxy 12/24 (50%) median 17.6 s best 12.2 s; gold from proxy best
+      par: { gold: 24.7, silver: 32.9, bronze: 49.3 }  // optimizer best 14.34 s, fuel used 66.7 of 105; proxy 12/24 (50%) median 17.6 s best 12.2 s; gold from proxy best
     },
     // 4
     {
@@ -71,7 +71,7 @@
       cells: [],
       asteroids: [],
       gate: { x: 460, y: 360 },
-      par: { gold: 13.6, silver: 76.1 }  // optimizer best 15.10 s, fuel used 79.7 of 110; proxy 11/24 (46%) median 14.5 s best 12.7 s; gold from proxy best
+      par: { gold: 13.6, silver: 18.2, bronze: 27.2 }  // optimizer best 15.10 s, fuel used 79.7 of 110; proxy 11/24 (46%) median 14.5 s best 12.7 s; gold from proxy best
     },
     // 5
     {
@@ -87,7 +87,7 @@
       cells: [{ x: -300, y: 300, amount: 42 }, { x: 330, y: 320, amount: 42 }, { x: -460, y: -280, amount: 42 }, { x: 420, y: -310, amount: 42 }, { x: 0, y: -330, amount: 42 }, { x: -260, y: -470, amount: 42 }, { x: 260, y: -470, amount: 42 }, { x: 560, y: 60, amount: 42 }, { x: -560, y: 60, amount: 42 }],
       asteroids: [],
       gate: { x: 0, y: 560 },
-      par: { gold: 21.4, silver: 50.4 }  // optimizer best 14.37 s, fuel used 141.9 of 175 (tank 35 + cells 140); proxy 12/24 (50%) median 30.5 s best 25.7 s
+      par: { gold: 21.4, silver: 28.5, bronze: 42.8 }  // optimizer best 14.37 s, fuel used 141.9 of 175 (tank 35 + cells 140); proxy 12/24 (50%) median 30.5 s best 25.7 s
     },
     // 6
     {
@@ -103,7 +103,7 @@
       cells: [],
       asteroids: [],
       gate: { x: 0, y: -520 },
-      par: { gold: 19.9, silver: 47.6 }  // optimizer best 14.71 s, fuel used 79.2 of 140; proxy 12/24 (50%) median 22.3 s best 18.9 s
+      par: { gold: 19.9, silver: 26.6, bronze: 39.8 }  // optimizer best 14.71 s, fuel used 79.2 of 140; proxy 12/24 (50%) median 22.3 s best 18.9 s
     },
     // 7
     {
@@ -120,7 +120,7 @@
       cells: [],
       asteroids: [],
       gate: { x: -350, y: 450 },
-      par: { gold: 25.5, silver: 65.5 }  // optimizer best 17.29 s, fuel used 116.8 of 155; proxy 18/24 (75%) median 24.7 s best 21.3 s
+      par: { gold: 25.5, silver: 33.9, bronze: 50.9 }  // optimizer best 17.29 s, fuel used 116.8 of 155; proxy 18/24 (75%) median 24.7 s best 21.3 s
     },
     // 8
     {
@@ -136,7 +136,7 @@
       cells: [],
       asteroids: [],
       gate: { x: 780, y: 520 },
-      par: { gold: 27.7, silver: 110.3 }  // optimizer best 19.12 s, fuel used 120.3 of 170; proxy 8/24 (33%) median 27.1 s best 24.4 s
+      par: { gold: 27.7, silver: 36.9, bronze: 55.3 }  // optimizer best 19.12 s, fuel used 120.3 of 170; proxy 8/24 (33%) median 27.1 s best 24.4 s
     },
     // 9
     {
@@ -152,7 +152,7 @@
       cells: [],
       asteroids: ring(0, 0, 240, 1.2e6 * K, 1, 24, [0, 1, 6, 7, 12, 13, 18], 26, 0).concat(ring(0, 0, 430, 1.2e6 * K, -1, 18, [], 18, 0.3)),
       gate: { orbit: { cx: 0, cy: 0, r: 600, period: 30, phase: Math.PI } },
-      par: { gold: 31.1, silver: 106.2 }  // optimizer best 25.09 s, fuel used 140.0 of 215; proxy 10/24 (42%) median 33.9 s best 27.3 s
+      par: { gold: 31.1, silver: 41.5, bronze: 62.2 }  // optimizer best 25.09 s, fuel used 140.0 of 215; proxy 10/24 (42%) median 33.9 s best 27.3 s
     },
     // 10
     {
@@ -169,7 +169,7 @@
       cells: [{ x: -700, y: -200, amount: 40 }, { x: 0, y: -420, amount: 40 }, { x: 560, y: 330, amount: 40 }],
       asteroids: ring(0, 0, 300, 4e6, 1, 30, [0, 1, 10, 11, 20, 21], 26, 0),
       gate: { orbit: { cx: 0, cy: 0, r: 680, period: 34, phase: Math.PI / 2 } },
-      par: { gold: 37.8, silver: 75.6 }  // optimizer best 26.02 s, fuel used 173.8 of 240 (tank 160 + cells 80); proxy 6/24 (25%) median 39.5 s best 38.0 s
+      par: { gold: 37.8, silver: 50.4, bronze: 75.5 }  // optimizer best 26.02 s, fuel used 173.8 of 240 (tank 160 + cells 80); proxy 6/24 (25%) median 39.5 s best 38.0 s
     }
   ];
 });

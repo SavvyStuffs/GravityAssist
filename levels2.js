@@ -24,7 +24,7 @@
   }
   var K = 1.3; // same 30% gravity boost for stars, planets and moons as levels.js (holes unchanged)
 
-  // Pars: gold = the recorded solution time plus 50% (the owner's call); silver = test-pilot median x 3.0, calibrated against the owner's real times on levels 1 to 10.
+  // Medal times: gold = 1.5x the recorded solution time, silver 2x, bronze 3x (the owner's call); slower finishes get no medal.
   return [
     // 11
     {
@@ -40,7 +40,7 @@
       cells: [],
       asteroids: [],
       gate: { x: -120, y: 560 },
-      par: { gold: 29.1, silver: 79.8 }
+      par: { gold: 29.1, silver: 38.8, bronze: 58.1 }
     },
     // 12
     {
@@ -56,7 +56,7 @@
       cells: [],
       asteroids: [],
       gate: { x: -560, y: 560 },
-      par: { gold: 24.9, silver: 76.2 }
+      par: { gold: 24.9, silver: 33.2, bronze: 49.8 }
     },
     // 13
     {
@@ -69,7 +69,7 @@
       cells: [],
       asteroids: ring(0, 0, 200, 4e6, 1, 26, [0, 1, 2, 13, 14, 15], 22, 0).concat(ring(0, 0, 370, 4e6, 1, 44, [0, 1, 2, 22, 23, 24], 20, 1.0)),
       gate: { x: 600, y: 450 },
-      par: { gold: 52.1, silver: 105.6 }
+      par: { gold: 52.1, silver: 69.5, bronze: 104.2 }
     },
     // 14
     {
@@ -85,7 +85,7 @@
       cells: [],
       asteroids: [],
       gate: { x: -600, y: 480 },
-      par: { gold: 31.6, silver: 102.0 }
+      par: { gold: 31.6, silver: 42.1, bronze: 63.1 }
     },
     // 15
     {
@@ -102,7 +102,7 @@
       cells: [],
       asteroids: [],
       gate: { x: 860, y: -420 },
-      par: { gold: 31.1, silver: 82.5 }
+      par: { gold: 31.1, silver: 41.4, bronze: 62.1 }
     },
     // 16
     {
@@ -115,7 +115,7 @@
       cells: [],
       asteroids: [],
       gate: { x: 560, y: 420 },
-      par: { gold: 18.4, silver: 45.6 }
+      par: { gold: 18.4, silver: 24.5, bronze: 36.7 }
     },
     // 17
     {
@@ -132,7 +132,7 @@
       cells: [],
       asteroids: [],
       gate: { x: 560, y: 520 },
-      par: { gold: 34.5, silver: 81.6 }
+      par: { gold: 34.5, silver: 46.0, bronze: 69.0 }
     },
     // 18
     {
@@ -149,7 +149,7 @@
       cells: [],
       asteroids: ring(0, 0, 310, 2e6 * K, 1, 40, [0, 1, 2, 38, 39], 18, 0),
       gate: { x: 620, y: -480 },
-      par: { gold: 32.4, silver: 126.6 }
+      par: { gold: 32.4, silver: 43.2, bronze: 64.8 }
     },
     // 19
     {
@@ -166,7 +166,7 @@
       cells: [{ x: -380, y: 150, amount: 40 }, { x: 400, y: -250, amount: 40 }],
       asteroids: ring(0, -450, 160, 1e6 * K, 1, 24, [0, 1, 12, 13], 16, 0),
       gate: { x: 1150, y: -400 },
-      par: { gold: 48.9, silver: 137.7 }
+      par: { gold: 48.9, silver: 65.1, bronze: 97.7 }
     },
     // 20
     {
@@ -184,7 +184,7 @@
       cells: [{ x: -400, y: 250, amount: 40 }, { x: 420, y: -250, amount: 40 }],
       asteroids: ring(0, 0, 220, 5e6, 1, 28, [0, 1, 2, 14, 15, 16], 22, 0),
       gate: { orbit: { cx: 0, cy: 0, r: 960, period: 40, phase: 0.3 } },
-      par: { gold: 46.1, silver: 139.2 }
+      par: { gold: 46.1, silver: 61.4, bronze: 92.1 }
     }
   ];
 });
