@@ -5,7 +5,7 @@
 
   var AC = (typeof window !== 'undefined') && (window.AudioContext || window.webkitAudioContext);
   var ctx = null, master = null, comp = null, noiseBuf = null;
-  var muted = false, MASTER_VOL = 0.5;
+  var muted = false, MASTER_VOL = 0.35; // everything about 30% quieter after playtesting
   var beaconStep = 0;
 
   // Engine / danger / music node sets (built once)
@@ -307,7 +307,7 @@
         on = !!on;
         if (!ctx || !eng || on === thrustOn) return;
         thrustOn = on;
-        eng.out.gain.setTargetAtTime(on ? 0.22 : 0, now(), on ? 0.03 : 0.027);
+        eng.out.gain.setTargetAtTime(on ? 0.16 : 0, now(), on ? 0.03 : 0.027);
       } catch (e) {}
     },
     play: function (name) {
@@ -324,7 +324,7 @@
         if (!ctx) return;
         if (on) {
           if (!mus) buildMusic();
-          mus.out.gain.setTargetAtTime(0.1, now(), 0.7);   // ~2 s fade in
+          mus.out.gain.setTargetAtTime(0.03, now(), 0.7);   // ~2 s fade in; the drone is kept very low
           // No random bells: the owner found background dings confusing next to real signals.
         } else {
           if (mus) mus.out.gain.setTargetAtTime(0, now(), 0.3); // ~1 s fade out
@@ -340,7 +340,7 @@
         l = Math.round(l * 50) / 50;
         if (l === dangerLevel) return;
         dangerLevel = l;
-        dng.lvl.gain.setTargetAtTime(l * 0.35, now(), 0.08);
+        dng.lvl.gain.setTargetAtTime(l * 0.15, now(), 0.08);
       } catch (e) {}
     }
   };
