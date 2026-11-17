@@ -170,6 +170,7 @@ function startLevel(i, keepDeaths, needRelease) {
 }
 function showMenu() {
   replay = null;
+  coach('');
   screen = 'menu'; paused = false; sim = null;
   Sfx.thrust(false); Sfx.danger(0); Sfx.music(false);
   $('menu').hidden = false; $('result').hidden = true; $('pause').hidden = true; $('hud').hidden = true;
@@ -186,10 +187,11 @@ function buildCards() {
     b.type = 'button'; b.className = 'card'; b.id = 'card-' + i;
     const open = unlocked(i), best = bestOf(i), medal = medalFor(i, best);
     b.disabled = !open;
-    const n = document.createElement('span'); n.className = 'n'; n.textContent = 'LEVEL ' + String(i + 1).padStart(2, '0');
+    const n = document.createElement('span'); n.className = 'n'; n.textContent = String(i + 1).padStart(2, '0');
     const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = L.name;
-    const md = document.createElement('span'); md.className = 'md' + (medal === 'Gold' ? ' gold' : '');
-    md.textContent = !open ? 'Locked' : best === null ? 'Not flown' : medal + ', ' + best.toFixed(2) + ' s';
+    const md = document.createElement('span'); md.className = 'md' + (medal ? ' ' + medal.toLowerCase() : '');
+    md.textContent = best === null ? '' : best.toFixed(2);
+    b.setAttribute('aria-label', 'Level ' + (i + 1) + ', ' + L.name + (best === null ? ', not flown' : ', ' + medal + ', best ' + best.toFixed(2) + ' seconds'));
     b.append(n, nm, md);
     b.addEventListener('click', () => { Sfx.init(); Sfx.play('click'); startLevel(i); });
     wrap.appendChild(b);
@@ -197,10 +199,10 @@ function buildCards() {
   const tally = { Gold: 0, Silver: 0, Bronze: 0 };
   LV.forEach((L, i) => { const m = medalFor(i, bestOf(i)); if (m) tally[m]++; });
   const flown = tally.Gold + tally.Silver + tally.Bronze;
-  $('tally').textContent = flown ? 'Medals so far: ' + tally.Gold + ' gold, ' + tally.Silver + ' silver, ' + tally.Bronze + ' bronze, from ' + flown + ' of ' + LV.length + ' levels.' : '';
+  $('tally').textContent = flown ? tally.Gold + ' gold · ' + tally.Silver + ' silver · ' + tally.Bronze + ' bronze' : '';
   $('tally').hidden = !flown;
   const nx = nextToFly();
-  $('continue').textContent = LV.length ? 'Fly level ' + String(nx + 1).padStart(2, '0') + ': ' + LV[nx].name : 'No levels found';
+  $('continue').textContent = LV.length ? 'Fly ' + LV[nx].name : 'No levels found';
   $('continue').disabled = !LV.length;
 }
 function setPaused(v) {
@@ -234,6 +236,7 @@ function showResult() {
   $('r-deaths').textContent = String(deaths);
   const last = levelIdx === LV.length - 1;
   $('r-next').hidden = last;
+  coach(''); if (levelIdx === 0) tut.done = true;
   $('result').hidden = false; $('b-pause').hidden = true; $('pad').hidden = true; padClear.forEach((f) => f());
   toast(''); Sfx.music(false);
   Sfx.play('medal');
@@ -290,6 +293,33 @@ function stepReplay(dt) {
     R.ended = true; phaseT = 2.2; sim.thrusting = false;
     Sfx.play('win'); burst(sh.x, sh.y, 40, 220, 0.8, true);
   }
+}
+
+// ---------- first-flight tutorial (level 1, once per visit) ----------
+const tut = { step: -1, t: 0, turned: 0, done: false };
+function coach(html) { const c = $('coach'); if (!html) { c.hidden = true; c.innerHTML = ''; tut.shown = -1; return; } c.innerHTML = html; c.hidden = false; }
+const TUT_TEXT = () => coarse ? [
+  'Hold <b>BURN</b> to fire the engine.',
+  'Use the <b>arrow buttons</b> to steer while you burn.',
+  'Collect every gold beacon, then fly into the <b>gate</b>.',
+  'Stuck on a level? <b>Pause</b>, then <b>Watch the solution</b>.'
+] : [
+  'Hold <kbd>&uarr;</kbd> to fire the engine.',
+  'Steer with <kbd>&larr;</kbd> <kbd>&rarr;</kbd> while you burn.',
+  'Collect every gold beacon, then fly into the <b>gate</b>.',
+  'Stuck on a level? <b>Pause</b>, then <b>Watch the solution</b>.'
+];
+function tutorialTick(dt) {
+  const away = screen !== 'play' || levelIdx !== 0 || paused || !sim || phase === 'replay' || phase === 'won' || phase === 'dead';
+  if (tut.done || away) { if (!$('coach').hidden) coach(''); return; }
+  const texts = TUT_TEXT();
+  if (tut.step < 0) tut.step = 0;
+  if (tut.step === 0 && phase === 'fly') { tut.step = 1; tut.t = 0; }
+  else if (tut.step === 1) { tut.t += dt; if (keys.has('left') || keys.has('right') || ptr.down) tut.turned += dt; if (tut.turned > 0.5 || tut.t > 7) { tut.step = 2; tut.t = 0; } }
+  else if (tut.step === 2) { tut.t += dt; if (tut.t > 5 || sim.got.some(Boolean)) { tut.step = 3; tut.t = 0; } }
+  else if (tut.step === 3) { tut.t += dt; if (tut.t > 6) { tut.done = true; coach(''); return; } }
+  if (tut.step === 0 && phase !== 'ready') return;
+  if (tut.shown !== tut.step) { tut.shown = tut.step; coach(texts[tut.step]); }
 }
 
 // ---------- input ----------
@@ -853,7 +883,7 @@ function drawShip() {
   drawRocket(x, y, ang, k);
   if (phase === 'replay') text('SOLUTION', x, y - 32 * k, C.ochre, 'center', 11);
   if (phase === 'ready') {
-    text(armed ? 'BURN TO START THE CLOCK' : 'LET GO, THEN BURN', x, y - 32 * k, C.ochre, 'center', 11);
+    if ($('coach').hidden || !armed) text(armed ? 'BURN TO START THE CLOCK' : 'LET GO, THEN BURN', x, y - 32 * k, C.ochre, 'center', 11);
     if (view.on) { ctx.strokeStyle = C.ochre; ctx.lineWidth = 1.25; ring(x, y, 20 * k + 4 * Math.sin(performance.now() / 300)); ctx.stroke(); }
   }
 }
@@ -1071,6 +1101,7 @@ function frameBody(now) {
   drawMap();
   cam.x -= ox / cam.zoom; cam.y -= oy / cam.zoom;
 
+  tutorialTick(paused ? 0 : dt);
   hudT += dt;
   if (hudT > 0.05) { updateHud(); hudT = 0; }
   requestAnimationFrame(frame);
