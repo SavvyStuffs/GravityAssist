@@ -96,8 +96,8 @@ button:disabled { opacity: 0.45; cursor: default; }
 .panel .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 .rule { border-top: 1px solid var(--line); margin: 16px 0 12px; }
 /* level list: one quiet row per level, number, name, medal */
-#cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0 24px; margin-top: 18px; border-top: 1px solid var(--line); }
-.card { display: grid; grid-template-columns: 2.2em 1fr auto; align-items: baseline; gap: 8px; width: 100%; text-align: left; padding: 9px 2px; min-height: 0; background: none; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; }
+#cards { column-count: 2; column-width: 200px; column-gap: 24px; margin-top: 18px; border-top: 1px solid var(--line); } /* levels run down the first column, then the second */
+.card { break-inside: avoid; display: grid; grid-template-columns: 2.2em 1fr auto; align-items: baseline; gap: 8px; width: 100%; text-align: left; padding: 9px 2px; min-height: 0; background: none; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; }
 .card:hover:not(:disabled) { border-color: var(--line); background: rgba(238, 244, 248, 0.05); }
 .card .n { color: var(--chalk-dim); font-size: 11px; font-variant-numeric: tabular-nums; }
 .card .nm { font-family: var(--level); font-style: normal; font-size: 17px; font-weight: 400; line-height: 1.1; letter-spacing: 0.01em; }
@@ -293,11 +293,11 @@ body.touch .panel { top: calc(50% + 22px); max-height: calc(100% - 110px); }
   <span class="keys" id="keys-hint">Arrows fly. R restarts. G orbit guide.</span>
 </div>
 
-<script src="sim.js"></script>
-<script src="levels.js"></script>
-<script src="levels2.js"></script>
-<script src="solutions.js"></script>
-<script src="audio.js"></script>
-<script src="game.js"></script>
+<script src="sim.js?v=20261117c"></script>
+<script src="levels.js?v=20261117c"></script>
+<script src="levels2.js?v=20261117c"></script>
+<script src="solutions.js?v=20261117c"></script>
+<script src="audio.js?v=20261117c"></script>
+<script src="game.js?v=20261117c"></script>
 </body>
 </html>
