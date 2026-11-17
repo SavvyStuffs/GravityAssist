@@ -161,9 +161,9 @@ function startLevel(i, keepDeaths, needRelease) {
   const b = bestOf(levelIdx), par = L.par || {}, hp = $('h-par');
   hp.textContent = '';
   const bits = [];
-  if (par.gold) bits.push('Gold ' + par.gold.toFixed(1));
-  if (par.silver) bits.push('Silver ' + par.silver.toFixed(1));
-  if (par.bronze) bits.push('Bronze ' + par.bronze.toFixed(1));
+  if (par.gold) bits.push('Gold ' + Math.round(par.gold));
+  if (par.silver) bits.push('Silver ' + Math.round(par.silver));
+  if (par.bronze) bits.push('Bronze ' + Math.round(par.bronze));
   if (b !== null) bits.push('Best ' + b.toFixed(2));
   bits.forEach((tx) => { const sp = document.createElement('span'); sp.textContent = tx; hp.appendChild(sp); });
   toast('');
@@ -231,9 +231,9 @@ function showResult() {
   $('r-title').textContent = levelIdx === LV.length - 1 ? 'Last gate reached' : 'Gate reached';
   $('r-time').textContent = finalTime.toFixed(2) + ' s';
   $('r-medal').textContent = medal ? medal + ' medal' + (newBest ? ', new best' : '') : (newBest ? 'New best' : '');
-  $('r-gold').textContent = ((L.par && L.par.gold) || 0).toFixed(1) + ' s';
-  $('r-silver').textContent = ((L.par && L.par.silver) || 0).toFixed(1) + ' s';
-  $('r-bronze').textContent = ((L.par && L.par.bronze) || 0).toFixed(1) + ' s';
+  $('r-gold').textContent = Math.round((L.par && L.par.gold) || 0) + ' s';
+  $('r-silver').textContent = Math.round((L.par && L.par.silver) || 0) + ' s';
+  $('r-bronze').textContent = Math.round((L.par && L.par.bronze) || 0) + ' s';
   $('r-best').textContent = b !== null ? b.toFixed(2) + ' s' : 'none';
   $('r-fuel').textContent = Math.round(100 * sim.ship.fuel / L.fuel) + '%';
   $('r-deaths').textContent = String(deaths);
