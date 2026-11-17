@@ -161,10 +161,10 @@ function startLevel(i, keepDeaths, needRelease) {
   const b = bestOf(levelIdx), par = L.par || {}, hp = $('h-par');
   hp.textContent = '';
   const bits = [];
-  if (par.gold) bits.push('Gold ' + Math.round(par.gold));
-  if (par.silver) bits.push('Silver ' + Math.round(par.silver));
-  if (par.bronze) bits.push('Bronze ' + Math.round(par.bronze));
-  if (b !== null) bits.push('Best ' + b.toFixed(2));
+  if (par.gold) bits.push('Gold: ' + Math.round(par.gold));
+  if (par.silver) bits.push('Silver: ' + Math.round(par.silver));
+  if (par.bronze) bits.push('Bronze: ' + Math.round(par.bronze));
+  if (b !== null) bits.push('Best: ' + b.toFixed(2));
   bits.forEach((tx) => { const sp = document.createElement('span'); sp.textContent = tx; hp.appendChild(sp); });
   toast('');
   updateHud();
