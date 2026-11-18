@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0d1a30">
@@ -166,6 +166,8 @@ html.ld-ready #loader svg, html.ld-ready #loader .ld-word { visibility: visible;
 body.touch .bar { padding-left: max(14px, env(safe-area-inset-left)); padding-right: max(14px, env(safe-area-inset-right)); padding-top: 6px; padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px)); gap: 6px; }
 body.touch .bar button { padding: 7px 8px; min-height: 32px; font-size: 11px; }
 button, .card { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+html, body { touch-action: manipulation; } /* no double-tap zoom anywhere (iPhone ignores the viewport setting) */
+#pad, #pad .grp, #hud { touch-action: none; }
 /* Touch screens: buttons along the top, out of thumb reach; flight readouts under them;
    the timer sits at the bottom between the turn buttons and BURN. */
 body.touch .bar { top: 0; bottom: auto; padding-top: max(6px, env(safe-area-inset-top)); padding-bottom: 6px; background: linear-gradient(to bottom, var(--paper-deep) 55%, rgba(8, 17, 31, 0)); }
@@ -329,10 +331,10 @@ body.touch .panel { top: calc(50% + 22px); max-height: calc(100% - 110px); }
   <span class="keys" id="keys-hint">Arrows fly. R restarts. G orbit guide.</span>
 </div>
 
-<script src="sim.js?v=20261117p"></script>
-<script src="levels.js?v=20261117p"></script>
-<script src="solutions.js?v=20261117p"></script>
-<script src="audio.js?v=20261117p"></script>
-<script src="game.js?v=20261117p"></script>
+<script src="sim.js?v=20261118a"></script>
+<script src="levels.js?v=20261118a"></script>
+<script src="solutions.js?v=20261118a"></script>
+<script src="audio.js?v=20261118a"></script>
+<script src="game.js?v=20261118a"></script>
 </body>
 </html>

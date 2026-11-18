@@ -455,9 +455,22 @@ function bindPad(id, key) {
   el.addEventListener('pointercancel', off);
   el.addEventListener('lostpointercapture', off);
   el.addEventListener('contextmenu', (e) => e.preventDefault());
+  // iPhone Safari zooms on a quick double tap unless the touch events themselves are cancelled
+  el.addEventListener('touchstart', (e) => e.preventDefault(), { passive: false });
+  el.addEventListener('touchend', (e) => e.preventDefault(), { passive: false });
   padClear.push(() => { down.clear(); keys.delete(key); el.classList.remove('on'); });
 }
 const padClear = [];
+// iPhone: stop pinch and double-tap zoom while flying (menus can still scroll).
+['gesturestart', 'gesturechange'].forEach((t) => document.addEventListener(t, (e) => { if (screen === 'play') e.preventDefault(); }, { passive: false }));
+{ let lastEnd = 0;
+  document.addEventListener('touchend', (e) => {
+    const now = performance.now();
+    if (screen === 'play' && now - lastEnd < 350 && !(e.target.closest && e.target.closest('button, a, input, textarea, select'))) e.preventDefault();
+    lastEnd = now;
+  }, { passive: false });
+  document.addEventListener('touchmove', (e) => { if (screen === 'play' && e.touches.length > 1) e.preventDefault(); }, { passive: false });
+}
 bindPad('t-left', 'left'); bindPad('t-right', 'right'); bindPad('t-burn', 'up');
 const fsEl = document.documentElement;
 const canFull = !!(fsEl.requestFullscreen || fsEl.webkitRequestFullscreen);
