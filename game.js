@@ -134,6 +134,15 @@ function resize() {
 const baseZoom = () => Math.max(Math.min(W, H) < 500 ? 0.4 : 0.5, Math.min(1.15, Math.min(W, H) / (Math.min(W, H) < 500 ? 900 : 780)));
 
 // ---------- level flow ----------
+// Fade through the star background when entering a level, instead of jumping.
+let veilBusy = false;
+function enterLevel(i) {
+  if (veilBusy) return;
+  const v = $('veil');
+  if (!v || matchMedia('(prefers-reduced-motion: reduce)').matches) { startLevel(i); return; }
+  veilBusy = true; v.classList.add('on');
+  setTimeout(() => { startLevel(i); requestAnimationFrame(() => { v.classList.remove('on'); veilBusy = false; }); }, 200);
+}
 function startLevel(i, keepDeaths, needRelease) {
   if (!LV.length) return;
   replay = null;
@@ -195,7 +204,7 @@ function buildCards() {
     md.textContent = best === null ? '' : best.toFixed(2);
     b.setAttribute('aria-label', 'Level ' + (i + 1) + ', ' + L.name + (best === null ? ', not flown' : ', ' + (medal || 'no medal') + ', best ' + best.toFixed(2) + ' seconds'));
     b.append(n, nm, md);
-    b.addEventListener('click', () => { Sfx.init(); Sfx.play('click'); startLevel(i); });
+    b.addEventListener('click', () => { Sfx.init(); Sfx.play('click'); enterLevel(i); });
     wrap.appendChild(b);
   });
   const tally = { Gold: 0, Silver: 0, Bronze: 0 };
@@ -344,8 +353,8 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'f' || e.key === 'F') { toggleFull(); return; }
   if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') { if (screen === 'play') { e.preventDefault(); setPaused(!paused); } return; }
   if (e.key === 'Enter' && tag !== 'button') {
-    if (screen === 'menu') { e.preventDefault(); startLevel(nextToFly()); }
-    else if (!$('result').hidden) { e.preventDefault(); if (levelIdx < LV.length - 1) startLevel(levelIdx + 1); else showMenu(); }
+    if (screen === 'menu') { e.preventDefault(); enterLevel(nextToFly()); }
+    else if (!$('result').hidden) { e.preventDefault(); if (levelIdx < LV.length - 1) enterLevel(levelIdx + 1); else showMenu(); }
   }
 });
 document.addEventListener('keyup', (e) => { const k = flightKey(e); if (k) keys.delete(k); });
@@ -544,7 +553,7 @@ click('save-send', () => {
 });
 }
 const click = (id, fn) => $(id).addEventListener('click', () => { Sfx.init(); Sfx.play('click'); fn(); });
-click('continue', () => startLevel(nextToFly()));
+click('continue', () => enterLevel(nextToFly()));
 click('b-levels', showMenu);
 click('b-restart', () => startLevel(levelIdx, phase !== 'won'));
 click('b-pause', () => setPaused(!paused));
@@ -552,7 +561,7 @@ $('b-sound').addEventListener('click', toggleSound);
 bindSave();
 $('b-guide').addEventListener('click', toggleGuide);
 $('b-full').addEventListener('click', () => { Sfx.init(); toggleFull(); });
-click('r-next', () => startLevel(levelIdx + 1));
+click('r-next', () => enterLevel(levelIdx + 1));
 click('r-retry', () => startLevel(levelIdx));
 click('r-levels', showMenu);
 click('p-resume', () => setPaused(false));
@@ -662,10 +671,11 @@ function makeGrain() {
   makeStars();
   const g = document.createElement('canvas'); g.width = g.height = 160;
   const c = g.getContext('2d'), img = c.createImageData(160, 160);
+  let seed = 4242; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647; // fixed, so the loading screen's copy matches
   for (let i = 0; i < img.data.length; i += 4) {
-    const light = Math.random() < 0.5;
+    const light = rnd() < 0.5;
     img.data[i] = img.data[i + 1] = img.data[i + 2] = light ? 255 : 0;
-    img.data[i + 3] = Math.random() * (light ? 14 : 26);
+    img.data[i + 3] = rnd() * (light ? 14 : 26);
   }
   c.putImageData(img, 0, 0);
   grain = ctx.createPattern(g, 'repeat');
