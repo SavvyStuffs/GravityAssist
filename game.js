@@ -1040,6 +1040,7 @@ function drawWorld(L, t, st) {
 // 0.7 of its units make one world unit here.
 const TITLE = { bounds: 600, bodies: [{ id: 'title-sun', kind: 'star', mass: 0, radius: 30 / 0.7, x: 0, y: 0 }] };
 const TITLE_ORBIT = 230 / 0.7, TITLE_LAP = 9; // seconds per lap, as in the loading screen
+let titleT0 = null;
 function drawTitle() {
   const s = Math.max(W / 1600, H / 1000) * (W <= H ? 0.6 : 1);
   cam.x = 0; cam.y = 0; cam.zoom = 0.7 * s;
@@ -1048,7 +1049,11 @@ function drawTitle() {
   ring(sx(0), sy(0), TITLE_ORBIT * cam.zoom); ctx.stroke(); ctx.setLineDash([]);
   drawBody(TITLE, TITLE.bodies[0], 0, null);
   // the loading screen's orbit started when the page opened, so this carries on from the same spot
-  const t = reduced ? 0 : performance.now() / 1000, th = Math.PI + TAU * t / TITLE_LAP;
+  if (titleT0 === null) { // lock to the loading screen's own animation clock, which starts a little after the page does
+    titleT0 = 0;
+    try { const o = document.querySelector('#loader .ld-orbit'), an = o && o.getAnimations ? o.getAnimations()[0] : null; if (an && an.currentTime !== null) titleT0 = performance.now() - an.currentTime; } catch (e) {}
+  }
+  const t = reduced ? 0 : (performance.now() - titleT0) / 1000, th = Math.PI + TAU * t / TITLE_LAP;
   const r = TITLE_ORBIT * cam.zoom;
   drawRocket(sx(0) + Math.cos(th) * r, sy(0) + Math.sin(th) * r, th + Math.PI / 2, 1.35 * s);
 }
