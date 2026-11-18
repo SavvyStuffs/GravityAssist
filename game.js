@@ -1023,6 +1023,26 @@ function drawWorld(L, t, st) {
   for (const b of L.bodies || []) drawBody(L, b, t, lit);
 }
 
+// ---------- title scene behind the menu ----------
+// The same picture as the loading screen in index.html, at the same scale, so the loading screen
+// fades into the menu without anything moving: a 600-wide chart, the sun, and the rocket on its orbit.
+// The loading drawing is 1600 x 1000 units filling the screen (scaled to 60% on tall screens), and
+// 0.7 of its units make one world unit here.
+const TITLE = { bounds: 600, bodies: [{ id: 'title-sun', kind: 'star', mass: 0, radius: 30 / 0.7, x: 0, y: 0 }] };
+const TITLE_ORBIT = 230 / 0.7, TITLE_LAP = 9; // seconds per lap, as in the loading screen
+function drawTitle() {
+  const s = Math.max(W / 1600, H / 1000) * (W <= H ? 0.6 : 1);
+  cam.x = 0; cam.y = 0; cam.zoom = 0.7 * s;
+  drawChart(TITLE);
+  ctx.strokeStyle = chalkA(0.16); ctx.lineWidth = 1; ctx.setLineDash([2 * s, 7 * s]);
+  ring(sx(0), sy(0), TITLE_ORBIT * cam.zoom); ctx.stroke(); ctx.setLineDash([]);
+  drawBody(TITLE, TITLE.bodies[0], 0, null);
+  // the loading screen's orbit started when the page opened, so this carries on from the same spot
+  const t = reduced ? 0 : performance.now() / 1000, th = Math.PI + TAU * t / TITLE_LAP;
+  const r = TITLE_ORBIT * cam.zoom;
+  drawRocket(sx(0) + Math.cos(th) * r, sy(0) + Math.sin(th) * r, th + Math.PI / 2, 1.35 * s);
+}
+
 // ---------- frame ----------
 let last = 0, hudT = 0;
 let frameErr = null;
@@ -1044,11 +1064,7 @@ function frameBody(now) {
 
   if (screen === 'menu' || !sim) {
     menuT += dt;
-    const L = LV[nextToFly()];
-    if (L) {
-      cam.x = 0; cam.y = 0; cam.zoom = Math.min(W, H) / (2 * L.bounds * 1.08);
-      drawWorld(L, reduced ? 0 : menuT, null);
-    }
+    drawTitle();
     requestAnimationFrame(frame);
     return;
   }
@@ -1114,7 +1130,6 @@ function frameBody(now) {
 let started = false;
 function start(data) {
   if (started) return; started = true;
-  { const n = document.getElementById('nojs'); if (n) n.hidden = true; } // the code is running
   resize(); makeGrain();
   if (typeof ResizeObserver === 'function') new ResizeObserver(resize).observe(canvas); else window.addEventListener('resize', resize);
   Sfx.setMuted(save.muted);
@@ -1127,6 +1142,10 @@ function start(data) {
     document.querySelectorAll('.touchonly').forEach((n) => { n.hidden = false; });
   }
   showMenu();
+  document.body.classList.add('ready');
+  // The loading screen stays at least one second from page open, then fades into the menu.
+  const since = (window.performance && performance.now) ? performance.now() : 1000;
+  setTimeout(() => document.body.classList.add('loaded'), Math.max(0, 1000 - since));
   cloudInit();
   if (data && data.screen === 'play' && LV[data.levelIdx]) startLevel(data.levelIdx);
   requestAnimationFrame((now) => { last = now; frame(now); });
