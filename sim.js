@@ -8,7 +8,7 @@
   var DT = 1 / 120;              // fixed step, seconds
   var SHIP = {
     thrust: 150,                 // px/s^2 while the engine burns
-    turn: 3.6,                   // rad/s
+    turn: 4.5,                   // rad/s
     radius: 7,                   // collision radius, px (forgiving: only the hull's middle can crash)
     reach: 18,                   // pickup reach, px: beacons, fuel and the gate count as soon as the nose touches
     burn: 10,                    // fuel units per second of thrust

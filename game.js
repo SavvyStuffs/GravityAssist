@@ -1105,7 +1105,7 @@ function frameBody(now) {
       acc += dt;
       let n = 0;
       while (acc >= DT && n < 14 && (phase === 'ready' || phase === 'fly')) { acc -= DT; n++; tick(); }
-      if (n === 14 || phase === 'ready') acc = 0;
+      if (n === 14) acc = 0; // never drop the leftover otherwise: on screens faster than 120 Hz a frame is shorter than one step
     } else if (phase === 'dead') {
       phaseT -= dt;
       if (phaseT <= 0) startLevel(levelIdx, true, true);

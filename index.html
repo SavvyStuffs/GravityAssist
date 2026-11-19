@@ -176,7 +176,7 @@ body.touch .hud-mid { position: fixed; left: 50%; transform: translateX(-50%); t
 body.touch #h-time { font-size: 26px; }
 body.touch #h-par { font-size: 10.5px; margin-top: 4px; gap: 0 8px; }
 body.touch #pad { bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
-body.touch.fs #pad { padding-left: max(9vw, 40px); padding-right: max(9vw, 40px); }
+body.touch.fs #pad { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(9vw, 40px); } /* left turn buttons close to the edge, under the thumb */
 body.touch #toast { top: calc(118px + env(safe-area-inset-top, 0px)); }
 body.touch .panel { top: calc(50% + 22px); max-height: calc(100% - 110px); }
 @media (max-width: 520px) { /* portrait phones: no room between the buttons, so the timer sits just above them */
@@ -331,10 +331,10 @@ body.touch .panel { top: calc(50% + 22px); max-height: calc(100% - 110px); }
   <span class="keys" id="keys-hint">Arrows fly. R restarts. G orbit guide.</span>
 </div>
 
-<script src="sim.js?v=20261118a"></script>
-<script src="levels.js?v=20261118a"></script>
-<script src="solutions.js?v=20261118a"></script>
-<script src="audio.js?v=20261118a"></script>
-<script src="game.js?v=20261118a"></script>
+<script src="sim.js?v=20261119d"></script>
+<script src="levels.js?v=20261119d"></script>
+<script src="solutions.js?v=20261119d"></script>
+<script src="audio.js?v=20261119d"></script>
+<script src="game.js?v=20261119d"></script>
 </body>
 </html>
