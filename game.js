@@ -402,6 +402,7 @@ canvas.addEventListener('wheel', (e) => {
 canvas.addEventListener('pointerdown', (e) => {
   Sfx.init();
   if (looking() && (coarse || e.pointerType === 'touch')) { try { canvas.setPointerCapture(e.pointerId); } catch (err) {} viewPointerDown(e); return; }
+  if (coarse || e.pointerType === 'touch') return; // on touch screens only the buttons fly, so a tap that misses an arrow can never burn
   try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
   touches.set(e.pointerId, ppos(e));
   follow(e.pointerId);        // the newest finger steers
