@@ -183,7 +183,7 @@ function showMenu() {
   replay = null;
   coach('');
   screen = 'menu'; paused = false; sim = null;
-  Sfx.thrust(false); Sfx.danger(0); Sfx.music(false);
+  Sfx.thrust(false); Sfx.danger(0);
   $('menu').hidden = false; $('result').hidden = true; $('pause').hidden = true; $('hud').hidden = true;
   $('b-levels').hidden = true; $('b-restart').hidden = true; $('b-pause').hidden = true; $('pad').hidden = true;
   padClear.forEach((f) => f());
@@ -224,7 +224,7 @@ function setPaused(v) {
   if (v) padClear.forEach((f) => f());
   $('b-pause').textContent = v ? 'Resume' : 'Pause';
   if (v) { Sfx.thrust(false); Sfx.danger(0); Sfx.music(false); try { $('p-resume').focus(); } catch (err) {} }
-  else { if (phase === 'fly') Sfx.music(true); try { canvas.focus({ preventScroll: true }); } catch (err) {} }
+  else { Sfx.music(true); try { canvas.focus({ preventScroll: true }); } catch (err) {} }
 }
 function causeText(cause) {
   if (cause === 'lost') return 'Drifted off the chart.';
@@ -250,7 +250,7 @@ function showResult() {
   $('r-next').hidden = last;
   coach(''); if (levelIdx === 0) tut.done = true;
   $('result').hidden = false; $('b-pause').hidden = true; $('pad').hidden = true; padClear.forEach((f) => f());
-  toast(''); Sfx.music(false);
+  toast('');
   Sfx.play('medal');
   try { (last ? $('r-retry') : $('r-next')).focus(); } catch (err) {}
 }
@@ -1162,6 +1162,12 @@ function start(data) {
   resize(); makeGrain();
   if (typeof ResizeObserver === 'function') new ResizeObserver(resize).observe(canvas); else window.addEventListener('resize', resize);
   Sfx.setMuted(save.muted);
+  // Music runs the whole time the game is open (only pause and mute stop it). Try to start it right away;
+  // most browsers block sound until the first tap, click or key, and then it fades in from there.
+  Sfx.music(true);
+  Sfx.init();
+  const firstTouch = () => { Sfx.init(); document.removeEventListener('pointerdown', firstTouch, true); document.removeEventListener('keydown', firstTouch, true); };
+  document.addEventListener('pointerdown', firstTouch, true); document.addEventListener('keydown', firstTouch, true);
   $('b-sound').setAttribute('aria-pressed', String(!save.muted));
   $('b-guide').setAttribute('aria-pressed', String(save.guide));
   if (coarse) {

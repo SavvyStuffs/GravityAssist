@@ -107,7 +107,7 @@ button:disabled { opacity: 0.45; cursor: default; }
 .card .n { color: var(--chalk-dim); font-size: 11px; font-variant-numeric: tabular-nums; }
 .card .nm { font-family: var(--level); font-style: normal; font-size: 17px; font-weight: 400; line-height: 1.1; letter-spacing: 0.01em; }
 .card .md { font-size: 11px; font-variant-numeric: tabular-nums; color: var(--chalk-dim); white-space: nowrap; }
-.card .md::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; background: transparent; }
+.card .md::before { content: ""; display: inline-block; width: 9px; height: 12px; margin-right: 5px; vertical-align: -1px; background: transparent; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 16'%3E%3Cpath d='M1 0h3.4l2.3 5.6-1.9 1.3zM11 0H7.6L5.3 5.6l1.9 1.3z'/%3E%3Cpath fill-rule='evenodd' d='M6 6.2a4.8 4.8 0 1 1 0 9.6a4.8 4.8 0 1 1 0-9.6zm0 1.3a3.5 3.5 0 1 0 0 7a3.5 3.5 0 1 0 0-7zm0 0.8a2.7 2.7 0 1 1 0 5.4a2.7 2.7 0 1 1 0-5.4z'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 16'%3E%3Cpath d='M1 0h3.4l2.3 5.6-1.9 1.3zM11 0H7.6L5.3 5.6l1.9 1.3z'/%3E%3Cpath fill-rule='evenodd' d='M6 6.2a4.8 4.8 0 1 1 0 9.6a4.8 4.8 0 1 1 0-9.6zm0 1.3a3.5 3.5 0 1 0 0 7a3.5 3.5 0 1 0 0-7zm0 0.8a2.7 2.7 0 1 1 0 5.4a2.7 2.7 0 1 1 0-5.4z'/%3E%3C/svg%3E") center / contain no-repeat; } /* tiny medal: ribbon over a ringed disc */
 .card .md.gold::before { background: var(--ochre); }
 .card .md.silver::before { background: #c9d3dc; }
 .card .md.bronze::before { background: #b9825a; }
@@ -332,10 +332,10 @@ body.touch .panel { top: calc(50% + 22px); max-height: calc(100% - 110px); }
   <span class="keys" id="keys-hint">Arrows fly. R restarts. G orbit guide.</span>
 </div>
 
-<script src="sim.js?v=20261119i"></script>
-<script src="levels.js?v=20261119i"></script>
-<script src="solutions.js?v=20261119i"></script>
-<script src="audio.js?v=20261119i"></script>
-<script src="game.js?v=20261119i"></script>
+<script src="sim.js?v=20261119p"></script>
+<script src="levels.js?v=20261119p"></script>
+<script src="solutions.js?v=20261119p"></script>
+<script src="audio.js?v=20261119p"></script>
+<script src="game.js?v=20261119p"></script>
 </body>
 </html>

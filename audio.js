@@ -76,9 +76,17 @@
     if (!screamBuf) { scream(t, far); return; }  // not decoded yet: fall back to the synthesized one
     var src = ctx.createBufferSource(), g = ctx.createGain(), lp = ctx.createBiquadFilter();
     src.buffer = screamBuf;
-    lp.type = 'lowpass'; lp.frequency.setValueAtTime(far ? 1700 : 16000, t);
-    g.gain.setValueAtTime(far ? 0.6 : 1.3, t);
-    if (far) src.playbackRate.setValueAtTime(0.94, t);
+    lp.type = 'lowpass';
+    if (far) {
+      // Drifting off the edge: starts dull and fades away clearly, as if falling into the distance.
+      var len = screamBuf.duration / 0.94;
+      src.playbackRate.setValueAtTime(0.94, t);
+      lp.frequency.setValueAtTime(2000, t); lp.frequency.linearRampToValueAtTime(500, t + len);
+      g.gain.setValueAtTime(0.6, t); g.gain.linearRampToValueAtTime(0.0001, t + len); // even fade over the whole scream
+    } else {
+      lp.frequency.setValueAtTime(16000, t);
+      g.gain.setValueAtTime(0.7, t);   // crash scream, kept modest (was 1.3, then 1.0)
+    }
     src.connect(lp); lp.connect(g); g.connect(master);
     src.start(t);
     src.onended = function () { try { src.disconnect(); lp.disconnect(); g.disconnect(); } catch (e) {} };
@@ -250,6 +258,38 @@
     mus = { out: out };
   }
 
+  // Background music: "Kulakovka" by MedicalTech (Pixabay Content License), looped and kept far back.
+  var TRACK_URL = 'MedicalTech%20-%20Kulakovka.mp3', TRACK_VOL = 0.13; // the song is loud; 0.13 is about 18 dB down
+  var track = null;
+  function buildTrack() {
+    try {
+      var el = new Audio(); el.src = TRACK_URL; el.loop = true; el.preload = 'auto';
+      el.setAttribute('playsinline', '');
+      var g = ctx.createGain(); g.gain.value = 0;
+      ctx.createMediaElementSource(el).connect(g); g.connect(master); // through the master gain, so M mutes it
+      track = { el: el, g: g, stopTimer: null };
+    } catch (e) { track = null; }
+  }
+
+  var trackStarted = false;
+  function applyTrack() {
+    try {
+      if (!ctx) return;
+      if (!track) buildTrack();
+      if (!track) return;
+      if (musicWanted && !muted) {
+        if (track.stopTimer) { clearTimeout(track.stopTimer); track.stopTimer = null; }
+        var pr = track.el.play(); if (pr && pr.catch) pr.catch(function () {});
+        // the very first start fades in slowly (~6 s); after a pause or unmute, ~2 s
+        track.g.gain.setTargetAtTime(TRACK_VOL, now(), trackStarted ? 0.7 : 2); trackStarted = true;
+      } else {
+        track.g.gain.setTargetAtTime(0, now(), 0.3);            // ~1 s fade out, then pause where it is
+        if (track.stopTimer) clearTimeout(track.stopTimer);
+        track.stopTimer = setTimeout(function () { track.stopTimer = null; if (!(musicWanted && !muted)) try { track.el.pause(); } catch (e) {} }, 1500);
+      }
+    } catch (e) {}
+  }
+
   // Occasional soft high bell on a random pentatonic note.
   function scheduleBell() {
     if (bellTimer) clearTimeout(bellTimer);
@@ -298,6 +338,7 @@
       try {
         muted = !!m;
         if (master) master.gain.setTargetAtTime(muted ? 0 : MASTER_VOL, now(), 0.02);
+        applyTrack(); // muting pauses the song; unmuting fades it back in
       } catch (e) {}
     },
     isMuted: function () { return muted; },
@@ -316,20 +357,13 @@
         SOUNDS[name](now() + 0.005);
       } catch (e) {}
     },
-    // Quiet generative ambient bed.
+    // Background music: the looped track (fades in when flying, out and paused otherwise).
     music: function (on) {
       try {
         on = !!on;
         musicWanted = on;
         if (!ctx) return;
-        if (on) {
-          if (!mus) buildMusic();
-          mus.out.gain.setTargetAtTime(0.03, now(), 0.7);   // ~2 s fade in; the drone is kept very low
-          // No random bells: the owner found background dings confusing next to real signals.
-        } else {
-          if (mus) mus.out.gain.setTargetAtTime(0, now(), 0.3); // ~1 s fade out
-          if (bellTimer) { clearTimeout(bellTimer); bellTimer = null; }
-        }
+        applyTrack();
       } catch (e) {}
     },
     // Sub-bass throb scaled by gravity-well depth (0..1).
