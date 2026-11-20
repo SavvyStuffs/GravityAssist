@@ -84,8 +84,9 @@
       lp.frequency.setValueAtTime(2000, t); lp.frequency.linearRampToValueAtTime(500, t + len);
       g.gain.setValueAtTime(0.6, t); g.gain.linearRampToValueAtTime(0.0001, t + len); // even fade over the whole scream
     } else {
-      lp.frequency.setValueAtTime(16000, t);
-      g.gain.setValueAtTime(0.7, t);   // crash scream, kept modest (was 1.3, then 1.0)
+      // Crash scream: matched to the edge scream's perceived volume, held steady without the fade.
+      lp.frequency.setValueAtTime(2400, t);
+      g.gain.setValueAtTime(0.42, t);
     }
     src.connect(lp); lp.connect(g); g.connect(master);
     src.start(t);
@@ -96,7 +97,7 @@
   // ("aah" sliding toward "aw"), yelping up, catching, then falling away. far softens and dulls it.
   function scream(t, far) {
     far = far || 0;
-    var dur = 1.15, vol = (0.75 - far * 0.35);
+    var dur = 1.15, vol = 0.4;
     var src = ctx.createOscillator(), vib = ctx.createOscillator(), vibAmt = ctx.createGain();
     src.type = 'sawtooth';
     var f = src.frequency;

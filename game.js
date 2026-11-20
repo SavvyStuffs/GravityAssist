@@ -80,14 +80,207 @@ function medalFor(i, time) {
   // Finishing slower than the bronze time earns no medal.
   return time <= (p.gold || 0) ? 'Gold' : time <= (p.silver || 0) ? 'Silver' : time <= (p.bronze || Infinity) ? 'Bronze' : null;
 }
-const unlocked = () => true; // every level is open: progress is easy to lose between copies of the game
-function nextToFly() {
-  for (let i = 0; i < LV.length; i++) if (bestOf(i) === null) return i;
+
+// ---------- constellations (grouped by mechanics into recognizable shapes) ----------
+// Rhombus composition around the Sun:
+//   Arrow (high-left) -> Hourglass (mid-upper-right) -> Crown (mid-lower-left) -> Compass Star (low-right)
+const CONSTELLATIONS = [
+  {
+    id: 0, roman: 'I', name: 'First Orbits', shape: 'Arrow',
+    desc: 'Gravity bends, slingshots, moons & fuel cells',
+    levels: [0, 1, 2, 3, 4],
+    // Recognizable spacefaring Arrow (higher, shifted slightly right to form the top-left rhombus vertex)
+    edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 1], [1, 3]],
+    land: [
+      { x: 112, y: 196, ls: 'bottom' },
+      { x: 200, y: 158, ls: 'bottom' },
+      { x: 252, y: 84, ls: 'top' },
+      { x: 364, y: 106, ls: 'top' },
+      { x: 286, y: 188, ls: 'bottom' }
+    ],
+    landLabel: { x: 234, y: 46 },
+    port: [
+      { x: 56, y: 192, ls: 'bottom' },
+      { x: 118, y: 160, ls: 'bottom' },
+      { x: 152, y: 98, ls: 'top' },
+      { x: 240, y: 120, ls: 'top' },
+      { x: 182, y: 194, ls: 'bottom' }
+    ],
+    portLabel: { x: 150, y: 60 }
+  },
+  {
+    id: 1, roman: 'II', name: 'Deep Wells', shape: 'Hourglass',
+    desc: 'Twin stars, repulsors, black holes & asteroid belts',
+    levels: [5, 6, 7, 8, 9],
+    // Recognizable tilted Hourglass (lower & further right for the right-upper rhombus vertex)
+    edges: [[0, 1], [0, 2], [1, 2], [2, 3], [2, 4], [3, 4]],
+    land: [
+      { x: 632, y: 138, ls: 'top' },
+      { x: 830, y: 120, ls: 'top' },
+      { x: 738, y: 188, ls: 'bottom' },
+      { x: 654, y: 258, ls: 'bottom' },
+      { x: 850, y: 240, ls: 'bottom' }
+    ],
+    landLabel: { x: 732, y: 86 },
+    port: [
+      { x: 344, y: 138, ls: 'top' },
+      { x: 510, y: 124, ls: 'top' },
+      { x: 430, y: 190, ls: 'bottom' },
+      { x: 358, y: 252, ls: 'bottom' },
+      { x: 522, y: 238, ls: 'bottom' }
+    ],
+    portLabel: { x: 430, y: 88 }
+  },
+  {
+    id: 2, roman: 'III', name: 'Singularity', shape: 'Crown',
+    desc: 'Hold beacons, binary abyss, accretion discs & relays',
+    levels: [10, 11, 12, 13, 14],
+    // Recognizable Cassiopeia / Crown (shifted left for the left-lower rhombus vertex)
+    edges: [[0, 1], [1, 2], [2, 3], [3, 4], [0, 2], [2, 4]],
+    land: [
+      { x: 68, y: 374, ls: 'top' },
+      { x: 140, y: 440, ls: 'bottom' },
+      { x: 216, y: 350, ls: 'top' },
+      { x: 288, y: 436, ls: 'bottom' },
+      { x: 354, y: 368, ls: 'top' }
+    ],
+    landLabel: { x: 214, y: 482 },
+    port: [
+      { x: 28, y: 470, ls: 'top' },
+      { x: 76, y: 532, ls: 'bottom' },
+      { x: 126, y: 454, ls: 'top' },
+      { x: 176, y: 530, ls: 'bottom' },
+      { x: 220, y: 468, ls: 'top' }
+    ],
+    portLabel: { x: 126, y: 578 }
+  },
+  {
+    id: 3, roman: 'IV', name: 'Grand Orrery', shape: 'Compass Star',
+    desc: 'Precision transfers, nested moons, ring riding & finale',
+    levels: [15, 16, 17, 18, 19],
+    // Recognizable Astrolabe Compass Star (17 aligned with 15, 20 sitting just right of the 2nd ring)
+    edges: [[0, 1], [1, 2], [2, 3], [3, 0], [0, 4], [1, 4], [2, 4], [3, 4]],
+    land: [
+      { x: 584, y: 450, ls: 'top' },
+      { x: 706, y: 368, ls: 'top' },
+      { x: 828, y: 450, ls: 'top' },
+      { x: 706, y: 532, ls: 'bottom' },
+      { x: 706, y: 450, ls: 'bottom' }
+    ],
+    landLabel: { x: 706, y: 576 },
+    port: [
+      { x: 326, y: 540, ls: 'top' },
+      { x: 414, y: 472, ls: 'top' },
+      { x: 502, y: 540, ls: 'top' },
+      { x: 414, y: 608, ls: 'bottom' },
+      { x: 414, y: 540, ls: 'bottom' }
+    ],
+    portLabel: { x: 414, y: 656 }
+  }
+];
+const constellationOf = (i) => Math.max(0, Math.min(CONSTELLATIONS.length - 1, Math.floor(i / 5)));
+const isGrandOrrery = (i) => LV.length > 0 && i === LV.length - 1;
+function constellationDoneCount(ci) {
+  const c = CONSTELLATIONS[ci];
+  return c ? c.levels.filter((i) => i < LV.length && bestOf(i) !== null).length : 0;
+}
+function constellationComplete(ci) {
+  const c = CONSTELLATIONS[ci];
+  return !!c && c.levels.every((i) => i >= LV.length || bestOf(i) !== null);
+}
+function constellationUnlocked(ci) {
+  return ci <= 0 || constellationComplete(ci - 1);
+}
+function priorDoneCount(i) {
+  let n = 0;
+  for (let k = 0; k < i && k < LV.length; k++) if (bestOf(k) !== null) n++;
+  return n;
+}
+function firstUnflownPrior(i) {
+  for (let k = 0; k < i && k < LV.length; k++) if (bestOf(k) === null) return k;
   return 0;
+}
+function unlocked(i) {
+  if (!constellationUnlocked(constellationOf(i))) return false;
+  // Grand Orrery (final level) specifically stays locked until ALL previous levels are completed.
+  if (isGrandOrrery(i)) return priorDoneCount(i) >= i;
+  return true;
+}
+function nextToFly() {
+  for (let i = 0; i < LV.length; i++) if (unlocked(i) && bestOf(i) === null) return i;
+  return 0;
+}
+function nextUnflownIn(ci) {
+  const c = CONSTELLATIONS[ci];
+  if (!c) return 0;
+  for (const idx of c.levels) if (idx < LV.length && bestOf(idx) === null) return idx;
+  return c.levels[0] || 0;
+}
+function nextAfterWin(i) {
+  if (i + 1 < LV.length && unlocked(i + 1)) return i + 1;
+  const ci = constellationOf(i);
+  const c = CONSTELLATIONS[ci];
+  if (c) {
+    for (const idx of c.levels) if (idx < LV.length && unlocked(idx) && bestOf(idx) === null) return idx;
+  }
+  return null;
+}
+
+// ---------- colored medal icon DOM builders ----------
+function medalIcon(tier, large) {
+  const sp = document.createElement('span');
+  sp.className = 'm-ico ' + tier + (large ? ' lg' : '');
+  sp.setAttribute('role', 'img');
+  sp.setAttribute('aria-label', tier[0].toUpperCase() + tier.slice(1) + ' medal');
+  return sp;
+}
+function medalChip(tier, label) {
+  const wrap = document.createElement('span');
+  wrap.className = 'm-chip ' + tier;
+  wrap.append(medalIcon(tier, false));
+  const tx = document.createElement('span');
+  tx.textContent = label;
+  wrap.append(tx);
+  return wrap;
+}
+function renderTally(el, showProgress) {
+  if (!el) return;
+  const tally = { gold: 0, silver: 0, bronze: 0 };
+  let completed = 0;
+  LV.forEach((L, i) => {
+    const b = bestOf(i);
+    if (b !== null) completed++;
+    const m = medalFor(i, b);
+    if (m) tally[m.toLowerCase()]++;
+  });
+  const totalMedals = tally.gold + tally.silver + tally.bronze;
+  el.textContent = '';
+  if (!showProgress && totalMedals === 0 && completed === 0) {
+    el.hidden = true;
+    return;
+  }
+  el.hidden = false;
+  el.append(
+    medalChip('gold', String(tally.gold)),
+    medalChip('silver', String(tally.silver)),
+    medalChip('bronze', String(tally.bronze))
+  );
+  if (showProgress) {
+    const sep = document.createElement('span');
+    sep.className = 'tally-sep tally-progress';
+    sep.textContent = '|';
+    const prog = document.createElement('span');
+    prog.className = 'tally-progress';
+    prog.textContent = completed + ' / ' + LV.length;
+    el.append(sep, prog);
+  }
 }
 
 // ---------- state ----------
 let screen = 'menu';           // 'menu' | 'play'
+let menuView = 'title';        // 'title' | 'map'
+let selectedIdx = 0;
+let justUnlocked = null;       // constellation name unlocked by the latest win
 let levelIdx = 0, sim = null, phase = 'ready', phaseT = 0, paused = false;
 let steps = 0, acc = 0, deaths = 0, finalTime = 0, newBest = false, armed = true;
 const prev = { x: 0, y: 0, a: 0 }, draw = { x: 0, y: 0, a: 0 }; // last step and the interpolated pose to render
@@ -134,19 +327,33 @@ function resize() {
 const baseZoom = () => Math.max(Math.min(W, H) < 500 ? 0.4 : 0.5, Math.min(1.15, Math.min(W, H) / (Math.min(W, H) < 500 ? 900 : 780)));
 
 // ---------- level flow ----------
-// Fade through the star background when entering a level, instead of jumping.
+// Fade through the star background when changing screens, instead of jumping.
 let veilBusy = false;
-function enterLevel(i) {
+function withVeil(fn) {
   if (veilBusy) return;
   const v = $('veil');
-  if (!v || matchMedia('(prefers-reduced-motion: reduce)').matches) { startLevel(i); return; }
+  if (!v || matchMedia('(prefers-reduced-motion: reduce)').matches) { fn(); return; }
   veilBusy = true; v.classList.add('on');
-  setTimeout(() => { startLevel(i); requestAnimationFrame(() => { v.classList.remove('on'); veilBusy = false; }); }, 200);
+  setTimeout(() => { fn(); requestAnimationFrame(() => { v.classList.remove('on'); veilBusy = false; }); }, 200);
+}
+function enterLevel(i) {
+  if (veilBusy) return;
+  if (!unlocked(i)) {
+    if (isGrandOrrery(i)) toast('Complete all ' + i + ' previous charts to unlock Grand Orrery.');
+    else toast('Complete all 5 charts in the previous constellation to unlock.');
+    return;
+  }
+  withVeil(() => startLevel(i));
+}
+function leaveToMenu(viewMode, focusIdx) {
+  withVeil(() => showMenu(viewMode, focusIdx));
 }
 function startLevel(i, keepDeaths, needRelease) {
   if (!LV.length) return;
   replay = null;
   levelIdx = Math.max(0, Math.min(LV.length - 1, i | 0));
+  selectedIdx = levelIdx;
+  justUnlocked = null;
   const L = LV[levelIdx];
   sim = S.create(L);
   phase = 'ready'; phaseT = 0; paused = false; steps = 0; acc = 0;
@@ -161,6 +368,7 @@ function startLevel(i, keepDeaths, needRelease) {
   if (keepDeaths) { view.on = false; cam.x = sim.ship.x; cam.y = sim.ship.y; cam.zoom = baseZoom(); }
   else { overview(); cam.x = view.x; cam.y = view.y; cam.zoom = view.zoom; }
   screen = 'play';
+  document.body.classList.remove('on-menu');
   $('menu').hidden = true; $('result').hidden = true; $('pause').hidden = true; $('hud').hidden = false;
   $('b-levels').hidden = false; $('b-restart').hidden = false; $('b-pause').hidden = false;
   $('pad').hidden = !coarse;
@@ -169,56 +377,448 @@ function startLevel(i, keepDeaths, needRelease) {
   $('h-hint').textContent = L.hint || '';
   const b = bestOf(levelIdx), par = L.par || {}, hp = $('h-par');
   hp.textContent = '';
-  const bits = [];
-  if (par.gold) bits.push('Gold: ' + Math.round(par.gold));
-  if (par.silver) bits.push('Silver: ' + Math.round(par.silver));
-  if (par.bronze) bits.push('Bronze: ' + Math.round(par.bronze));
-  if (b !== null) bits.push('Best: ' + b.toFixed(2));
-  bits.forEach((tx) => { const sp = document.createElement('span'); sp.textContent = tx; hp.appendChild(sp); });
+  if (par.gold) hp.appendChild(medalChip('gold', Math.round(par.gold) + 's'));
+  if (par.silver) hp.appendChild(medalChip('silver', Math.round(par.silver) + 's'));
+  if (par.bronze) hp.appendChild(medalChip('bronze', Math.round(par.bronze) + 's'));
+  if (b !== null) {
+    const sp = document.createElement('span');
+    sp.textContent = 'Best ' + b.toFixed(2) + 's';
+    hp.appendChild(sp);
+  }
   toast('');
   updateHud();
   try { canvas.focus({ preventScroll: true }); } catch (err) {}
 }
-function showMenu() {
+function showMenu(viewMode, focusIdx) {
   replay = null;
   coach('');
   screen = 'menu'; paused = false; sim = null;
+  menuView = viewMode === 'map' ? 'map' : 'title';
+  if (typeof focusIdx === 'number' && LV[focusIdx]) selectedIdx = focusIdx;
+  else if (menuView === 'map') selectedIdx = unlocked(levelIdx) ? levelIdx : nextToFly();
+  else selectedIdx = nextToFly();
   Sfx.thrust(false); Sfx.danger(0);
-  $('menu').hidden = false; $('result').hidden = true; $('pause').hidden = true; $('hud').hidden = true;
+  document.body.classList.add('on-menu');
+  $('menu').hidden = false;
+  $('title-view').hidden = menuView !== 'title';
+  $('map-view').hidden = menuView !== 'map';
+  $('result').hidden = true; $('pause').hidden = true; $('hud').hidden = true;
   $('b-levels').hidden = true; $('b-restart').hidden = true; $('b-pause').hidden = true; $('pad').hidden = true;
   padClear.forEach((f) => f());
   toast('');
+  if (menuView === 'map') resetMapCam();
   buildCards();
 }
-function buildCards() {
-  const wrap = $('cards');
-  wrap.textContent = '';
-  LV.forEach((L, i) => {
-    const b = document.createElement('button');
-    b.type = 'button'; b.className = 'card'; b.id = 'card-' + i;
-    const open = unlocked(i), best = bestOf(i), medal = medalFor(i, best);
-    b.disabled = !open;
-    const n = document.createElement('span'); n.className = 'n'; n.textContent = String(i + 1).padStart(2, '0');
-    const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = L.name;
-    const md = document.createElement('span'); md.className = 'md' + (medal ? ' ' + medal.toLowerCase() : '');
-    md.textContent = best === null ? '' : best.toFixed(2);
-    b.setAttribute('aria-label', 'Level ' + (i + 1) + ', ' + L.name + (best === null ? ', not flown' : ', ' + (medal || 'no medal') + ', best ' + best.toFixed(2) + ' seconds'));
-    b.append(n, nm, md);
-    b.addEventListener('click', () => { Sfx.init(); Sfx.play('click'); enterLevel(i); });
-    wrap.appendChild(b);
-  });
-  const tally = { Gold: 0, Silver: 0, Bronze: 0 };
-  LV.forEach((L, i) => { const m = medalFor(i, bestOf(i)); if (m) tally[m]++; });
-  const flown = tally.Gold + tally.Silver + tally.Bronze;
-  $('tally').textContent = flown ? tally.Gold + ' gold · ' + tally.Silver + ' silver · ' + tally.Bronze + ' bronze' : '';
-  $('tally').hidden = !flown;
-  const nx = nextToFly();
-  $('continue').textContent = LV.length ? 'Fly ' + LV[nx].name : 'No levels found';
-  $('continue').disabled = !LV.length;
+function setMenuView(viewMode, instant) {
+  const apply = () => {
+    menuView = viewMode === 'map' ? 'map' : 'title';
+    $('title-view').hidden = menuView !== 'title';
+    $('map-view').hidden = menuView !== 'map';
+    if (menuView === 'map') {
+      resetMapCam();
+      if (!LV[selectedIdx]) selectedIdx = nextToFly();
+      renderConstellationMap();
+      updateDock();
+    }
+  };
+  if (instant) apply();
+  else withVeil(apply);
 }
+
+// ---------- Star Map Zoom & Pan (desktop wheel/drag + mobile pinch/pan) ----------
+const mapCam = { zoom: 1, x: 0, y: 0 };
+const MAP_MIN_ZOOM = 1, MAP_MAX_ZOOM = 2.8;
+let mapSuppressClickUntil = 0;
+let mapDragging = false;
+
+function applyMapTransform() {
+  const svg = $('constellation-svg'), wrap = $('constellation-wrap');
+  if (!svg) return;
+  if (mapCam.zoom <= 1.001) {
+    svg.style.transform = '';
+  } else {
+    svg.style.transform = 'translate3d(' + mapCam.x.toFixed(2) + 'px,' + mapCam.y.toFixed(2) + 'px,0) scale(' + mapCam.zoom.toFixed(4) + ')';
+  }
+  if (wrap) wrap.classList.toggle('zoomed', mapCam.zoom > 1.01);
+}
+function clampMapCam() {
+  mapCam.zoom = Math.max(MAP_MIN_ZOOM, Math.min(MAP_MAX_ZOOM, mapCam.zoom));
+  if (mapCam.zoom <= 1.001) { mapCam.zoom = 1; mapCam.x = 0; mapCam.y = 0; return; }
+  const svg = $('constellation-svg');
+  const bw = (svg && svg.clientWidth) || W, bh = (svg && svg.clientHeight) || H;
+  const maxX = (bw * (mapCam.zoom - 1)) / 2 + 56;
+  const maxY = (bh * (mapCam.zoom - 1)) / 2 + 56;
+  mapCam.x = Math.max(-maxX, Math.min(maxX, mapCam.x));
+  mapCam.y = Math.max(-maxY, Math.min(maxY, mapCam.y));
+}
+function resetMapCam() {
+  mapCam.zoom = 1; mapCam.x = 0; mapCam.y = 0;
+  mapDragging = false;
+  const wrap = $('constellation-wrap');
+  if (wrap) wrap.classList.remove('dragging');
+  applyMapTransform();
+}
+function zoomMapAt(newZoom, clientX, clientY) {
+  const svg = $('constellation-svg');
+  if (!svg) return;
+  const oldZ = mapCam.zoom;
+  const targetZ = Math.max(MAP_MIN_ZOOM, Math.min(MAP_MAX_ZOOM, newZoom));
+  if (Math.abs(targetZ - oldZ) < 1e-4) return;
+  const rect = svg.getBoundingClientRect();
+  const ox = rect.left + rect.width / 2 - mapCam.x;
+  const oy = rect.top + rect.height / 2 - mapCam.y;
+  const dx = clientX - ox, dy = clientY - oy;
+  const ratio = targetZ / oldZ;
+  mapCam.x = dx - (dx - mapCam.x) * ratio;
+  mapCam.y = dy - (dy - mapCam.y) * ratio;
+  mapCam.zoom = targetZ;
+  clampMapCam();
+  applyMapTransform();
+}
+(function bindMapZoomPan() {
+  const wrap = $('constellation-wrap');
+  if (!wrap) return;
+  const ptrs = new Map();
+  let dragStart = { x: 0, y: 0 }, lastPt = { x: 0, y: 0 }, moved = false;
+  let pinchDist = 0, lastMid = { x: 0, y: 0 };
+
+  wrap.addEventListener('wheel', (e) => {
+    if (screen !== 'menu' || menuView !== 'map') return;
+    e.preventDefault();
+    const step = Math.max(-0.45, Math.min(0.45, -e.deltaY * (e.ctrlKey ? 0.01 : 0.0018)));
+    zoomMapAt(mapCam.zoom * Math.exp(step), e.clientX, e.clientY);
+  }, { passive: false });
+
+  wrap.addEventListener('dblclick', (e) => {
+    if (screen !== 'menu' || menuView !== 'map') return;
+    if (e.target && e.target.closest && e.target.closest('.c-node')) return;
+    if (mapCam.zoom > 1.01) resetMapCam();
+  });
+
+  wrap.addEventListener('pointerdown', (e) => {
+    if (screen !== 'menu' || menuView !== 'map' || e.button === 2) return;
+    ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (ptrs.size === 1) {
+      dragStart = { x: e.clientX, y: e.clientY };
+      lastPt = { x: e.clientX, y: e.clientY };
+      moved = false;
+    } else if (ptrs.size === 2) {
+      const [a, b] = Array.from(ptrs.values());
+      pinchDist = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+      lastMid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+      moved = true;
+      mapDragging = true;
+      wrap.classList.add('dragging');
+    }
+  });
+
+  window.addEventListener('pointermove', (e) => {
+    if (!ptrs.has(e.pointerId)) return;
+    ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (ptrs.size >= 2) {
+      const [a, b] = Array.from(ptrs.values());
+      const d = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+      const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+      mapCam.x += mx - lastMid.x;
+      mapCam.y += my - lastMid.y;
+      clampMapCam();
+      applyMapTransform();
+      zoomMapAt(mapCam.zoom * (d / pinchDist), mx, my);
+      pinchDist = d;
+      lastMid = { x: mx, y: my };
+    } else if (ptrs.size === 1 && mapCam.zoom > 1.01) {
+      if (!moved && Math.hypot(e.clientX - dragStart.x, e.clientY - dragStart.y) > 6) {
+        moved = true;
+        mapDragging = true;
+        wrap.classList.add('dragging');
+      }
+      if (moved) {
+        mapCam.x += e.clientX - lastPt.x;
+        mapCam.y += e.clientY - lastPt.y;
+        clampMapCam();
+        applyMapTransform();
+      }
+      lastPt = { x: e.clientX, y: e.clientY };
+    }
+  });
+
+  const endPtr = (e) => {
+    if (!ptrs.has(e.pointerId)) return;
+    ptrs.delete(e.pointerId);
+    if (moved) mapSuppressClickUntil = performance.now() + 260;
+    if (ptrs.size === 1) {
+      const rem = Array.from(ptrs.values())[0];
+      lastPt = { x: rem.x, y: rem.y };
+      dragStart = { x: rem.x, y: rem.y };
+      pinchDist = 0;
+    } else if (ptrs.size === 0) {
+      moved = false;
+      mapDragging = false;
+      pinchDist = 0;
+      wrap.classList.remove('dragging');
+    }
+  };
+  window.addEventListener('pointerup', endPtr);
+  window.addEventListener('pointercancel', endPtr);
+  window.addEventListener('resize', () => {
+    if (screen === 'menu' && menuView === 'map') { clampMapCam(); applyMapTransform(); }
+  });
+})();
+
+// ---------- Constellation SVG Map & Launch Dock ----------
+const isMapPortrait = () => W / Math.max(1, H) < 0.78;
+let lastMapPortrait = null;
+function renderConstellationMap() {
+  const svg = $('constellation-svg');
+  if (!svg) return;
+  const portrait = isMapPortrait();
+  lastMapPortrait = portrait;
+  svg.setAttribute('viewBox', portrait ? '0 0 560 700' : '0 0 1000 600');
+  const sunX = portrait ? 280 : 482;
+  const sunY = portrait ? 345 : 288;
+  const nextIdx = nextToFly();
+
+  let html = '';
+  // Invisible anchor (r=21 SVG units) synced in both center & scale to the live animated Canvas Sun
+  html += '<circle id="sun-anchor" cx="' + sunX + '" cy="' + sunY + '" r="21" fill="none"/>';
+
+  // Graceful dashed progression curves:
+  //   05 -> 06, 10 -> clockwise slingshot orbit around the Sun -> 11, and 15 -> 16
+  const p5 = (portrait ? CONSTELLATIONS[0].port : CONSTELLATIONS[0].land)[4];
+  const p6 = (portrait ? CONSTELLATIONS[1].port : CONSTELLATIONS[1].land)[0];
+  const p10 = (portrait ? CONSTELLATIONS[1].port : CONSTELLATIONS[1].land)[4];
+  const p11 = (portrait ? CONSTELLATIONS[2].port : CONSTELLATIONS[2].land)[0];
+  const p15 = (portrait ? CONSTELLATIONS[2].port : CONSTELLATIONS[2].land)[4];
+  const p16 = (portrait ? CONSTELLATIONS[3].port : CONSTELLATIONS[3].land)[0];
+
+  const arcStyle = (openB) => ' fill="none" stroke="' + (openB ? 'rgba(240,195,90,0.34)' : 'rgba(238,244,248,0.2)') + '" stroke-width="1.3" stroke-dasharray="3 7"';
+
+  // 05 -> 06
+  html += '<path d="M ' + p5.x + ' ' + p5.y + ' Q ' + ((p5.x + p6.x) / 2).toFixed(1) + ' ' + ((p5.y + p6.y) / 2 - 36).toFixed(1) + ' ' + p6.x + ' ' + p6.y + '"' + arcStyle(constellationUnlocked(1)) + '/>';
+
+  // 10 -> underneath Sun -> unmistakable clockwise slingshot ribbon loop around Sun (open asymmetric X-crossing underneath) -> 11
+  const orbR = portrait ? 54 : 58;
+  const aIn = 154 * Math.PI / 180;
+  const aOut = 28 * Math.PI / 180;
+  const inX = sunX + orbR * Math.cos(aIn), inY = sunY + orbR * Math.sin(aIn);
+  const outX = sunX + orbR * Math.cos(aOut), outY = sunY + orbR * Math.sin(aOut);
+  const hIn = portrait ? 96 : 115, hOut = portrait ? 90 : 105;
+  // Clockwise tangent at θ is (-sin θ, +cos θ), so incoming C2 lies behind along (+sin aIn, -cos aIn)
+  const c2InX = inX + hIn * Math.sin(aIn), c2InY = inY - hIn * Math.cos(aIn);
+  const c1OutX = outX - hOut * Math.sin(aOut), c1OutY = outY + hOut * Math.cos(aOut);
+  const f1 = (n) => n.toFixed(1);
+  const slingshotD = portrait
+    ? 'M ' + p10.x + ' ' + p10.y +
+      ' C 465 392, ' + f1(c2InX) + ' ' + f1(c2InY) + ', ' + f1(inX) + ' ' + f1(inY) +
+      ' A ' + orbR + ' ' + orbR + ' 0 1 1 ' + f1(outX) + ' ' + f1(outY) +
+      ' C ' + f1(c1OutX) + ' ' + f1(c1OutY) + ', 108 360, ' + p11.x + ' ' + p11.y
+    : 'M ' + p10.x + ' ' + p10.y +
+      ' C 745 352, ' + f1(c2InX) + ' ' + f1(c2InY) + ', ' + f1(inX) + ' ' + f1(inY) +
+      ' A ' + orbR + ' ' + orbR + ' 0 1 1 ' + f1(outX) + ' ' + f1(outY) +
+      ' C ' + f1(c1OutX) + ' ' + f1(c1OutY) + ', 220 254, ' + p11.x + ' ' + p11.y;
+  html += '<path d="' + slingshotD + '"' + arcStyle(constellationUnlocked(2)) + '/>';
+
+  // 15 -> 16
+  html += '<path d="M ' + p15.x + ' ' + p15.y + ' Q ' + ((p15.x + p16.x) / 2).toFixed(1) + ' ' + ((p15.y + p16.y) / 2 + 28).toFixed(1) + ' ' + p16.x + ' ' + p16.y + '"' + arcStyle(constellationUnlocked(3)) + '/>';
+
+  // Render each constellation's recognizable shape + stars
+  CONSTELLATIONS.forEach((c) => {
+    const pts = portrait ? c.port : c.land;
+    const lbl = portrait ? c.portLabel : c.landLabel;
+    const open = constellationUnlocked(c.id);
+    const doneCount = constellationDoneCount(c.id);
+    const activeSec = constellationOf(selectedIdx) === c.id;
+
+    // Shape edges
+    const edgeColor = !open ? 'rgba(238,244,248,0.13)' : (activeSec ? 'rgba(240,195,90,0.58)' : 'rgba(238,244,248,0.3)');
+    c.edges.forEach(([u, v], ei) => {
+      const p0 = pts[u], p1 = pts[v];
+      const spokeToLockedFinale = c.id === 3 && (u === 4 || v === 4) && !unlocked(c.levels[4]);
+      const edgeOpen = open && !spokeToLockedFinale;
+      const edgeDash = !edgeOpen ? ' stroke-dasharray="4 5"' : '';
+      const secondary = (c.id === 0 && ei >= 4) || (c.id === 2 && ei >= 4) || (c.id === 3 && ei >= 4);
+      const col = secondary ? (!edgeOpen ? 'rgba(238,244,248,0.06)' : (activeSec ? 'rgba(240,195,90,0.22)' : 'rgba(238,244,248,0.12)')) : edgeColor;
+      html += '<line x1="' + p0.x + '" y1="' + p0.y + '" x2="' + p1.x + '" y2="' + p1.y + '" stroke="' + col + '" stroke-width="' + (secondary ? 1 : (activeSec && edgeOpen ? 1.6 : 1.2)) + '"' + edgeDash + '/>';
+    });
+
+    // Minimalist progress stamp only (no constellation names): x/5 or [lock] x/5
+    if (!open) {
+      html += '<g transform="translate(' + (lbl.x - 19) + ' ' + (lbl.y - 9) + ')" fill="none" stroke="rgba(238,244,248,0.42)" stroke-width="1.2">' +
+        '<rect x="0" y="5" width="8" height="6" rx="1"/>' +
+        '<path d="M1.8 5V3.2a2.2 2.2 0 0 1 4.4 0V5"/>' +
+        '</g>';
+      html += '<text x="' + (lbl.x + 8) + '" y="' + lbl.y + '" text-anchor="middle" fill="rgba(238,244,248,0.42)" font-family="Azeret Mono, monospace" font-size="10.5">' + doneCount + '/5</text>';
+    } else {
+      const progFill = doneCount === 5 ? 'rgba(240,195,90,0.85)' : (activeSec ? '#f0c35a' : 'rgba(238,244,248,0.52)');
+      html += '<text x="' + lbl.x + '" y="' + lbl.y + '" text-anchor="middle" fill="' + progFill + '" font-family="Azeret Mono, monospace" font-size="10.5">' + doneCount + '/5</text>';
+    }
+
+    // Star nodes
+    c.levels.forEach((lvlIdx, k) => {
+      if (!LV[lvlIdx]) return;
+      const L = LV[lvlIdx], p = pts[k];
+      const nodeOpen = unlocked(lvlIdx);
+      const active = lvlIdx === selectedIdx;
+      const best = bestOf(lvlIdx), medal = medalFor(lvlIdx, best);
+      const mKey = medal ? medal.toLowerCase() : null;
+      const done = best !== null;
+      const isNext = nodeOpen && lvlIdx === nextIdx && !done;
+      const isCapstone = k === 4;
+      const col = mKey === 'gold' ? '#f0c35a' : mKey === 'silver' ? '#c9d3dc' : mKey === 'bronze' ? '#c68659' : '#eef4f8';
+      const r = active ? 6.8 : (isCapstone ? 5.6 : 4.5);
+
+      html += '<g class="c-node" tabindex="0" role="button" data-idx="' + lvlIdx + '" aria-label="Chart ' + (lvlIdx + 1) + ', ' + L.name + (!nodeOpen ? ', locked' : done ? (medal ? ', ' + medal + ' medal, ' + best.toFixed(2) + ' seconds' : ', completed, ' + best.toFixed(2) + ' seconds') : ', not flown') + '" transform="translate(' + p.x + ' ' + p.y + ')"' + (!nodeOpen ? ' opacity="0.46"' : '') + '>';
+      html += '<circle r="24" fill="transparent"/>';
+      html += '<circle class="c-focus" r="19" fill="none" opacity="0"/>';
+
+      if (active) {
+        html += '<g class="c-reticle">' +
+          '<circle r="16.5" fill="none" stroke="' + (nodeOpen ? '#f0c35a' : 'rgba(238,244,248,0.55)') + '" stroke-width="1.25" stroke-dasharray="6 5"/>' +
+          '<path d="M0 -21 L0 -15 M0 15 L0 21 M-21 0 L-15 0 M15 0 L21 0" stroke="' + (nodeOpen ? '#f0c35a' : 'rgba(238,244,248,0.55)') + '" stroke-width="1.2"/>' +
+          '</g>';
+      } else if (isNext) {
+        html += '<circle r="11.5" fill="none" stroke="#f0c35a" stroke-width="1.1" class="c-pulse"/>';
+      }
+
+      // Soft glow & 4-point star flare for Gold or Capstone stars
+      if (nodeOpen && (mKey === 'gold' || active)) {
+        html += '<circle r="' + (active ? 15 : 11) + '" fill="' + col + '" fill-opacity="' + (active ? 0.14 : 0.08) + '"/>';
+      }
+      if (nodeOpen && (mKey === 'gold' || (isCapstone && done) || (isCapstone && active))) {
+        const f = active ? 13.5 : (isCapstone ? 11 : 9);
+        html += '<path d="M0 ' + (-f) + ' L1.4 -1.4 L' + f + ' 0 L1.4 1.4 L0 ' + f + ' L-1.4 1.4 L' + (-f) + ' 0 L-1.4 -1.4 Z" fill="' + (mKey ? col : '#eef4f8') + '" fill-opacity="' + (mKey ? 0.92 : 0.55) + '"/>';
+      }
+
+      if (!nodeOpen) {
+        html += '<circle r="' + (r * 0.9) + '" fill="#08111f" stroke="rgba(238,244,248,0.62)" stroke-width="1.3" stroke-dasharray="2 2"/>';
+        // When Constellation IV is open but Grand Orrery (20) is specifically sealed, show a tiny lock badge on star 20
+        if (open && isGrandOrrery(lvlIdx)) {
+          html += '<g transform="translate(-3.5 -5)" fill="none" stroke="rgba(238,244,248,0.75)" stroke-width="1.1"><rect x="0" y="4" width="7" height="5" rx="1"/><path d="M1.5 4V2.6a2 2 0 0 1 4 0V4"/></g>';
+        }
+      } else if (done) {
+        html += '<circle r="' + r + '" fill="' + col + '" stroke="#08111f" stroke-width="1.2"/>';
+      } else {
+        html += '<circle r="' + r + '" fill="#08111f" stroke="' + (active || isNext ? '#f0c35a' : 'rgba(238,244,248,0.75)') + '" stroke-width="1.7"/>';
+        if (active || isNext) html += '<circle r="2" fill="#f0c35a"/>';
+      }
+
+      // Clean coordinate number; active star gets a readable pill with name
+      const dy = p.ls === 'bottom' ? (active ? 29 : 19) : (active ? -23 : -13);
+      const numStr = String(lvlIdx + 1).padStart(2, '0');
+      if (active) {
+        const labelStr = numStr + ' · ' + L.name;
+        const bw = Math.max(96, labelStr.length * 7.2 + 22);
+        html += '<g transform="translate(0 ' + dy + ')">' +
+          '<rect x="' + (-bw / 2).toFixed(1) + '" y="-11" width="' + bw.toFixed(1) + '" height="20" rx="10" fill="rgba(8,17,31,0.92)" stroke="' + (nodeOpen ? 'rgba(240,195,90,0.75)' : 'rgba(238,244,248,0.35)') + '" stroke-width="1"/>' +
+          '<text y="2.5" text-anchor="middle" fill="' + (nodeOpen ? '#f0c35a' : 'rgba(238,244,248,0.78)') + '" font-family="Azeret Mono, monospace" font-size="10.5" font-weight="500">' + labelStr + '</text>' +
+          '</g>';
+      } else {
+        html += '<text y="' + dy + '" text-anchor="middle" fill="' + (done ? 'rgba(238,244,248,0.86)' : 'rgba(238,244,248,0.48)') + '" font-family="Azeret Mono, monospace" font-size="' + (portrait ? 11 : 10) + '">' + numStr + '</text>';
+      }
+      html += '</g>';
+    });
+  });
+
+  svg.innerHTML = html;
+  svg.querySelectorAll('.c-node').forEach((g) => {
+    const idx = Number(g.dataset.idx);
+    g.addEventListener('pointerenter', (e) => {
+      if (e.pointerType === 'mouse' && !mapDragging && selectedIdx !== idx) selectStar(idx);
+    });
+    g.addEventListener('click', () => {
+      if (performance.now() < mapSuppressClickUntil) return;
+      Sfx.init(); Sfx.play('click');
+      if (selectedIdx === idx && unlocked(idx)) enterLevel(idx);
+      else selectStar(idx);
+    });
+    g.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault(); Sfx.init(); Sfx.play('click');
+        if (unlocked(idx)) enterLevel(idx); else selectStar(idx);
+      }
+    });
+  });
+}
+
+function selectStar(idx) {
+  selectedIdx = Math.max(0, Math.min(LV.length - 1, idx));
+  renderConstellationMap();
+  updateDock();
+}
+
+function updateDock() {
+  if (!LV.length) return;
+  const i = selectedIdx, L = LV[i], ci = constellationOf(i), c = CONSTELLATIONS[ci];
+  const open = unlocked(i), best = bestOf(i), medal = medalFor(i, best);
+  const mKey = medal ? medal.toLowerCase() : null;
+  $('dock-num').textContent = String(i + 1).padStart(2, '0');
+  $('dock-name').textContent = L.name;
+  $('mini-lens').classList.toggle('locked', !open);
+
+  const st = $('dock-status');
+  st.textContent = '';
+  st.className = '';
+  if (!open) {
+    st.className = 'locked';
+    st.textContent = 'Locked';
+  } else if (mKey) {
+    st.className = mKey;
+    st.append(medalIcon(mKey, false), document.createTextNode(' ' + best.toFixed(2) + 's'));
+  } else if (best !== null) {
+    st.className = 'done';
+    st.textContent = 'Cleared · ' + best.toFixed(2) + 's';
+  } else {
+    st.textContent = i === nextToFly() ? 'Next up' : 'Unflown';
+  }
+
+  const meta = $('dock-meta');
+  meta.textContent = '';
+  if (!open) {
+    const sp = document.createElement('span');
+    if (isGrandOrrery(i) && constellationUnlocked(ci)) {
+      sp.textContent = 'Complete all ' + i + ' previous charts (' + priorDoneCount(i) + '/' + i + ') to unlock';
+    } else {
+      const done = constellationDoneCount(ci - 1);
+      sp.textContent = 'Complete previous constellation (' + done + '/5) to unlock';
+    }
+    meta.appendChild(sp);
+  } else {
+    const par = L.par || {};
+    if (par.gold) meta.appendChild(medalChip('gold', Math.round(par.gold) + 's'));
+    if (par.silver) meta.appendChild(medalChip('silver', Math.round(par.silver) + 's'));
+    if (par.bronze) meta.appendChild(medalChip('bronze', Math.round(par.bronze) + 's'));
+    const sp = document.createElement('span');
+    sp.textContent = '· ' + (L.beacons ? L.beacons.length : 0) + ' beacons';
+    meta.appendChild(sp);
+  }
+
+  const flyBtn = $('dock-fly');
+  if (open) {
+    flyBtn.textContent = 'Fly →';
+    flyBtn.disabled = false;
+  } else {
+    const reqIdx = (isGrandOrrery(i) && constellationUnlocked(ci)) ? firstUnflownPrior(i) : nextUnflownIn(ci - 1);
+    flyBtn.textContent = 'Go to ' + String(reqIdx + 1).padStart(2, '0') + ' →';
+    flyBtn.disabled = false;
+  }
+}
+
+function buildCards() {
+  renderTally($('title-tally'), false);
+  renderTally($('map-tally'), true);
+  const nx = nextToFly();
+  $('continue').textContent = LV.length ? 'Fly ' + LV[nx].name + ' →' : 'No levels found';
+  $('continue').disabled = !LV.length;
+  if (menuView === 'map') {
+    renderConstellationMap();
+    updateDock();
+  }
+}
+
 function setPaused(v) {
   if (screen !== 'play' || phase === 'won') return;
   paused = v;
+  if (v && LV[levelIdx]) $('p-level').textContent = String(levelIdx + 1).padStart(2, '0') + ' · ' + LV[levelIdx].name;
   $('pause').hidden = !v;
   if (coarse) $('pad').hidden = v;
   if (v) padClear.forEach((f) => f());
@@ -236,23 +836,69 @@ function causeText(cause) {
     kind === 'moon' ? 'Hit the moon.' : kind === 'repulsor' ? 'Hit the repulsor.' : 'Hit the planet.';
 }
 function showResult() {
-  const L = LV[levelIdx], medal = medalFor(levelIdx, finalTime), b = bestOf(levelIdx);
-  $('r-title').textContent = levelIdx === LV.length - 1 ? 'Last gate reached' : 'Gate reached';
-  $('r-time').textContent = finalTime.toFixed(2) + ' s';
-  $('r-medal').textContent = medal ? medal + ' medal' + (newBest ? ', new best' : '') : (newBest ? 'New best' : '');
-  $('r-gold').textContent = Math.round((L.par && L.par.gold) || 0) + ' s';
-  $('r-silver').textContent = Math.round((L.par && L.par.silver) || 0) + ' s';
-  $('r-bronze').textContent = Math.round((L.par && L.par.bronze) || 0) + ' s';
-  $('r-best').textContent = b !== null ? b.toFixed(2) + ' s' : 'none';
+  const L = LV[levelIdx], medal = medalFor(levelIdx, finalTime), mKey = medal ? medal.toLowerCase() : null, b = bestOf(levelIdx);
+  $('r-title').textContent = String(levelIdx + 1).padStart(2, '0') + ' · ' + L.name + (levelIdx === LV.length - 1 ? ' · Final Gate' : ' · Gate Reached');
+  $('r-time').innerHTML = finalTime.toFixed(2) + '<small>s</small>';
+
+  const badge = $('r-badge'), bIco = $('r-badge-ico'), bTxt = $('r-badge-txt');
+  bIco.textContent = '';
+  badge.className = mKey || '';
+  if (mKey || newBest) {
+    badge.hidden = false;
+    if (mKey) bIco.appendChild(medalIcon(mKey, true));
+    bTxt.textContent = newBest ? 'New Best' : 'Cleared';
+  } else {
+    badge.hidden = true;
+  }
+
+  const unl = $('r-unlock');
+  if (justUnlocked) {
+    unl.textContent = '★ ' + justUnlocked;
+    unl.hidden = false;
+  } else {
+    unl.hidden = true;
+  }
+
+  // Visual Par-Time Ruler with colored medal icons
+  const par = L.par || {};
+  const gT = Math.round(par.gold || 10), sT = Math.round(par.silver || 20), bT = Math.round(par.bronze || 30);
+  const maxT = Math.max(bT * 1.15, finalTime * 1.08, 1);
+  const pct = (v) => Math.max(2, Math.min(98, (v / maxT) * 100)).toFixed(1) + '%';
+  const lbls = $('r-par-labels');
+  lbls.textContent = '';
+  lbls.append(
+    medalChip('gold', gT + 's'),
+    medalChip('silver', sT + 's'),
+    medalChip('bronze', bT + 's')
+  );
+  $('tick-gold').style.left = pct(gT);
+  $('tick-silver').style.left = pct(sT);
+  $('tick-bronze').style.left = pct(bT);
+  const runPct = pct(finalTime);
+  $('par-fill').style.width = runPct;
+  $('par-fill').style.background = mKey === 'gold' ? 'var(--ochre)' : mKey === 'silver' ? 'var(--silver)' : mKey === 'bronze' ? 'var(--bronze)' : 'var(--chalk-dim)';
+  $('par-pin').style.left = runPct;
+
+  $('r-best').textContent = b !== null ? b.toFixed(2) + ' s' : '—';
   $('r-fuel').textContent = Math.round(100 * sim.ship.fuel / L.fuel) + '%';
   $('r-deaths').textContent = String(deaths);
-  const last = levelIdx === LV.length - 1;
-  $('r-next').hidden = last;
+
+  const nxt = nextAfterWin(levelIdx);
+  const nextBtn = $('r-next');
+  if (nxt !== null && LV[nxt]) {
+    nextBtn.hidden = false;
+    nextBtn.textContent = 'Next: ' + LV[nxt].name + ' →';
+    nextBtn.dataset.nextIdx = String(nxt);
+  } else {
+    nextBtn.hidden = true;
+    nextBtn.dataset.nextIdx = '';
+  }
+
   coach(''); if (levelIdx === 0) tut.done = true;
   $('result').hidden = false; $('b-pause').hidden = true; $('pad').hidden = true; padClear.forEach((f) => f());
   toast('');
   Sfx.play('medal');
-  try { (last ? $('r-retry') : $('r-next')).focus(); } catch (err) {}
+  try { (nxt === null ? $('r-retry') : $('r-next')).focus(); } catch (err) {}
 }
 
 // ---------- solution replay ----------
@@ -344,6 +990,12 @@ document.addEventListener('keydown', (e) => {
   Sfx.init();
   const tag = (e.target.tagName || '').toLowerCase();
   if (tag === 'input' || tag === 'textarea') return; // typing a save code
+  if (document.querySelector('dialog.sheet[open]')) return; // let native <dialog> handle keys while open
+  if (screen === 'menu' && menuView === 'map') {
+    if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') { e.preventDefault(); selectStar((selectedIdx + 1) % LV.length); return; }
+    if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') { e.preventDefault(); selectStar((selectedIdx - 1 + LV.length) % LV.length); return; }
+    if (e.key === 'Escape') { e.preventDefault(); setMenuView('title'); return; }
+  }
   const k = flightKey(e);
   if (k) { if (screen === 'play') { keys.add(k); e.preventDefault(); } return; }
   if (e.repeat) return;
@@ -353,8 +1005,22 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'f' || e.key === 'F') { toggleFull(); return; }
   if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') { if (screen === 'play') { e.preventDefault(); setPaused(!paused); } return; }
   if (e.key === 'Enter' && tag !== 'button') {
-    if (screen === 'menu') { e.preventDefault(); enterLevel(nextToFly()); }
-    else if (!$('result').hidden) { e.preventDefault(); if (levelIdx < LV.length - 1) enterLevel(levelIdx + 1); else showMenu(); }
+    if (screen === 'menu') {
+      e.preventDefault();
+      if (menuView === 'map') {
+        if (unlocked(selectedIdx)) enterLevel(selectedIdx);
+        else {
+          const ci = constellationOf(selectedIdx);
+          selectStar((isGrandOrrery(selectedIdx) && constellationUnlocked(ci)) ? firstUnflownPrior(selectedIdx) : nextUnflownIn(ci - 1));
+        }
+      } else {
+        enterLevel(nextToFly());
+      }
+    } else if (!$('result').hidden) {
+      e.preventDefault();
+      const nxt = nextAfterWin(levelIdx);
+      if (nxt !== null) enterLevel(nxt); else showMenu('map', levelIdx);
+    }
   }
 });
 document.addEventListener('keyup', (e) => { const k = flightKey(e); if (k) keys.delete(k); });
@@ -441,10 +1107,13 @@ function gather() {
   return input;
 }
 
+function syncSoundButtons() {
+  document.querySelectorAll('.btn-sound').forEach((b) => b.setAttribute('aria-pressed', String(!save.muted)));
+}
 function toggleSound() {
   save.muted = !save.muted; persist();
   Sfx.init(); Sfx.setMuted(save.muted);
-  $('b-sound').setAttribute('aria-pressed', String(!save.muted));
+  syncSoundButtons();
   if (screen === 'play') { try { canvas.focus({ preventScroll: true }); } catch (err) {} }
 }
 function bindPad(id, key) {
@@ -462,15 +1131,16 @@ function bindPad(id, key) {
   padClear.push(() => { down.clear(); keys.delete(key); el.classList.remove('on'); });
 }
 const padClear = [];
-// iPhone: stop pinch and double-tap zoom while flying (menus can still scroll).
-['gesturestart', 'gesturechange'].forEach((t) => document.addEventListener(t, (e) => { if (screen === 'play') e.preventDefault(); }, { passive: false }));
+// iPhone: stop browser pinch/double-tap zoom while flying or pinching the Star Map.
+const isPinchMap = () => screen === 'menu' && menuView === 'map';
+['gesturestart', 'gesturechange'].forEach((t) => document.addEventListener(t, (e) => { if (screen === 'play' || isPinchMap()) e.preventDefault(); }, { passive: false }));
 { let lastEnd = 0;
   document.addEventListener('touchend', (e) => {
     const now = performance.now();
     if (screen === 'play' && now - lastEnd < 350 && !(e.target.closest && e.target.closest('button, a, input, textarea, select'))) e.preventDefault();
     lastEnd = now;
   }, { passive: false });
-  document.addEventListener('touchmove', (e) => { if (screen === 'play' && e.touches.length > 1) e.preventDefault(); }, { passive: false });
+  document.addEventListener('touchmove', (e) => { if ((screen === 'play' || isPinchMap()) && e.touches.length > 1) e.preventDefault(); }, { passive: false });
 }
 bindPad('t-left', 'left'); bindPad('t-right', 'right'); bindPad('t-burn', 'up');
 const fsEl = document.documentElement;
@@ -485,7 +1155,14 @@ function toggleFull() {
     if (p && p.then) p.then(lock).catch(() => toast('Full screen is blocked here. Open the game in its own browser tab and try again.', 5000)); else lock();
   } catch (err) { toast('Full screen is blocked here. Open the game in its own browser tab and try again.', 5000); }
 }
-function syncFull() { const f = isFull(); document.body.classList.toggle('fs', f); $('b-full').setAttribute('aria-pressed', String(f)); $('b-full').setAttribute('aria-label', f ? 'Exit full screen' : 'Full screen'); }
+function syncFull() {
+  const f = isFull();
+  document.body.classList.toggle('fs', f);
+  document.querySelectorAll('.btn-full').forEach((b) => {
+    b.setAttribute('aria-pressed', String(f));
+    b.setAttribute('aria-label', f ? 'Exit full screen' : 'Full screen');
+  });
+}
 document.addEventListener('fullscreenchange', syncFull);
 document.addEventListener('webkitfullscreenchange', syncFull);
 function toggleGuide() {
@@ -566,21 +1243,63 @@ click('save-send', () => {
   } catch (err) { fallback(); }
 });
 }
-const click = (id, fn) => $(id).addEventListener('click', () => { Sfx.init(); Sfx.play('click'); fn(); });
+const click = (id, fn) => { const el = $(id); if (el) el.addEventListener('click', () => { Sfx.init(); Sfx.play('click'); fn(); }); };
+function openDialog(id) {
+  const dlg = $(id);
+  if (!dlg) return;
+  if (typeof dlg.showModal === 'function') {
+    if (!dlg.open) dlg.showModal();
+  } else {
+    dlg.setAttribute('open', '');
+  }
+}
+// Progressive light-dismiss fallback for browsers without native dialog closedby="any" (e.g. Safari)
+document.querySelectorAll('dialog.sheet').forEach((dlg) => {
+  dlg.addEventListener('close', () => { dlg.returnValue = ''; });
+  if (!('closedBy' in HTMLDialogElement.prototype)) {
+    const outside = (e) => {
+      const r = dlg.getBoundingClientRect();
+      return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+    };
+    let pressedOutside = false;
+    dlg.addEventListener('pointerdown', (e) => { pressedOutside = outside(e); });
+    dlg.addEventListener('pointerup', (e) => { if (pressedOutside && outside(e) && dlg.open) dlg.close(); });
+  }
+});
+
 click('continue', () => enterLevel(nextToFly()));
-click('b-levels', showMenu);
+click('open-map', () => { selectedIdx = nextToFly(); setMenuView('map'); });
+click('map-back', () => setMenuView('title'));
+click('open-controls', () => openDialog('dlg-controls'));
+click('open-save', () => openDialog('dlg-save'));
+click('map-controls', () => openDialog('dlg-controls'));
+click('map-save', () => openDialog('dlg-save'));
+click('dock-prev', () => selectStar((selectedIdx - 1 + LV.length) % LV.length));
+click('dock-next', () => selectStar((selectedIdx + 1) % LV.length));
+click('dock-fly', () => {
+  if (unlocked(selectedIdx)) enterLevel(selectedIdx);
+  else {
+    const ci = constellationOf(selectedIdx);
+    selectStar((isGrandOrrery(selectedIdx) && constellationUnlocked(ci)) ? firstUnflownPrior(selectedIdx) : nextUnflownIn(ci - 1));
+  }
+});
+click('b-levels', () => leaveToMenu('map', levelIdx));
 click('b-restart', () => startLevel(levelIdx, phase !== 'won'));
 click('b-pause', () => setPaused(!paused));
-$('b-sound').addEventListener('click', toggleSound);
+document.querySelectorAll('.btn-sound').forEach((b) => b.addEventListener('click', toggleSound));
 bindSave();
 $('b-guide').addEventListener('click', toggleGuide);
-$('b-full').addEventListener('click', () => { Sfx.init(); toggleFull(); });
-click('r-next', () => enterLevel(levelIdx + 1));
+document.querySelectorAll('.btn-full').forEach((b) => b.addEventListener('click', () => { Sfx.init(); toggleFull(); }));
+click('r-next', () => {
+  const raw = $('r-next').dataset.nextIdx;
+  const idx = raw !== '' && raw !== undefined ? Number(raw) : nextAfterWin(levelIdx);
+  if (idx !== null && LV[idx]) enterLevel(idx); else leaveToMenu('map', levelIdx);
+});
 click('r-retry', () => startLevel(levelIdx));
-click('r-levels', showMenu);
+click('r-levels', () => leaveToMenu('map', levelIdx));
 click('p-resume', () => setPaused(false));
 click('p-restart', () => startLevel(levelIdx, phase !== 'won'));
-click('p-levels', showMenu);
+click('p-levels', () => leaveToMenu('map', levelIdx));
 click('p-solve', () => { setPaused(false); watchSolution(); });
 click('r-solve', () => { $('result').hidden = true; watchSolution(); });
 
@@ -628,9 +1347,16 @@ function tick() {
     else if (ev === 'win') {
       phase = 'won'; phaseT = 0.75; finalTime = Math.round(sim.t * 1000) / 1000;
       Sfx.play('win'); Sfx.thrust(false); burst(sh.x, sh.y, 40, 220, 0.8, true);
+      const ci = constellationOf(levelIdx);
+      const nextWasLocked = ci + 1 < CONSTELLATIONS.length && !constellationUnlocked(ci + 1);
+      const finaleIdx = LV.length - 1;
+      const finaleWasLocked = finaleIdx > 0 && !unlocked(finaleIdx);
       const k = keyOf(levelIdx), old = bestOf(levelIdx);
       newBest = old === null || finalTime < old;
       if (newBest) { save.best[k] = finalTime; save.ghost[k] = rec.slice(); save.splits[k] = splits.slice(); persist(); pushCloud(); }
+      if (finaleWasLocked && unlocked(finaleIdx)) justUnlocked = 'Grand Orrery Unlocked';
+      else if (nextWasLocked && constellationUnlocked(ci + 1)) justUnlocked = 'Next Constellation Unlocked';
+      else justUnlocked = null;
     } else if (ev === 'crash' || ev === 'lost') {
       phase = 'dead'; phaseT = 1.0; deaths++;
       Sfx.play(ev); Sfx.thrust(false);
@@ -1047,29 +1773,164 @@ function drawWorld(L, t, st) {
   for (const b of L.bodies || []) drawBody(L, b, t, lit);
 }
 
-// ---------- title scene behind the menu ----------
-// The same picture as the loading screen in index.html, at the same scale, so the loading screen
-// fades into the menu without anything moving: a 600-wide chart, the sun, and the rocket on its orbit.
-// The loading drawing is 1600 x 1000 units filling the screen (scaled to 60% on tall screens), and
-// 0.7 of its units make one world unit here.
-const TITLE = { bounds: 600, bodies: [{ id: 'title-sun', kind: 'star', mass: 0, radius: 30 / 0.7, x: 0, y: 0 }] };
-const TITLE_ORBIT = 230 / 0.7, TITLE_LAP = 9; // seconds per lap, as in the loading screen
-let titleT0 = null;
+// ---------- title scene & constellation map backdrop ----------
+// Exact pixel-locked match to the #loader SVG in index.html at the same scale `s`,
+// so the loading screen dissolves into the Title Screen without a single line, tick,
+// or sun ray shifting—and then the sun rays smoothly start rotating from angle 0.
+const TITLE_ORBIT = 230, TITLE_LAP = 9; // SVG units and seconds per lap, matching #loader
+const SUN_SPIN = 0.03;                  // shared serene angular velocity (rad/s) for Title & Star Map suns
+let titleT0 = null, loaderDoneAt = null;
 function drawTitle() {
   const s = Math.max(W / 1600, H / 1000) * (W <= H ? 0.6 : 1);
   cam.x = 0; cam.y = 0; cam.zoom = 0.7 * s;
-  drawChart(TITLE);
-  ctx.strokeStyle = chalkA(0.16); ctx.lineWidth = 1; ctx.setLineDash([2 * s, 7 * s]);
-  ring(sx(0), sy(0), TITLE_ORBIT * cam.zoom); ctx.stroke(); ctx.setLineDash([]);
-  drawBody(TITLE, TITLE.bodies[0], 0, null);
-  // the loading screen's orbit started when the page opened, so this carries on from the same spot
-  if (titleT0 === null) { // lock to the loading screen's own animation clock, which starts a little after the page does
+  const ox = W / 2, oy = H / 2, R = 420 * s;
+
+  // Inner concentric circles (exact match to #loader: r = 70, 140, 210, 280, 350)
+  ctx.lineWidth = 1;
+  for (let k = 1; k <= 5; k++) {
+    ctx.strokeStyle = chalkA(k === 5 ? 0.16 : 0.07);
+    ring(ox, oy, 70 * k * s); ctx.stroke();
+  }
+  // 12 radial chart lines (exact match to #loader: 42*s -> 420*s)
+  ctx.strokeStyle = chalkA(0.07);
+  ctx.beginPath();
+  for (let i = 0; i < 12; i++) {
+    const a = i * TAU / 12, c = Math.cos(a), sn = Math.sin(a);
+    ctx.moveTo(ox + c * 42 * s, oy + sn * 42 * s);
+    ctx.lineTo(ox + c * R, oy + sn * R);
+  }
+  ctx.stroke();
+  // Outer ring (r = 420*s) & 180 scaled compass ticks (14*s, 9*s, 5*s — matching #loader SVG)
+  ctx.strokeStyle = chalkA(0.75); ctx.lineWidth = 1.5;
+  ring(ox, oy, R); ctx.stroke();
+  ctx.lineWidth = 1; ctx.strokeStyle = chalkA(0.45);
+  ctx.beginPath();
+  for (let i = 0; i < 180; i++) {
+    const a = i * TAU / 180, c = Math.cos(a), sn = Math.sin(a);
+    const len = (i % 15 === 0 ? 14 : i % 5 === 0 ? 9 : 5) * s;
+    ctx.moveTo(ox + c * R, oy + sn * R);
+    ctx.lineTo(ox + c * (R + len), oy + sn * (R + len));
+  }
+  ctx.stroke();
+
+  // Dashed rocket orbit circle (exact match to #loader: r = 230*s, non-scaling 2px/7px dash)
+  ctx.strokeStyle = chalkA(0.16); ctx.lineWidth = 1; ctx.setLineDash([2, 7]);
+  ring(ox, oy, TITLE_ORBIT * s); ctx.stroke(); ctx.setLineDash([]);
+
+  // Central Sun: exact #loader ray geometry (r=30*s, r0=34*s, r1=49.5*s / 42.6*s),
+  // held at angle 0 while #loader dissolves, then smoothly starting to spin at SUN_SPIN.
+  let spin = 0;
+  if (!reduced && loaderDoneAt !== null) {
+    const elapsed = Math.max(0, (performance.now() - loaderDoneAt) / 1000);
+    // Smooth 0.6s ramp from 0 velocity to SUN_SPIN so it visibly wakes up right as the loader finishes fading
+    const ramp = 0.6;
+    spin = elapsed < ramp ? 0.5 * (SUN_SPIN / ramp) * elapsed * elapsed : SUN_SPIN * (elapsed - 0.5 * ramp);
+  }
+  ctx.strokeStyle = chalkA(0.75); ctx.lineWidth = 1; ctx.beginPath();
+  for (let i = 0; i < 24; i++) {
+    const a = i * TAU / 24 + spin, c = Math.cos(a), sn = Math.sin(a);
+    const r0 = 34 * s, r1 = (i % 2 ? 42.6 : 49.5) * s;
+    ctx.moveTo(ox + c * r0, oy + sn * r0);
+    ctx.lineTo(ox + c * r1, oy + sn * r1);
+  }
+  ctx.stroke();
+  ctx.fillStyle = C.chalk; ring(ox, oy, 30 * s); ctx.fill();
+
+  // Orbiting rocket locked to the loading screen's exact animation clock
+  if (titleT0 === null) {
     titleT0 = 0;
     try { const o = document.querySelector('#loader .ld-orbit'), an = o && o.getAnimations ? o.getAnimations()[0] : null; if (an && an.currentTime !== null) titleT0 = performance.now() - an.currentTime; } catch (e) {}
   }
   const t = reduced ? 0 : (performance.now() - titleT0) / 1000, th = Math.PI + TAU * t / TITLE_LAP;
-  const r = TITLE_ORBIT * cam.zoom;
-  drawRocket(sx(0) + Math.cos(th) * r, sy(0) + Math.sin(th) * r, th + Math.PI / 2, 1.35 * s);
+  const r = TITLE_ORBIT * s;
+  drawRocket(ox + Math.cos(th) * r, oy + Math.sin(th) * r, th + Math.PI / 2, 1.35 * s);
+}
+
+// Star Map backdrop: real animated Gravity Assist Sun centered & scaled in lockstep with #sun-anchor
+function drawMapBackdrop() {
+  const portrait = isMapPortrait();
+  if (lastMapPortrait !== null && lastMapPortrait !== portrait) {
+    resetMapCam();
+    renderConstellationMap();
+  }
+  let cx = W / 2, cy = H / 2;
+  const s = Math.min(W, H) / 680;
+  let sunR = Math.max(14, Math.min(24, 19 * s));
+  let svgScale = sunR / 21;
+  const anchor = document.getElementById('sun-anchor');
+  if (anchor) {
+    const ar = anchor.getBoundingClientRect(), cr = canvas.getBoundingClientRect();
+    if (ar.width > 1 && ar.height > 1) {
+      cx = ar.left + ar.width / 2 - cr.left;
+      cy = ar.top + ar.height / 2 - cr.top;
+      sunR = ar.width / 2;
+      svgScale = sunR / 21;
+    }
+  }
+  // Subtle blueprint rings radiating from the central sun (scale & pan in lockstep with the SVG constellations)
+  ctx.strokeStyle = chalkA(0.06); ctx.lineWidth = 1;
+  for (let k = 1; k <= 4; k++) { ring(cx, cy, (portrait ? 92 : 118) * k * svgScale); ctx.stroke(); }
+  // Animated solar rays + chalk sun core (matched proportions to Title Screen sun, spinning at SUN_SPIN)
+  const spin = reduced ? 0 : menuT * SUN_SPIN;
+  ctx.strokeStyle = chalkA(0.78); ctx.lineWidth = Math.max(1, 1.05 * Math.min(1.6, mapCam.zoom)); ctx.beginPath();
+  for (let i = 0; i < 24; i++) {
+    const a = i * TAU / 24 + spin, c = Math.cos(a), sn = Math.sin(a);
+    const r0 = sunR * 1.14, r1 = sunR * (i % 2 ? 1.42 : 1.65);
+    ctx.moveTo(cx + c * r0, cy + sn * r0);
+    ctx.lineTo(cx + c * r1, cy + sn * r1);
+  }
+  ctx.stroke();
+  ctx.fillStyle = C.chalk; ring(cx, cy, sunR); ctx.fill();
+}
+
+// Live miniature orbital system lens inside the Star Map launch dock
+const miniCanvas = $('mini-sky');
+const miniCtx = miniCanvas ? miniCanvas.getContext('2d') : null;
+function drawMiniLens() {
+  if (!miniCanvas || !miniCtx || !LV[selectedIdx]) return;
+  const r = miniCanvas.getBoundingClientRect();
+  if (!r.width || !r.height) return;
+  const mdpr = Math.min(2, window.devicePixelRatio || 1);
+  const mw = Math.round(r.width * mdpr), mh = Math.round(r.height * mdpr);
+  if (miniCanvas.width !== mw || miniCanvas.height !== mh) { miniCanvas.width = mw; miniCanvas.height = mh; }
+  miniCtx.setTransform(mdpr, 0, 0, mdpr, 0, 0);
+  const w = r.width, h = r.height, cx = w / 2, cy = h / 2, rad = Math.min(w, h) * 0.44;
+  miniCtx.fillStyle = C.deep; miniCtx.fillRect(0, 0, w, h);
+  miniCtx.strokeStyle = chalkA(0.16); miniCtx.lineWidth = 0.8;
+  miniCtx.beginPath(); miniCtx.arc(cx, cy, rad, 0, TAU); miniCtx.stroke();
+
+  const L = LV[selectedIdx], t = reduced ? 0 : menuT * 1.1, k = rad / (L.bounds || 800);
+  // Bodies using real orbital mechanics from sim.js
+  for (const b of L.bodies || []) {
+    const p = at(L, b, t);
+    const bx = cx + p.x * k, by = cy + p.y * k;
+    const br = Math.max(2, Math.min(7, (b.radius || 20) * k * 1.45));
+    if (b.kind === 'hole') {
+      miniCtx.fillStyle = '#02050b'; miniCtx.strokeStyle = C.chalk; miniCtx.lineWidth = 1.2;
+      miniCtx.beginPath(); miniCtx.arc(bx, by, br, 0, TAU); miniCtx.fill(); miniCtx.stroke();
+    } else if (b.kind === 'repulsor') {
+      miniCtx.strokeStyle = C.ochre; miniCtx.lineWidth = 1.2;
+      miniCtx.beginPath(); miniCtx.arc(bx, by, Math.max(2.5, br), 0, TAU); miniCtx.stroke();
+    } else if (b.kind === 'star') {
+      miniCtx.fillStyle = C.chalk;
+      miniCtx.beginPath(); miniCtx.arc(bx, by, br, 0, TAU); miniCtx.fill();
+    } else {
+      miniCtx.fillStyle = '#c9d3dc';
+      miniCtx.beginPath(); miniCtx.arc(bx, by, br, 0, TAU); miniCtx.fill();
+    }
+  }
+  // Beacons
+  miniCtx.fillStyle = C.ochre;
+  for (const b of L.beacons || []) {
+    const p = at(L, b, t);
+    miniCtx.beginPath(); miniCtx.arc(cx + p.x * k, cy + p.y * k, 1.6, 0, TAU); miniCtx.fill();
+  }
+  // Gate
+  if (L.gate) {
+    const p = at(L, L.gate, t);
+    miniCtx.strokeStyle = chalkA(0.7); miniCtx.lineWidth = 1;
+    miniCtx.beginPath(); miniCtx.arc(cx + p.x * k, cy + p.y * k, 2.8, 0, TAU); miniCtx.stroke();
+  }
 }
 
 // ---------- frame ----------
@@ -1093,7 +1954,12 @@ function frameBody(now) {
 
   if (screen === 'menu' || !sim) {
     menuT += dt;
-    drawTitle();
+    if (menuView === 'map') {
+      drawMapBackdrop();
+      drawMiniLens();
+    } else {
+      drawTitle();
+    }
     requestAnimationFrame(frame);
     return;
   }
@@ -1168,7 +2034,7 @@ function start(data) {
   Sfx.init();
   const firstTouch = () => { Sfx.init(); document.removeEventListener('pointerdown', firstTouch, true); document.removeEventListener('keydown', firstTouch, true); };
   document.addEventListener('pointerdown', firstTouch, true); document.addEventListener('keydown', firstTouch, true);
-  $('b-sound').setAttribute('aria-pressed', String(!save.muted));
+  syncSoundButtons();
   $('b-guide').setAttribute('aria-pressed', String(save.guide));
   if (coarse) {
     document.body.classList.add('touch');
@@ -1176,11 +2042,15 @@ function start(data) {
     document.querySelectorAll('.kb').forEach((n) => { n.hidden = true; });
     document.querySelectorAll('.touchonly').forEach((n) => { n.hidden = false; });
   }
-  showMenu();
+  showMenu('title');
   document.body.classList.add('ready');
-  // The loading screen stays at least one second from page open, then fades into the menu.
+  // The loading screen stays at least one second from page open, then fades into the title screen.
   const since = (window.performance && performance.now) ? performance.now() : 1000;
-  setTimeout(() => document.body.classList.add('loaded'), Math.max(0, 1000 - since));
+  setTimeout(() => {
+    document.body.classList.add('loaded');
+    // Start sun rotation right as the 0.65s loader dissolve completes so rays stay pixel-locked with zero ghosting during fade
+    loaderDoneAt = performance.now() + 650;
+  }, Math.max(0, 1000 - since));
   cloudInit();
   if (data && data.screen === 'play' && LV[data.levelIdx]) startLevel(data.levelIdx);
   requestAnimationFrame((now) => { last = now; frame(now); });
