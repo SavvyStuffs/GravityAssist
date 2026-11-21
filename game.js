@@ -86,7 +86,7 @@ function medalFor(i, time) {
 //   Arrow (high-left) -> Hourglass (mid-upper-right) -> Crown (mid-lower-left) -> Compass Star (low-right)
 const CONSTELLATIONS = [
   {
-    id: 0, roman: 'I', name: 'First Orbits', shape: 'Arrow',
+    id: 0, chart: 0, roman: 'I', name: 'First Orbits', shape: 'Arrow',
     desc: 'Gravity bends, slingshots, moons & fuel cells',
     levels: [0, 1, 2, 3, 4],
     // Recognizable spacefaring Arrow (higher, shifted slightly right to form the top-left rhombus vertex)
@@ -109,7 +109,7 @@ const CONSTELLATIONS = [
     portLabel: { x: 150, y: 60 }
   },
   {
-    id: 1, roman: 'II', name: 'Deep Wells', shape: 'Hourglass',
+    id: 1, chart: 0, roman: 'II', name: 'Deep Wells', shape: 'Hourglass',
     desc: 'Twin stars, repulsors, black holes & asteroid belts',
     levels: [5, 6, 7, 8, 9],
     // Recognizable tilted Hourglass (lower & further right for the right-upper rhombus vertex)
@@ -132,7 +132,7 @@ const CONSTELLATIONS = [
     portLabel: { x: 430, y: 88 }
   },
   {
-    id: 2, roman: 'III', name: 'Singularity', shape: 'Crown',
+    id: 2, chart: 0, roman: 'III', name: 'Singularity', shape: 'Crown',
     desc: 'Hold beacons, binary abyss, accretion discs & relays',
     levels: [10, 11, 12, 13, 14],
     // Recognizable Cassiopeia / Crown (shifted left for the left-lower rhombus vertex)
@@ -155,7 +155,7 @@ const CONSTELLATIONS = [
     portLabel: { x: 126, y: 578 }
   },
   {
-    id: 3, roman: 'IV', name: 'Grand Orrery', shape: 'Compass Star',
+    id: 3, chart: 0, roman: 'IV', name: 'Grand Orrery', shape: 'Compass Star',
     desc: 'Precision transfers, nested moons, ring riding & finale',
     levels: [15, 16, 17, 18, 19],
     // Recognizable Astrolabe Compass Star (17 aligned with 15, 20 sitting just right of the 2nd ring)
@@ -176,10 +176,118 @@ const CONSTELLATIONS = [
       { x: 414, y: 540, ls: 'bottom' }
     ],
     portLabel: { x: 414, y: 656 }
+  },
+  // ---------- Chart II (Deep Sector, Levels 21–40) ----------
+  {
+    id: 4, chart: 1, roman: 'V', name: 'Folded Space', shape: 'Portal Ring',
+    desc: 'Wormhole folds chained with gravity wells, rings & guards',
+    levels: [20, 21, 22, 23, 24],
+    // 5-sided Pentagon Portal Aperture Ring in the upper-left quadrant of Chart II (no hourglass pinch)
+    edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0]],
+    land: [
+      { x: 124, y: 216, ls: 'bottom' },
+      { x: 152, y: 118, ls: 'top' },
+      { x: 262, y: 92, ls: 'top' },
+      { x: 368, y: 146, ls: 'top' },
+      { x: 320, y: 234, ls: 'bottom' }
+    ],
+    landLabel: { x: 254, y: 58 },
+    port: [
+      { x: 56, y: 210, ls: 'bottom' },
+      { x: 78, y: 122, ls: 'top' },
+      { x: 164, y: 98, ls: 'top' },
+      { x: 248, y: 146, ls: 'top' },
+      { x: 214, y: 226, ls: 'bottom' }
+    ],
+    portLabel: { x: 164, y: 66 }
+  },
+  {
+    id: 5, chart: 1, roman: 'VI', name: 'Pulsar Cross', shape: 'Pulsar Cross',
+    desc: 'Rotating pulsar kill beams, crossfire lanes & wormhole blinks',
+    levels: [25, 26, 27, 28, 29],
+    // Pure 4-beam Pulsar Cross (+ beams radiating from central star 28, no outer triangle chords)
+    edges: [[0, 2], [1, 2], [2, 3], [2, 4]],
+    land: [
+      { x: 634, y: 176, ls: 'bottom' },
+      { x: 756, y: 104, ls: 'top' },
+      { x: 742, y: 192, ls: 'bottom' },
+      { x: 728, y: 280, ls: 'bottom' },
+      { x: 850, y: 208, ls: 'bottom' }
+    ],
+    landLabel: { x: 756, y: 66 },
+    port: [
+      { x: 348, y: 180, ls: 'bottom' },
+      { x: 442, y: 114, ls: 'top' },
+      { x: 432, y: 192, ls: 'bottom' },
+      { x: 422, y: 270, ls: 'bottom' },
+      { x: 516, y: 204, ls: 'bottom' }
+    ],
+    portLabel: { x: 442, y: 76 }
+  },
+  {
+    id: 6, chart: 1, roman: 'VII', name: 'White Holes', shape: 'Eclipse Crescent',
+    desc: 'Polarity-flipping black & white holes, antiphase relays & core bounces',
+    levels: [30, 31, 32, 33, 34],
+    // Concave Eclipse Crescent Moon (outer arc 31-32-33-34, inner crescent rim 31-35-34 tucked deep inside)
+    edges: [[0, 1], [1, 2], [2, 3], [0, 4], [3, 4], [1, 4], [2, 4]],
+    land: [
+      { x: 616, y: 382, ls: 'top' },
+      { x: 726, y: 358, ls: 'top' },
+      { x: 842, y: 446, ls: 'top' },
+      { x: 720, y: 536, ls: 'bottom' },
+      { x: 752, y: 442, ls: 'top' }
+    ],
+    landLabel: { x: 642, y: 526 },
+    port: [
+      { x: 336, y: 468, ls: 'top' },
+      { x: 416, y: 448, ls: 'top' },
+      { x: 508, y: 520, ls: 'top' },
+      { x: 418, y: 598, ls: 'bottom' },
+      { x: 438, y: 516, ls: 'top' }
+    ],
+    portLabel: { x: 356, y: 592 }
+  },
+  {
+    id: 7, chart: 1, roman: 'VIII', name: 'Solar Winds', shape: 'Galaxy Spiral',
+    desc: 'Solar winds, boundary breaches, multi-sector voyages & the 3-sector finale',
+    levels: [35, 36, 37, 38, 39, 40, 41, 42, 43, 44],
+    // 10-star clockwise Galaxy Spiral (36 -> 37 -> ... -> 44 curling into locked Grand Finale star 45 at the eye)
+    edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [5, 9], [7, 9]],
+    land: [
+      { x: 392, y: 432, ls: 'bottom' },
+      { x: 328, y: 504, ls: 'bottom' },
+      { x: 204, y: 518, ls: 'bottom' },
+      { x: 96, y: 458, ls: 'bottom' },
+      { x: 86, y: 356, ls: 'top' },
+      { x: 186, y: 304, ls: 'top' },
+      { x: 312, y: 328, ls: 'top' },
+      { x: 324, y: 416, ls: 'bottom' },
+      { x: 182, y: 444, ls: 'bottom' },
+      { x: 234, y: 396, ls: 'top' }
+    ],
+    landLabel: { x: 268, y: 562 },
+    port: [
+      { x: 260, y: 514, ls: 'bottom' },
+      { x: 214, y: 576, ls: 'bottom' },
+      { x: 126, y: 584, ls: 'bottom' },
+      { x: 44, y: 534, ls: 'bottom' },
+      { x: 36, y: 448, ls: 'top' },
+      { x: 112, y: 400, ls: 'top' },
+      { x: 204, y: 422, ls: 'top' },
+      { x: 212, y: 496, ls: 'bottom' },
+      { x: 108, y: 518, ls: 'bottom' },
+      { x: 150, y: 476, ls: 'top' }
+    ],
+    portLabel: { x: 170, y: 626 }
   }
 ];
-const constellationOf = (i) => Math.max(0, Math.min(CONSTELLATIONS.length - 1, Math.floor(i / 5)));
-const isGrandOrrery = (i) => LV.length > 0 && i === LV.length - 1;
+const constellationOf = (i) => {
+  const idx = CONSTELLATIONS.findIndex((c) => c.levels.includes(i));
+  return idx >= 0 ? idx : Math.max(0, Math.min(CONSTELLATIONS.length - 1, Math.floor(i / 5)));
+};
+const chartOfLevel = (i) => (CONSTELLATIONS[constellationOf(i)] || { chart: 0 }).chart;
+const isGrandOrrery = (i) => i === 19 || i === 44;
+const isChartTwoOpen = () => LV.length > 20 && bestOf(19) !== null;
 function constellationDoneCount(ci) {
   const c = CONSTELLATIONS[ci];
   return c ? c.levels.filter((i) => i < LV.length && bestOf(i) !== null).length : 0;
@@ -279,6 +387,7 @@ function renderTally(el, showProgress) {
 // ---------- state ----------
 let screen = 'menu';           // 'menu' | 'play'
 let menuView = 'title';        // 'title' | 'map'
+let activeChart = 0;           // 0 = Chart I (01–20), 1 = Chart II (21–40)
 let selectedIdx = 0;
 let justUnlocked = null;       // constellation name unlocked by the latest win
 let levelIdx = 0, sim = null, phase = 'ready', phaseT = 0, paused = false;
@@ -288,7 +397,7 @@ let splits = [], bestSplits = null; // clock time at each beacon pickup, this ru
 let rec = [], ghost = null;    // flat [x, y, a, ...] sampled every REC_EVERY steps
 const REC_EVERY = 4;
 let trail = [], sparks = [], bursts = [];
-let shake = 0, menuT = 0, toastTimer = 0;
+let shake = 0, stageFlash = 0, menuT = 0, toastTimer = 0;
 const cam = { x: 0, y: 0, zoom: 1 };
 // Before the first burn the camera is free: it opens on the whole chart, and you can pinch,
 // drag or scroll to look around. The first burn hands it back to the ship.
@@ -339,7 +448,7 @@ function withVeil(fn) {
 function enterLevel(i) {
   if (veilBusy) return;
   if (!unlocked(i)) {
-    if (isGrandOrrery(i)) toast('Complete all ' + i + ' previous charts to unlock Grand Orrery.');
+    if (isGrandOrrery(i)) toast('Complete all ' + i + ' previous charts to unlock ' + LV[i].name + '.');
     else toast('Complete all 5 charts in the previous constellation to unlock.');
     return;
   }
@@ -397,6 +506,7 @@ function showMenu(viewMode, focusIdx) {
   if (typeof focusIdx === 'number' && LV[focusIdx]) selectedIdx = focusIdx;
   else if (menuView === 'map') selectedIdx = unlocked(levelIdx) ? levelIdx : nextToFly();
   else selectedIdx = nextToFly();
+  activeChart = chartOfLevel(selectedIdx);
   Sfx.thrust(false); Sfx.danger(0);
   document.body.classList.add('on-menu');
   $('menu').hidden = false;
@@ -417,12 +527,37 @@ function setMenuView(viewMode, instant) {
     if (menuView === 'map') {
       resetMapCam();
       if (!LV[selectedIdx]) selectedIdx = nextToFly();
+      activeChart = chartOfLevel(selectedIdx);
       renderConstellationMap();
       updateDock();
     }
   };
   if (instant) apply();
   else withVeil(apply);
+}
+function switchChart(targetChart) {
+  const nextChart = targetChart === 1 && LV.length > 20 ? 1 : 0;
+  if (nextChart === 1 && !isChartTwoOpen()) {
+    selectStar(19);
+    toast('Complete 20 · Grand Orrery to open the Wormhole.', 2600);
+    return;
+  }
+  Sfx.init();
+  Sfx.play('wormhole');
+  withVeil(() => {
+    activeChart = nextChart;
+    resetMapCam();
+    // Focus the first unflown star in the target chart (or its first/capstone star)
+    const chartConsts = CONSTELLATIONS.filter((c) => c.chart === activeChart && c.levels[0] < LV.length);
+    let pick = activeChart === 1 ? 20 : 19;
+    for (const c of chartConsts) {
+      const u = c.levels.find((i) => i < LV.length && unlocked(i) && bestOf(i) === null);
+      if (u !== undefined) { pick = u; break; }
+    }
+    if (LV[pick]) selectedIdx = pick;
+    renderConstellationMap();
+    updateDock();
+  });
 }
 
 // ---------- Star Map Zoom & Pan (desktop wheel/drag + mobile pinch/pan) ----------
@@ -574,55 +709,121 @@ function renderConstellationMap() {
   const portrait = isMapPortrait();
   lastMapPortrait = portrait;
   svg.setAttribute('viewBox', portrait ? '0 0 560 700' : '0 0 1000 600');
+  const mh = $('map-heading');
+  if (mh) mh.textContent = activeChart === 1 ? 'Star Map · II' : 'Star Map';
   const sunX = portrait ? 280 : 482;
   const sunY = portrait ? 345 : 288;
+  const whX = portrait ? 280 : 482;
+  const whY = portrait ? 622 : 492;
   const nextIdx = nextToFly();
+  const chartTwoOpen = isChartTwoOpen();
 
   let html = '';
-  // Invisible anchor (r=21 SVG units) synced in both center & scale to the live animated Canvas Sun
+  // Invisible anchor (r=21 SVG units) synced in both center & scale to the live animated Canvas centerpiece
   html += '<circle id="sun-anchor" cx="' + sunX + '" cy="' + sunY + '" r="21" fill="none"/>';
 
-  // Graceful dashed progression curves:
-  //   05 -> 06, 10 -> clockwise slingshot orbit around the Sun -> 11, and 15 -> 16
-  const p5 = (portrait ? CONSTELLATIONS[0].port : CONSTELLATIONS[0].land)[4];
-  const p6 = (portrait ? CONSTELLATIONS[1].port : CONSTELLATIONS[1].land)[0];
-  const p10 = (portrait ? CONSTELLATIONS[1].port : CONSTELLATIONS[1].land)[4];
-  const p11 = (portrait ? CONSTELLATIONS[2].port : CONSTELLATIONS[2].land)[0];
-  const p15 = (portrait ? CONSTELLATIONS[2].port : CONSTELLATIONS[2].land)[4];
-  const p16 = (portrait ? CONSTELLATIONS[3].port : CONSTELLATIONS[3].land)[0];
-
   const arcStyle = (openB) => ' fill="none" stroke="' + (openB ? 'rgba(240,195,90,0.34)' : 'rgba(238,244,248,0.2)') + '" stroke-width="1.3" stroke-dasharray="3 7"';
+  const foldArcStyle = (openB) => ' fill="none" stroke="' + (openB ? 'rgba(114,216,255,0.46)' : 'rgba(238,244,248,0.18)') + '" stroke-width="1.35" stroke-dasharray="3 6"';
 
-  // 05 -> 06
-  html += '<path d="M ' + p5.x + ' ' + p5.y + ' Q ' + ((p5.x + p6.x) / 2).toFixed(1) + ' ' + ((p5.y + p6.y) / 2 - 36).toFixed(1) + ' ' + p6.x + ' ' + p6.y + '"' + arcStyle(constellationUnlocked(1)) + '/>';
+  if (activeChart === 0) {
+    // Graceful dashed progression curves on Chart I:
+    //   05 -> 06, 10 -> clockwise slingshot orbit around the Sun -> 11, 15 -> 16, and 20 -> Chart II Wormhole
+    const p5 = (portrait ? CONSTELLATIONS[0].port : CONSTELLATIONS[0].land)[4];
+    const p6 = (portrait ? CONSTELLATIONS[1].port : CONSTELLATIONS[1].land)[0];
+    const p10 = (portrait ? CONSTELLATIONS[1].port : CONSTELLATIONS[1].land)[4];
+    const p11 = (portrait ? CONSTELLATIONS[2].port : CONSTELLATIONS[2].land)[0];
+    const p15 = (portrait ? CONSTELLATIONS[2].port : CONSTELLATIONS[2].land)[4];
+    const p16 = (portrait ? CONSTELLATIONS[3].port : CONSTELLATIONS[3].land)[0];
+    const p20 = (portrait ? CONSTELLATIONS[3].port : CONSTELLATIONS[3].land)[4];
 
-  // 10 -> underneath Sun -> unmistakable clockwise slingshot ribbon loop around Sun (open asymmetric X-crossing underneath) -> 11
-  const orbR = portrait ? 54 : 58;
-  const aIn = 154 * Math.PI / 180;
-  const aOut = 28 * Math.PI / 180;
-  const inX = sunX + orbR * Math.cos(aIn), inY = sunY + orbR * Math.sin(aIn);
-  const outX = sunX + orbR * Math.cos(aOut), outY = sunY + orbR * Math.sin(aOut);
-  const hIn = portrait ? 96 : 115, hOut = portrait ? 90 : 105;
-  // Clockwise tangent at θ is (-sin θ, +cos θ), so incoming C2 lies behind along (+sin aIn, -cos aIn)
-  const c2InX = inX + hIn * Math.sin(aIn), c2InY = inY - hIn * Math.cos(aIn);
-  const c1OutX = outX - hOut * Math.sin(aOut), c1OutY = outY + hOut * Math.cos(aOut);
-  const f1 = (n) => n.toFixed(1);
-  const slingshotD = portrait
-    ? 'M ' + p10.x + ' ' + p10.y +
-      ' C 465 392, ' + f1(c2InX) + ' ' + f1(c2InY) + ', ' + f1(inX) + ' ' + f1(inY) +
-      ' A ' + orbR + ' ' + orbR + ' 0 1 1 ' + f1(outX) + ' ' + f1(outY) +
-      ' C ' + f1(c1OutX) + ' ' + f1(c1OutY) + ', 108 360, ' + p11.x + ' ' + p11.y
-    : 'M ' + p10.x + ' ' + p10.y +
-      ' C 745 352, ' + f1(c2InX) + ' ' + f1(c2InY) + ', ' + f1(inX) + ' ' + f1(inY) +
-      ' A ' + orbR + ' ' + orbR + ' 0 1 1 ' + f1(outX) + ' ' + f1(outY) +
-      ' C ' + f1(c1OutX) + ' ' + f1(c1OutY) + ', 220 254, ' + p11.x + ' ' + p11.y;
-  html += '<path d="' + slingshotD + '"' + arcStyle(constellationUnlocked(2)) + '/>';
+    // 05 -> 06
+    html += '<path d="M ' + p5.x + ' ' + p5.y + ' Q ' + ((p5.x + p6.x) / 2).toFixed(1) + ' ' + ((p5.y + p6.y) / 2 - 36).toFixed(1) + ' ' + p6.x + ' ' + p6.y + '"' + arcStyle(constellationUnlocked(1)) + '/>';
 
-  // 15 -> 16
-  html += '<path d="M ' + p15.x + ' ' + p15.y + ' Q ' + ((p15.x + p16.x) / 2).toFixed(1) + ' ' + ((p15.y + p16.y) / 2 + 28).toFixed(1) + ' ' + p16.x + ' ' + p16.y + '"' + arcStyle(constellationUnlocked(3)) + '/>';
+    // 10 -> underneath Sun -> unmistakable clockwise slingshot ribbon loop around Sun (open asymmetric X-crossing underneath) -> 11
+    const orbR = portrait ? 54 : 58;
+    const aIn = 154 * Math.PI / 180;
+    const aOut = 28 * Math.PI / 180;
+    const inX = sunX + orbR * Math.cos(aIn), inY = sunY + orbR * Math.sin(aIn);
+    const outX = sunX + orbR * Math.cos(aOut), outY = sunY + orbR * Math.sin(aOut);
+    const hIn = portrait ? 96 : 115, hOut = portrait ? 90 : 105;
+    const c2InX = inX + hIn * Math.sin(aIn), c2InY = inY - hIn * Math.cos(aIn);
+    const c1OutX = outX - hOut * Math.sin(aOut), c1OutY = outY + hOut * Math.cos(aOut);
+    const f1 = (n) => n.toFixed(1);
+    const slingshotD = portrait
+      ? 'M ' + p10.x + ' ' + p10.y +
+        ' C 465 392, ' + f1(c2InX) + ' ' + f1(c2InY) + ', ' + f1(inX) + ' ' + f1(inY) +
+        ' A ' + orbR + ' ' + orbR + ' 0 1 1 ' + f1(outX) + ' ' + f1(outY) +
+        ' C ' + f1(c1OutX) + ' ' + f1(c1OutY) + ', 108 360, ' + p11.x + ' ' + p11.y
+      : 'M ' + p10.x + ' ' + p10.y +
+        ' C 745 352, ' + f1(c2InX) + ' ' + f1(c2InY) + ', ' + f1(inX) + ' ' + f1(inY) +
+        ' A ' + orbR + ' ' + orbR + ' 0 1 1 ' + f1(outX) + ' ' + f1(outY) +
+        ' C ' + f1(c1OutX) + ' ' + f1(c1OutY) + ', 220 254, ' + p11.x + ' ' + p11.y;
+    html += '<path d="' + slingshotD + '"' + arcStyle(constellationUnlocked(2)) + '/>';
 
-  // Render each constellation's recognizable shape + stars
-  CONSTELLATIONS.forEach((c) => {
+    // 15 -> 16
+    html += '<path d="M ' + p15.x + ' ' + p15.y + ' Q ' + ((p15.x + p16.x) / 2).toFixed(1) + ' ' + ((p15.y + p16.y) / 2 + 28).toFixed(1) + ' ' + p16.x + ' ' + p16.y + '"' + arcStyle(constellationUnlocked(3)) + '/>';
+
+    // 20 (Grand Orrery) -> Wormhole portal centered in bottom third -> Chart II
+    if (LV.length > 20) {
+      const wCurve = portrait
+        ? 'M ' + p20.x + ' ' + p20.y + ' Q 344 606 ' + whX + ' ' + whY
+        : 'M ' + p20.x + ' ' + p20.y + ' Q 596 512 ' + whX + ' ' + whY;
+      html += '<path d="' + wCurve + '"' + foldArcStyle(chartTwoOpen) + '/>';
+    }
+  } else {
+    // Chart II: dashed arrival curve from the Return Wormhole into star 21, plus inter-constellation links
+    const c5 = CONSTELLATIONS[4];
+    const c6 = CONSTELLATIONS[5];
+    const c7 = CONSTELLATIONS[6];
+    const c8 = CONSTELLATIONS[7];
+    if (c5 && c5.levels[0] < LV.length) {
+      const p21 = (portrait ? c5.port : c5.land)[0];
+      const arrivalD = portrait
+        ? 'M ' + whX + ' ' + whY + ' C 18 656, -8 490, ' + p21.x + ' ' + p21.y
+        : 'M ' + whX + ' ' + whY + ' C 145 616, -24 470, ' + p21.x + ' ' + p21.y;
+      html += '<path d="' + arrivalD + '"' + foldArcStyle(true) + '/>';
+    }
+    if (c5 && c6 && c6.levels[0] < LV.length) {
+      const p25 = (portrait ? c5.port : c5.land)[4];
+      const p26 = (portrait ? c6.port : c6.land)[0];
+      html += '<path d="M ' + p25.x + ' ' + p25.y + ' Q ' + ((p25.x + p26.x) / 2).toFixed(1) + ' ' + ((p25.y + p26.y) / 2 - 42).toFixed(1) + ' ' + p26.x + ' ' + p26.y + '"' + arcStyle(constellationUnlocked(5)) + '/>';
+    }
+    if (c6 && c7 && c7.levels[0] < LV.length) {
+      const p30 = (portrait ? c6.port : c6.land)[4];
+      const p31 = (portrait ? c7.port : c7.land)[0];
+      const orbR = portrait ? 52 : 58;
+      const aIn = 85 * Math.PI / 180;
+      const aOut = -5 * Math.PI / 180;
+      const inX = sunX + orbR * Math.cos(aIn), inY = sunY + orbR * Math.sin(aIn);
+      const outX = sunX + orbR * Math.cos(aOut), outY = sunY + orbR * Math.sin(aOut);
+      const hIn = portrait ? 75 : 98, hOut = portrait ? 44 : 52;
+      const c2InX = inX + hIn * Math.sin(aIn), c2InY = inY - hIn * Math.cos(aIn);
+      const c1OutX = outX - hOut * Math.sin(aOut), c1OutY = outY + hOut * Math.cos(aOut);
+      const f1 = (n) => n.toFixed(1);
+      const holeSlingD = portrait
+        ? 'M ' + p30.x + ' ' + p30.y +
+          ' C 468 336, ' + f1(c2InX) + ' ' + f1(c2InY) + ', ' + f1(inX) + ' ' + f1(inY) +
+          ' A ' + orbR + ' ' + orbR + ' 0 1 1 ' + f1(outX) + ' ' + f1(outY) +
+          ' C ' + f1(c1OutX) + ' ' + f1(c1OutY) + ', 298 468, ' + p31.x + ' ' + p31.y
+        : 'M ' + p30.x + ' ' + p30.y +
+          ' C 775 305, ' + f1(c2InX) + ' ' + f1(c2InY) + ', ' + f1(inX) + ' ' + f1(inY) +
+          ' A ' + orbR + ' ' + orbR + ' 0 1 1 ' + f1(outX) + ' ' + f1(outY) +
+          ' C ' + f1(c1OutX) + ' ' + f1(c1OutY) + ', 556 382, ' + p31.x + ' ' + p31.y;
+      html += '<path d="' + holeSlingD + '"' + arcStyle(constellationUnlocked(6)) + '/>';
+    }
+    if (c7 && c8 && c8.levels[0] < LV.length) {
+      const p35 = (portrait ? c7.port : c7.land)[4];
+      const p36 = (portrait ? c8.port : c8.land)[0];
+      const bridgeD = portrait
+        ? 'M ' + p35.x + ' ' + p35.y + ' Q 312 520 ' + p36.x + ' ' + p36.y
+        : 'M ' + p35.x + ' ' + p35.y + ' Q 542 406 ' + p36.x + ' ' + p36.y;
+      html += '<path d="' + bridgeD + '"' + arcStyle(constellationUnlocked(7)) + '/>';
+    }
+  }
+
+  // Render each constellation on the active chart whose levels exist in LV
+  const visibleConsts = CONSTELLATIONS.filter((c) => c.chart === activeChart && c.levels[0] < LV.length);
+  visibleConsts.forEach((c) => {
     const pts = portrait ? c.port : c.land;
     const lbl = portrait ? c.portLabel : c.landLabel;
     const open = constellationUnlocked(c.id);
@@ -631,26 +832,29 @@ function renderConstellationMap() {
 
     // Shape edges
     const edgeColor = !open ? 'rgba(238,244,248,0.13)' : (activeSec ? 'rgba(240,195,90,0.58)' : 'rgba(238,244,248,0.3)');
+    const lastK = c.levels.length - 1;
     c.edges.forEach(([u, v], ei) => {
       const p0 = pts[u], p1 = pts[v];
-      const spokeToLockedFinale = c.id === 3 && (u === 4 || v === 4) && !unlocked(c.levels[4]);
+      if (!p0 || !p1) return;
+      const spokeToLockedFinale = (c.id === 3 || c.id === 7) && (u === lastK || v === lastK) && !unlocked(c.levels[lastK]);
       const edgeOpen = open && !spokeToLockedFinale;
       const edgeDash = !edgeOpen ? ' stroke-dasharray="4 5"' : '';
-      const secondary = (c.id === 0 && ei >= 4) || (c.id === 2 && ei >= 4) || (c.id === 3 && ei >= 4);
+      const secondary = (c.id === 0 && ei >= 4) || (c.id === 2 && ei >= 4) || (c.id === 3 && ei >= 4) || (c.id === 6 && ei >= 5) || (c.id === 7 && ei >= 9);
       const col = secondary ? (!edgeOpen ? 'rgba(238,244,248,0.06)' : (activeSec ? 'rgba(240,195,90,0.22)' : 'rgba(238,244,248,0.12)')) : edgeColor;
       html += '<line x1="' + p0.x + '" y1="' + p0.y + '" x2="' + p1.x + '" y2="' + p1.y + '" stroke="' + col + '" stroke-width="' + (secondary ? 1 : (activeSec && edgeOpen ? 1.6 : 1.2)) + '"' + edgeDash + '/>';
     });
 
-    // Minimalist progress stamp only (no constellation names): x/5 or [lock] x/5
+    // Minimalist progress stamp only (no constellation names): x/N or [lock] x/N
+    const cTotal = c.levels.length;
     if (!open) {
-      html += '<g transform="translate(' + (lbl.x - 19) + ' ' + (lbl.y - 9) + ')" fill="none" stroke="rgba(238,244,248,0.42)" stroke-width="1.2">' +
+      html += '<g transform="translate(' + (lbl.x - 21) + ' ' + (lbl.y - 9) + ')" fill="none" stroke="rgba(238,244,248,0.42)" stroke-width="1.2">' +
         '<rect x="0" y="5" width="8" height="6" rx="1"/>' +
         '<path d="M1.8 5V3.2a2.2 2.2 0 0 1 4.4 0V5"/>' +
         '</g>';
-      html += '<text x="' + (lbl.x + 8) + '" y="' + lbl.y + '" text-anchor="middle" fill="rgba(238,244,248,0.42)" font-family="Azeret Mono, monospace" font-size="10.5">' + doneCount + '/5</text>';
+      html += '<text x="' + (lbl.x + 8) + '" y="' + lbl.y + '" text-anchor="middle" fill="rgba(238,244,248,0.42)" font-family="Azeret Mono, monospace" font-size="10.5">' + doneCount + '/' + cTotal + '</text>';
     } else {
-      const progFill = doneCount === 5 ? 'rgba(240,195,90,0.85)' : (activeSec ? '#f0c35a' : 'rgba(238,244,248,0.52)');
-      html += '<text x="' + lbl.x + '" y="' + lbl.y + '" text-anchor="middle" fill="' + progFill + '" font-family="Azeret Mono, monospace" font-size="10.5">' + doneCount + '/5</text>';
+      const progFill = doneCount === cTotal ? 'rgba(240,195,90,0.85)' : (activeSec ? '#f0c35a' : 'rgba(238,244,248,0.52)');
+      html += '<text x="' + lbl.x + '" y="' + lbl.y + '" text-anchor="middle" fill="' + progFill + '" font-family="Azeret Mono, monospace" font-size="10.5">' + doneCount + '/' + cTotal + '</text>';
     }
 
     // Star nodes
@@ -663,7 +867,7 @@ function renderConstellationMap() {
       const mKey = medal ? medal.toLowerCase() : null;
       const done = best !== null;
       const isNext = nodeOpen && lvlIdx === nextIdx && !done;
-      const isCapstone = k === 4;
+      const isCapstone = k === lastK;
       const col = mKey === 'gold' ? '#f0c35a' : mKey === 'silver' ? '#c9d3dc' : mKey === 'bronze' ? '#c68659' : '#eef4f8';
       const r = active ? 6.8 : (isCapstone ? 5.6 : 4.5);
 
@@ -695,8 +899,12 @@ function renderConstellationMap() {
         if (open && isGrandOrrery(lvlIdx)) {
           html += '<g transform="translate(-3.5 -5)" fill="none" stroke="rgba(238,244,248,0.75)" stroke-width="1.1"><rect x="0" y="4" width="7" height="5" rx="1"/><path d="M1.5 4V2.6a2 2 0 0 1 4 0V4"/></g>';
         }
-      } else if (done) {
+      } else if (done && mKey) {
         html += '<circle r="' + r + '" fill="' + col + '" stroke="#08111f" stroke-width="1.2"/>';
+      } else if (done) {
+        // Cleared without a medal: distinct dark-blue filled ring with subtle inner dot (not solid white like Silver)
+        html += '<circle r="' + r + '" fill="#1b3452" stroke="rgba(238,244,248,0.82)" stroke-width="1.5"/>';
+        html += '<circle r="1.7" fill="rgba(238,244,248,0.72)"/>';
       } else {
         html += '<circle r="' + r + '" fill="#08111f" stroke="' + (active || isNext ? '#f0c35a' : 'rgba(238,244,248,0.75)') + '" stroke-width="1.7"/>';
         if (active || isNext) html += '<circle r="2" fill="#f0c35a"/>';
@@ -708,7 +916,9 @@ function renderConstellationMap() {
       if (active) {
         const labelStr = numStr + ' · ' + L.name;
         const bw = Math.max(96, labelStr.length * 7.2 + 22);
-        html += '<g transform="translate(0 ' + dy + ')">' +
+        const vbW = portrait ? 560 : 1000;
+        const px = Math.max(bw / 2 + 10 - p.x, Math.min(vbW - bw / 2 - 10 - p.x, 0));
+        html += '<g transform="translate(' + px.toFixed(1) + ' ' + dy + ')">' +
           '<rect x="' + (-bw / 2).toFixed(1) + '" y="-11" width="' + bw.toFixed(1) + '" height="20" rx="10" fill="rgba(8,17,31,0.92)" stroke="' + (nodeOpen ? 'rgba(240,195,90,0.75)' : 'rgba(238,244,248,0.35)') + '" stroke-width="1"/>' +
           '<text y="2.5" text-anchor="middle" fill="' + (nodeOpen ? '#f0c35a' : 'rgba(238,244,248,0.78)') + '" font-family="Azeret Mono, monospace" font-size="10.5" font-weight="500">' + labelStr + '</text>' +
           '</g>';
@@ -718,6 +928,39 @@ function renderConstellationMap() {
       html += '</g>';
     });
   });
+
+  // Inter-chart Wormhole portal centered in the bottom third (Chart I -> Chart II, and Chart II -> Chart I)
+  if (LV.length > 20) {
+    const toChart = activeChart === 0 ? 1 : 0;
+    const portalOpen = toChart === 0 || chartTwoOpen;
+    const pCol = portalOpen ? '#72d8ff' : 'rgba(238,244,248,0.42)';
+    const pLabel = toChart === 1 ? 'CHART II' : 'CHART I';
+    const pAria = toChart === 1
+      ? (portalOpen ? 'Enter Wormhole to Chart II' : 'Wormhole to Chart II, locked until Grand Orrery is completed')
+      : 'Return through Wormhole to Chart I';
+    html += '<g class="wh-portal" id="map-wormhole" tabindex="0" role="button" aria-label="' + pAria + '" transform="translate(' + whX + ' ' + whY + ')"' + (!portalOpen ? ' opacity="0.52"' : '') + '>';
+    html += '<circle r="34" fill="transparent"/>';
+    html += '<circle class="c-focus" r="27" fill="none" opacity="0"/>';
+    if (portalOpen) {
+      html += '<circle r="24" fill="rgba(114,216,255,0.08)"/>';
+      html += '<g class="wh-spin">' +
+        '<circle r="20" fill="none" stroke="' + pCol + '" stroke-width="1.35" stroke-dasharray="10 6 4 6"/>' +
+        '<path d="M0 -24 L0 -19 M0 19 L0 24 M-24 0 L-19 0 M19 0 L24 0" stroke="rgba(240,195,90,0.7)" stroke-width="1.1"/>' +
+        '</g>';
+      html += '<g class="wh-spin-rev">' +
+        '<circle r="13.5" fill="none" stroke="rgba(238,244,248,0.75)" stroke-width="1.15" stroke-dasharray="6 5"/>' +
+        '<path d="M-8 -4 A 9 9 0 0 1 8 -4 M8 4 A 9 9 0 0 1 -8 4" fill="none" stroke="' + pCol + '" stroke-width="1.2"/>' +
+        '</g>';
+      html += '<circle r="6" fill="#060e1c" stroke="' + pCol + '" stroke-width="1.3"/>';
+      html += '<circle r="2.2" fill="#f0c35a"/>';
+    } else {
+      html += '<circle r="18" fill="#08111f" stroke="' + pCol + '" stroke-width="1.2" stroke-dasharray="4 5"/>';
+      html += '<circle r="11" fill="none" stroke="' + pCol + '" stroke-width="1" stroke-dasharray="2 4"/>';
+      html += '<g transform="translate(-3.5 -5)" fill="none" stroke="rgba(238,244,248,0.75)" stroke-width="1.1"><rect x="0" y="4" width="7" height="5" rx="1"/><path d="M1.5 4V2.6a2 2 0 0 1 4 0V4"/></g>';
+    }
+    html += '<text y="33" text-anchor="middle" fill="' + (portalOpen ? 'rgba(114,216,255,0.88)' : 'rgba(238,244,248,0.42)') + '" font-family="Azeret Mono, monospace" font-size="9.5" letter-spacing="0.14em">' + pLabel + '</text>';
+    html += '</g>';
+  }
 
   svg.innerHTML = html;
   svg.querySelectorAll('.c-node').forEach((g) => {
@@ -738,10 +981,24 @@ function renderConstellationMap() {
       }
     });
   });
+  const whEl = svg.querySelector('#map-wormhole');
+  if (whEl) {
+    const go = () => {
+      if (performance.now() < mapSuppressClickUntil) return;
+      switchChart(activeChart === 0 ? 1 : 0);
+    };
+    whEl.addEventListener('click', go);
+    whEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  }
 }
 
 function selectStar(idx) {
   selectedIdx = Math.max(0, Math.min(LV.length - 1, idx));
+  const targetChart = chartOfLevel(selectedIdx);
+  if (targetChart !== activeChart && (targetChart === 0 || isChartTwoOpen())) {
+    activeChart = targetChart;
+    resetMapCam();
+  }
   renderConstellationMap();
   updateDock();
 }
@@ -788,7 +1045,9 @@ function updateDock() {
     if (par.silver) meta.appendChild(medalChip('silver', Math.round(par.silver) + 's'));
     if (par.bronze) meta.appendChild(medalChip('bronze', Math.round(par.bronze) + 's'));
     const sp = document.createElement('span');
-    sp.textContent = '· ' + (L.beacons ? L.beacons.length : 0) + ' beacons';
+    let bCount = 0, secs = 0, cur = L;
+    while (cur) { secs++; bCount += cur.beacons ? cur.beacons.length : 0; cur = cur.stage2; }
+    sp.textContent = '· ' + bCount + ' beacons' + (secs > 1 ? ' · ' + secs + ' sectors' : '');
     meta.appendChild(sp);
   }
 
@@ -829,11 +1088,12 @@ function setPaused(v) {
 function causeText(cause) {
   if (cause === 'lost') return 'Drifted off the chart.';
   if (cause === 'asteroid') return 'Hit an asteroid.';
+  if (String(cause || '').indexOf('pulsar:') === 0) return 'Vaporized by a pulsar beam.';
   const id = String(cause || '').split(':')[1];
   const b = (sim.level.bodies || []).find((x, i) => String(x.id || i) === id);
   const kind = b && b.kind;
-  return kind === 'star' ? 'Burned up in the star.' : kind === 'hole' ? 'Swallowed by the black hole.' :
-    kind === 'moon' ? 'Hit the moon.' : kind === 'repulsor' ? 'Hit the repulsor.' : 'Hit the planet.';
+  return kind === 'star' ? 'Burned up in the star.' : (kind === 'hole' || kind === 'flip') ? 'Swallowed by the black hole.' :
+    kind === 'pulsar' ? 'Hit the pulsar.' : kind === 'moon' ? 'Hit the moon.' : kind === 'repulsor' ? 'Hit the repulsor.' : 'Hit the planet.';
 }
 function showResult() {
   const L = LV[levelIdx], medal = medalFor(levelIdx, finalTime), mKey = medal ? medal.toLowerCase() : null, b = bestOf(levelIdx);
@@ -929,18 +1189,43 @@ function watchSolution() {
 }
 function stepReplay(dt) {
   const R = replay, fr = R.fr, sol = R.sol, sh = sim.ship, L = sim.level;
+  const prevT = R.t;
   R.t = Math.min(sol.t, R.t + dt);
   sim.t = R.t;
+  for (const pb of L.bodies || []) {
+    if (pb.kind === 'pulsar' && S.pulsarState(pb, R.t).mode === 'fire' && S.pulsarState(pb, prevT).mode !== 'fire') {
+      Sfx.play('pulsar'); if (!reduced) shake = Math.max(shake, 2.5); break;
+    }
+  }
   while (R.ev < sol.ev.length && sol.ev[R.ev][0] <= R.t) {
     const e = sol.ev[R.ev++];
-    if (e[1] === 'b') { sim.got[e[2]] = true; Sfx.play('beacon'); burst(sh.x, sh.y, 18, 160, 0.5, true); bursts.push({ x: sh.x, y: sh.y, age: 0 }); if (sim.got.every(Boolean)) { sim.gateOpen = true; Sfx.play('gate'); } }
+    if (e[1] === 'b') { sim.got[e[2]] = true; Sfx.play('beacon'); burst(sh.x, sh.y, 18, 160, 0.5, true); bursts.push({ x: sh.x, y: sh.y, age: 0 }); if (sim.got.every(Boolean)) { sim.gateOpen = true; Sfx.play(sim.level.breach && !sim.level.gate ? 'breach' : 'gate'); } }
     else if (e[1] === 'c') { sim.cells[e[2]] = true; Sfx.play('cell'); burst(sh.x, sh.y, 10, 110, 0.4, false); }
+    else if (e[1] === 'w') { Sfx.play('wormhole'); burst(sh.x, sh.y, 18, 150, 0.45, false); bursts.push({ x: sh.x, y: sh.y, age: 0 }); trail.push(NaN, NaN); }
+    else if (e[1] === 'stage' && sim.level.stage2) {
+      const L2 = sim.level.stage2;
+      sim.stage = (sim.stage || 0) + 1;
+      sim.level = L2;
+      sim.idx = S.index(L2);
+      sim.got = (L2.beacons || []).map(() => false);
+      sim.held = (L2.beacons || []).map(() => 0);
+      sim.cells = (L2.cells || []).map(() => false);
+      sim.wormCool = (L2.wormholes || []).map(() => 0);
+      sim.gateOpen = !(L2.beacons && L2.beacons.length);
+      trail.length = 0; sparks.length = 0; bursts.length = 0;
+      stageFlash = 0.85;
+      Sfx.play('breach');
+      toast('Sector ' + (['I', 'II', 'III', 'IV'][sim.stage] || (sim.stage + 1)) + ' · Solar Current Entered', 2000);
+    }
   }
+  const Lcur = sim.level;
   const f = R.t / sol.step, i = Math.min(fr.length - 2, Math.floor(f)), u = Math.max(0, Math.min(1, f - i)), A = fr[i], B = fr[i + 1];
-  const nx = A.x + (B.x - A.x) * u, ny = A.y + (B.y - A.y) * u;
-  sh.vx = (B.x - A.x) / sol.step; sh.vy = (B.y - A.y) / sol.step;
+  const jumped = Math.hypot(B.x - A.x, B.y - A.y) > 90;
+  const nx = jumped ? B.x : A.x + (B.x - A.x) * u, ny = jumped ? B.y : A.y + (B.y - A.y) * u;
+  if (!jumped) { sh.vx = (B.x - A.x) / sol.step; sh.vy = (B.y - A.y) / sol.step; }
+  else if (Math.hypot(nx - sh.x, ny - sh.y) > 90) { trail.push(NaN, NaN); burst(nx, ny, 16, 150, 0.45, false); }
   prev.x = sh.x = nx; prev.y = sh.y = ny; prev.a = sh.a = A.a + S.wrap(B.a - A.a) * u;
-  sh.fuel = A.fuel * L.fuel; sim.thrusting = A.th;
+  sh.fuel = A.fuel * Lcur.fuel; sim.thrusting = A.th;
   steps++;
   if (steps % 3 === 0) { trail.push(sh.x, sh.y); if (trail.length > 360) trail.splice(0, 2); }
   if (sim.thrusting && steps % 2 === 0 && !reduced) {
@@ -1197,18 +1482,29 @@ function codeTimes(str) {
   if (m) return m[1].split('.').map((v) => (v ? parseInt(v, 36) / 100 : null));
   return null;
 }
-function loadCode(str) {
+function loadCode(str, replace) {
   const times = codeTimes(str);
   if (!times) return -1;
   let n = 0;
-  times.forEach((t, i) => {
-    if (t === null || !LV[i]) return;
-    if (!(t > 0 && t < 10000)) return;
-    const k = keyOf(i), old = bestOf(i);
-    if (old === null || t < old) { save.best[k] = t; n++; }
-  });
+  if (replace) {
+    const next = {};
+    times.forEach((t, i) => {
+      if (t === null || !LV[i]) return;
+      if (!(t > 0 && t < 10000)) return;
+      next[keyOf(i)] = t;
+      n++;
+    });
+    save.best = next;
+  } else {
+    times.forEach((t, i) => {
+      if (t === null || !LV[i]) return;
+      if (!(t > 0 && t < 10000)) return;
+      const k = keyOf(i), old = bestOf(i);
+      if (old === null || t < old) { save.best[k] = t; n++; }
+    });
+  }
   persist();
-  if (n) pushCloud();
+  if (n || replace) pushCloud();
   return n;
 }
 function bindSave() {
@@ -1221,13 +1517,16 @@ click('save-copy', () => {
     else { out.select(); $('save-note').textContent = 'Select the code in the box and copy it.'; }
   } catch (err) { out.select(); $('save-note').textContent = 'Select the code in the box and copy it.'; }
 });
-function tryLoad(text, quiet) {
-  const n = loadCode(text);
+function tryLoad(text, quiet, replace) {
+  const n = loadCode(text, replace);
   if (n < 0) { if (!quiet) $('save-note').textContent = 'No save code found. Codes start with PR2-.'; return; }
-  $('save-note').textContent = n === 0 ? 'Code loaded. Your times here were already as good or better.' : 'Code loaded: ' + n + (n === 1 ? ' best time added.' : ' best times added.');
+  $('save-note').textContent = replace
+    ? ('Save replaced: ' + n + ' times loaded.')
+    : (n === 0 ? 'Code loaded. Your times here were already as good or better.' : 'Code loaded: ' + n + (n === 1 ? ' best time added.' : ' best times added.'));
   buildCards();
 }
-click('save-load', () => tryLoad($('save-text').value));
+click('save-load', () => tryLoad($('save-text').value, false, false));
+click('save-replace', () => tryLoad($('save-text').value, false, true));
 // Pasting a code (or a whole message containing one) loads it straight away.
 $('save-text').addEventListener('input', () => { if (codeTimes($('save-text').value)) tryLoad($('save-text').value, true); });
 click('save-send', () => {
@@ -1340,21 +1639,57 @@ function tick() {
         toast('Beacon ' + n + ' of ' + total + (d === null ? '' : d <= 0 ? '   ' + Math.abs(d).toFixed(2) + ' s ahead of your best' : '   ' + d.toFixed(2) + ' s behind your best'), 1800);
       }
     }
+    else if (ev === 'wormhole') {
+      Sfx.play('wormhole');
+      const w = sim.lastWarp;
+      if (w) {
+        burst(w.x0, w.y0, 20, 160, 0.45, false); bursts.push({ x: w.x0, y: w.y0, age: 0 });
+        burst(w.x1, w.y1, 20, 160, 0.45, true); bursts.push({ x: w.x1, y: w.y1, age: 0 });
+      }
+      prev.x = sh.x; prev.y = sh.y;
+      trail.push(NaN, NaN, sh.x, sh.y);
+      if (trail.length > 360) trail.splice(0, trail.length - 360);
+      if (!reduced) shake = 4;
+    }
+    else if (ev === 'pulsar') { Sfx.play('pulsar'); if (!reduced) shake = Math.max(shake, 2.5); }
+    else if (ev === 'wind') { Sfx.play('wind'); }
     else if (ev === 'bounce') { Sfx.play('bounce'); burst(sh.x, sh.y, 10, 120, 0.35, true); if (!reduced) shake = 4; }
     else if (ev === 'cell') { Sfx.play('cell'); burst(sh.x, sh.y, 10, 110, 0.4, false); toast('Fuel taken on.', 1200); }
-    else if (ev === 'gate') { Sfx.play('gate'); toast('Every beacon collected. The gate is open.'); }
+    else if (ev === 'gate') {
+      if (sim.level.breach && !sim.level.gate) {
+        Sfx.play('breach');
+        toast('Edge breach open! Ride the solar wind into Sector ' + (['II', 'III', 'IV'][sim.stage] || 'II') + '.', 3200);
+      } else {
+        Sfx.play('gate');
+        toast('Every beacon collected. The gate is open.');
+      }
+    }
+    else if (ev === 'stage') {
+      Sfx.play('breach');
+      trail.length = 0; sparks.length = 0; bursts.length = 0;
+      prev.x = sh.x; prev.y = sh.y; prev.a = sh.a;
+      cam.x = sh.x; cam.y = sh.y;
+      burst(sh.x, sh.y, 28, 190, 0.65, true);
+      bursts.push({ x: sh.x, y: sh.y, age: 0 });
+      stageFlash = 0.9;
+      if (!reduced) shake = 6;
+      toast('Sector ' + (['I', 'II', 'III', 'IV'][sim.stage] || (sim.stage + 1)) + ' · Solar Current Entered', 2400);
+    }
     else if (ev === 'empty') { Sfx.play('empty'); toast(coarse ? 'Tank empty. Coast, or tap Restart.' : 'Tank empty. Coast, or press R to restart.', 4000); }
     else if (ev === 'win') {
       phase = 'won'; phaseT = 0.75; finalTime = Math.round(sim.t * 1000) / 1000;
       Sfx.play('win'); Sfx.thrust(false); burst(sh.x, sh.y, 40, 220, 0.8, true);
       const ci = constellationOf(levelIdx);
       const nextWasLocked = ci + 1 < CONSTELLATIONS.length && !constellationUnlocked(ci + 1);
-      const finaleIdx = LV.length - 1;
-      const finaleWasLocked = finaleIdx > 0 && !unlocked(finaleIdx);
+      const grandWasLocked = LV.length > 19 && !unlocked(19);
+      const finale2WasLocked = LV.length > 44 && !unlocked(44);
+      const chartTwoWasLocked = LV.length > 20 && !isChartTwoOpen();
       const k = keyOf(levelIdx), old = bestOf(levelIdx);
       newBest = old === null || finalTime < old;
       if (newBest) { save.best[k] = finalTime; save.ghost[k] = rec.slice(); save.splits[k] = splits.slice(); persist(); pushCloud(); }
-      if (finaleWasLocked && unlocked(finaleIdx)) justUnlocked = 'Grand Orrery Unlocked';
+      if (chartTwoWasLocked && isChartTwoOpen()) justUnlocked = 'Chart II Wormhole Opened';
+      else if (grandWasLocked && unlocked(19)) justUnlocked = 'Grand Orrery Unlocked';
+      else if (finale2WasLocked && unlocked(44)) justUnlocked = LV[44].name + ' Unlocked';
       else if (nextWasLocked && constellationUnlocked(ci + 1)) justUnlocked = 'Next Constellation Unlocked';
       else justUnlocked = null;
     } else if (ev === 'crash' || ev === 'lost') {
@@ -1370,9 +1705,10 @@ function dangerLevel() {
   let worst = 0;
   const L = sim.level, sh = sim.ship;
   for (const b of L.bodies || []) {
-    if (!b.mass || b.mass < 0) continue;
+    const m = b.kind === 'flip' ? S.flipState(b, sim.t).effMass : b.mass;
+    if (!m || m < 0) continue;
     const p = at(L, b, sim.t), d2 = (p.x - sh.x) ** 2 + (p.y - sh.y) ** 2;
-    worst = Math.max(worst, b.mass / (d2 + 400) / 320);
+    worst = Math.max(worst, m / (d2 + 400) / 320);
   }
   return Math.max(0, Math.min(1, worst - 0.15));
 }
@@ -1384,27 +1720,33 @@ function updateHud() {
   $('tank-fill').style.width = (f * 100).toFixed(1) + '%';
   $('tank').className = 'tank' + (f < 0.2 ? ' low' : '');
   const n = sim.got.length, got = sim.got.filter(Boolean).length;
-  $('h-beacons').textContent = n ? got + ' / ' + n : 'none';
+  const sec = (sim.rootLevel && sim.rootLevel.stage2) ? ((['I', 'II', 'III', 'IV'][sim.stage] || String(sim.stage + 1)) + ' · ') : '';
+  $('h-beacons').textContent = n ? sec + got + ' / ' + n : 'none';
 }
 
 // ---------- drawing ----------
-let grain = null, starTiles = [];
+let grain = null, starTiles = [], twinkles = [], nextTwinkleAt = 0;
 const TILE = 900;
 function makeStars() {
   // Flat dots only: two sparse layers, the nearer one moving a little faster as you fly.
+  // Keep the exact PRNG sequence untouched so the static tile matches the loading screen pixel-for-pixel.
   starTiles = [{ n: 150, r: [0.5, 1.1], a: [0.25, 0.55], par: 0.06 }, { n: 45, r: [0.9, 1.6], a: [0.5, 0.9], par: 0.16 }].map((sp, li) => {
     const c = document.createElement('canvas'); c.width = c.height = TILE;
     const g = c.getContext('2d'); let seed = 1234 + li * 777;
     const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const stars = [];
     for (let i = 0; i < sp.n; i++) {
       const x = rnd() * TILE, y = rnd() * TILE, r = sp.r[0] + rnd() * (sp.r[1] - sp.r[0]), a = sp.a[0] + rnd() * (sp.a[1] - sp.a[0]);
       g.fillStyle = 'rgba(238,244,248,' + a + ')'; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill();
+      let cross = false;
       if (li === 1 && rnd() < 0.12) { // the odd bright one gets a small cross, like a chart symbol
+        cross = true;
         g.strokeStyle = 'rgba(238,244,248,' + a * 0.7 + ')'; g.lineWidth = 0.8;
         g.beginPath(); g.moveTo(x - 4, y); g.lineTo(x + 4, y); g.moveTo(x, y - 4); g.lineTo(x, y + 4); g.stroke();
       }
+      stars.push({ x, y, r, a, cross });
     }
-    return { pat: ctx.createPattern(c, 'repeat'), par: sp.par };
+    return { pat: ctx.createPattern(c, 'repeat'), par: sp.par, stars };
   });
 }
 function makeGrain() {
@@ -1425,15 +1767,58 @@ function text(str, x, y, color, align, size) {
   ctx.fillStyle = color; ctx.fillText(str, x, y);
 }
 function ring(x, y, r) { ctx.beginPath(); ctx.arc(x, y, Math.max(0.5, r), 0, TAU); }
-function drawPaper() {
+function drawPaper(now) {
   ctx.fillStyle = C.paper; ctx.fillRect(0, 0, W, H);
   for (const s of starTiles) {
     const ox = -(cam.x * s.par) % TILE, oy = -(cam.y * s.par) % TILE;
     ctx.save(); ctx.translate(ox, oy); ctx.fillStyle = s.pat; ctx.fillRect(-ox - 1, -oy - 1, W + 2, H + 2); ctx.restore();
   }
+  // Occasional delicate twinkle glint on a random visible star at a random interval
+  if (!reduced && starTiles.length) {
+    const t = (now || performance.now()) / 1000;
+    if (nextTwinkleAt === 0) nextTwinkleAt = t + 0.8 + Math.random() * 1.4;
+    if (t >= nextTwinkleAt && twinkles.length < 4) {
+      nextTwinkleAt = t + 0.9 + Math.random() * 2.1;
+      // Pick a random layer (favoring brighter near layer slightly) and a random star currently on screen
+      const li = Math.random() < 0.55 ? 1 : 0, layer = starTiles[li];
+      let ox = -(cam.x * layer.par) % TILE; if (ox > 0) ox -= TILE;
+      let oy = -(cam.y * layer.par) % TILE; if (oy > 0) oy -= TILE;
+      for (let tries = 0; tries < 10; tries++) {
+        const st = layer.stars[Math.floor(Math.random() * layer.stars.length)];
+        const cols = Math.ceil((W - ox) / TILE), rows = Math.ceil((H - oy) / TILE);
+        const cx = Math.floor(Math.random() * Math.max(1, cols)), cy = Math.floor(Math.random() * Math.max(1, rows));
+        const sx0 = ox + cx * TILE + st.x, sy0 = oy + cy * TILE + st.y;
+        if (sx0 > 12 && sx0 < W - 12 && sy0 > 12 && sy0 < H - 12) {
+          twinkles.push({ li, st, cx, cy, t0: t, dur: 1.1 + Math.random() * 0.8 });
+          break;
+        }
+      }
+    }
+    for (let i = twinkles.length - 1; i >= 0; i--) {
+      const tw = twinkles[i], u = (t - tw.t0) / tw.dur;
+      if (u >= 1) { twinkles.splice(i, 1); continue; }
+      const layer = starTiles[tw.li];
+      let ox = -(cam.x * layer.par) % TILE; if (ox > 0) ox -= TILE;
+      let oy = -(cam.y * layer.par) % TILE; if (oy > 0) oy -= TILE;
+      const x = ox + tw.cx * TILE + tw.st.x, y = oy + tw.cy * TILE + tw.st.y;
+      if (x < -12 || x > W + 12 || y < -12 || y > H + 12) continue;
+      // Smooth bell curve (0 -> 1 -> 0) for a soft, crisp glint
+      const k = Math.sin(u * Math.PI), peak = k * k;
+      const arm = (tw.st.cross ? 5.5 : 3.8) + peak * (tw.li === 1 ? 4.2 : 2.8);
+      ctx.save();
+      ctx.fillStyle = chalkA(0.55 * peak);
+      ring(x, y, tw.st.r + 1.4 * peak); ctx.fill();
+      ctx.strokeStyle = chalkA(0.85 * peak); ctx.lineWidth = 0.85;
+      ctx.beginPath();
+      ctx.moveTo(x - arm, y); ctx.lineTo(x + arm, y);
+      ctx.moveTo(x, y - arm); ctx.lineTo(x, y + arm);
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
   if (grain) { ctx.fillStyle = grain; ctx.fillRect(0, 0, W, H); }
 }
-function drawChart(L) {
+function drawChart(L, st) {
   const z = cam.zoom, ox = sx(0), oy = sy(0), R = L.bounds * z;
   ctx.lineWidth = 1;
   for (let r = 100; r < L.bounds; r += 100) {
@@ -1444,16 +1829,180 @@ function drawChart(L) {
   ctx.beginPath();
   for (let i = 0; i < 12; i++) { const a = i * TAU / 12; ctx.moveTo(ox + Math.cos(a) * 60 * z, oy + Math.sin(a) * 60 * z); ctx.lineTo(ox + Math.cos(a) * R, oy + Math.sin(a) * R); }
   ctx.stroke();
-  // the edge of the chart: cross it and the ship is lost
+  // the edge of the chart: cross it and the ship is lost — unless a Rim Breach is open to Sector II!
+  const br = L.breach, openBr = !!(br && st && st.gateOpen);
+  const bAng = br ? (br.angle || 0) : 0, halfArc = br ? (br.halfArc || 0.24) : 0;
   ctx.strokeStyle = chalkA(0.75); ctx.lineWidth = 1.5;
-  ring(ox, oy, R); ctx.stroke();
+  if (openBr) {
+    ctx.beginPath();
+    ctx.arc(ox, oy, R, bAng + halfArc, bAng - halfArc + TAU);
+    ctx.stroke();
+  } else {
+    ring(ox, oy, R); ctx.stroke();
+  }
   ctx.lineWidth = 1; ctx.strokeStyle = chalkA(0.45);
   ctx.beginPath();
   for (let i = 0; i < 180; i++) {
-    const a = i * TAU / 180, c = Math.cos(a), s = Math.sin(a), len = i % 15 === 0 ? 14 : i % 5 === 0 ? 9 : 5;
+    const a = i * TAU / 180;
+    if (openBr && Math.abs(S.wrap(a - bAng)) < halfArc) continue;
+    const c = Math.cos(a), s = Math.sin(a), len = i % 15 === 0 ? 14 : i % 5 === 0 ? 9 : 5;
     ctx.moveTo(ox + c * R, oy + s * R); ctx.lineTo(ox + c * (R + len), oy + s * (R + len));
   }
   ctx.stroke();
+  if (br) {
+    const t = st ? st.t : 0;
+    const a0 = bAng - halfArc, a1 = bAng + halfArc;
+    if (openBr) {
+      // Glowing open boundary breach posts + animated outward chevrons
+      ctx.strokeStyle = C.ochre; ctx.lineWidth = 2.4;
+      [a0, a1].forEach((a) => {
+        const c = Math.cos(a), s = Math.sin(a);
+        ctx.beginPath(); ctx.moveTo(ox + c * (R - 14), oy + s * (R - 14)); ctx.lineTo(ox + c * (R + 20), oy + s * (R + 20)); ctx.stroke();
+      });
+      const ux = Math.cos(bAng), uy = Math.sin(bAng), nx = -uy, ny = ux;
+      for (let k = 0; k < 3; k++) {
+        const p = ((t * 1.4 + k / 3) % 1);
+        const rr = R - 26 + p * 66;
+        const cx = ox + ux * rr, cy = oy + uy * rr;
+        const hw = Math.min(28, halfArc * R * 0.42);
+        ctx.strokeStyle = ochreA(0.95 * Math.sin(p * Math.PI)); ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(cx - ux * 10 - nx * hw, cy - uy * 10 - ny * hw);
+        ctx.lineTo(cx + ux * 10, cy + uy * 10);
+        ctx.lineTo(cx - ux * 10 + nx * hw, cy - uy * 10 + ny * hw);
+        ctx.stroke();
+      }
+      text('SECTOR ' + (['II', 'III', 'IV'][(st && st.stage) || 0] || 'II'), ox + ux * (R - 36), oy + uy * (R - 36), C.ochre, 'center', 10);
+    } else {
+      // Locked breach preview brackets along the rim
+      ctx.strokeStyle = ochreA(0.35); ctx.lineWidth = 2; ctx.setLineDash([5, 6]);
+      ctx.beginPath(); ctx.arc(ox, oy, R, a0, a1); ctx.stroke(); ctx.setLineDash([]);
+    }
+  }
+}
+function drawWinds(L, t, st) {
+  const winds = L.winds || [];
+  if (!winds.length) return;
+  const z = cam.zoom, gateOpen = !!(st && st.gateOpen);
+  winds.forEach((w, wi) => {
+    const ws = S.windState(w, t, gateOpen);
+    if (ws.mode === 'off') return;
+    const isGold = !!w.onlyWhenOpen;
+    const baseCol = isGold ? C.ochre : '#72d8ff';
+    const colA = (a) => isGold ? ochreA(a) : ('rgba(114,216,255,' + a.toFixed(3) + ')');
+
+    if (w.kind === 'global') {
+      const a = w.angle || 0, ux = Math.cos(a), uy = Math.sin(a), nx = -uy, ny = ux;
+      const R = L.bounds;
+      if (ws.mode === 'warn') {
+        const pulse = 0.22 + 0.5 * ws.warnFrac;
+        ctx.strokeStyle = ochreA(pulse); ctx.lineWidth = 1.2; ctx.setLineDash([8, 12]);
+        for (let off = -R + 180; off <= R - 180; off += 260) {
+          const span = Math.sqrt(Math.max(0, R * R - off * off)) * 0.92;
+          const x0 = sx(nx * off - ux * span), y0 = sy(ny * off - uy * span);
+          const x1 = sx(nx * off + ux * span), y1 = sy(ny * off + uy * span);
+          ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
+        }
+        ctx.setLineDash([]);
+        // Compact warning pill near top-center of viewport so player immediately sees incoming solar gust
+        if (st) {
+          const wx = W / 2, wy = coarse ? 92 : 66;
+          text('SOLAR WIND INCOMING', wx, wy, ochreA(0.55 + 0.45 * ws.warnFrac), 'center', 10);
+        }
+      } else if (ws.mode === 'on') {
+        const al = 0.42 * ws.strength;
+        ctx.strokeStyle = colA(al); ctx.lineWidth = 1.4;
+        const speed = 340 + (w.force || 45) * 4;
+        for (let lane = -R + 110; lane <= R - 110; lane += 150) {
+          const half = Math.sqrt(Math.max(0, R * R - lane * lane));
+          if (half < 80) continue;
+          for (let k = 0; k < 4; k++) {
+            const p = (((t * speed + lane * 1.7 + k * (half * 0.55) + wi * 91) % (half * 2)) + half * 2) % (half * 2) - half;
+            const len = Math.min(110, half * 0.28);
+            const p0 = Math.max(-half, p - len / 2), p1 = Math.min(half, p + len / 2);
+            if (p1 - p0 < 12) continue;
+            ctx.beginPath();
+            ctx.moveTo(sx(nx * lane + ux * p0), sy(ny * lane + uy * p0));
+            ctx.lineTo(sx(nx * lane + ux * p1), sy(ny * lane + uy * p1));
+            ctx.stroke();
+          }
+        }
+        // Subtle gust arrow indicators
+        ctx.strokeStyle = colA(0.65 * ws.strength); ctx.lineWidth = 1.6;
+        for (let lane = -R + 260; lane <= R - 260; lane += 360) {
+          const p = (((t * 160 + lane * 0.9) % 600) + 600) % 600 - 300;
+          const cx = sx(nx * lane + ux * p), cy = sy(ny * lane + uy * p);
+          ctx.beginPath();
+          ctx.moveTo(cx - ux * 8 - nx * 7, cy - uy * 8 - ny * 7);
+          ctx.lineTo(cx + ux * 8, cy + uy * 8);
+          ctx.lineTo(cx - ux * 8 + nx * 7, cy - uy * 8 + ny * 7);
+          ctx.stroke();
+        }
+      }
+      return;
+    }
+
+    // Directional Stream / Jet Corridor
+    const dx = w.x1 - w.x0, dy = w.y1 - w.y0, len = Math.hypot(dx, dy) || 1;
+    const ux = dx / len, uy = dy / len, nx = -uy, ny = ux;
+    const hw = (w.width || 160) / 2;
+    const c0x = sx(w.x0 - nx * hw), c0y = sy(w.y0 - ny * hw);
+    const c1x = sx(w.x1 - nx * hw), c1y = sy(w.y1 - ny * hw);
+    const c2x = sx(w.x1 + nx * hw), c2y = sy(w.y1 + ny * hw);
+    const c3x = sx(w.x0 + nx * hw), c3y = sy(w.y0 + ny * hw);
+
+    if (ws.mode === 'idle') {
+      ctx.strokeStyle = colA(0.12); ctx.lineWidth = 1; ctx.setLineDash([4, 10]);
+      ctx.beginPath(); ctx.moveTo(c0x, c0y); ctx.lineTo(c1x, c1y); ctx.moveTo(c3x, c3y); ctx.lineTo(c2x, c2y); ctx.stroke(); ctx.setLineDash([]);
+      return;
+    }
+    if (ws.mode === 'warn') {
+      const a = 0.25 + 0.55 * ws.warnFrac;
+      ctx.fillStyle = ochreA(0.05 * ws.warnFrac);
+      ctx.beginPath(); ctx.moveTo(c0x, c0y); ctx.lineTo(c1x, c1y); ctx.lineTo(c2x, c2y); ctx.lineTo(c3x, c3y); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = ochreA(a); ctx.lineWidth = 1.4; ctx.setLineDash([7, 7]);
+      ctx.beginPath(); ctx.moveTo(c0x, c0y); ctx.lineTo(c1x, c1y); ctx.moveTo(c3x, c3y); ctx.lineTo(c2x, c2y); ctx.stroke(); ctx.setLineDash([]);
+      return;
+    }
+
+    // Active stream corridor: soft translucent fill, dashed edges, fast animated streamlines + chevrons
+    const s = ws.strength;
+    ctx.fillStyle = colA(isGold ? 0.085 * s : 0.065 * s);
+    ctx.beginPath(); ctx.moveTo(c0x, c0y); ctx.lineTo(c1x, c1y); ctx.lineTo(c2x, c2y); ctx.lineTo(c3x, c3y); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = colA(0.32 * s); ctx.lineWidth = 1.1; ctx.setLineDash([6, 8]);
+    ctx.beginPath(); ctx.moveTo(c0x, c0y); ctx.lineTo(c1x, c1y); ctx.moveTo(c3x, c3y); ctx.lineTo(c2x, c2y); ctx.stroke(); ctx.setLineDash([]);
+
+    const speed = 260 + (w.force || 60) * 3.2;
+    const rows = Math.max(3, Math.round(hw / 36));
+    ctx.strokeStyle = colA(0.55 * s); ctx.lineWidth = 1.35;
+    for (let r = -rows + 1; r <= rows - 1; r++) {
+      const off = (r / rows) * hw * 0.85;
+      const count = Math.max(3, Math.floor(len / 240));
+      for (let k = 0; k < count; k++) {
+        const d = ((t * speed + k * (len / count) + Math.abs(r) * 73 + wi * 47) % len);
+        const seg = Math.min(95, len * 0.16);
+        const d0 = Math.max(0, d - seg / 2), d1 = Math.min(len, d + seg / 2);
+        if (d1 - d0 < 10) continue;
+        ctx.beginPath();
+        ctx.moveTo(sx(w.x0 + ux * d0 + nx * off), sy(w.y0 + uy * d0 + ny * off));
+        ctx.lineTo(sx(w.x0 + ux * d1 + nx * off), sy(w.y0 + uy * d1 + ny * off));
+        ctx.stroke();
+      }
+    }
+    // Centerline directional chevrons
+    ctx.strokeStyle = colA(0.75 * s); ctx.lineWidth = 1.6;
+    const chCount = Math.max(2, Math.floor(len / 320));
+    const chW = Math.min(18, hw * 0.24 * z);
+    for (let k = 0; k < chCount; k++) {
+      const d = ((t * 170 + k * (len / chCount)) % len);
+      const cx = sx(w.x0 + ux * d), cy = sy(w.y0 + uy * d);
+      ctx.beginPath();
+      ctx.moveTo(cx - ux * 7 - nx * chW, cy - uy * 7 - ny * chW);
+      ctx.lineTo(cx + ux * 8, cy + uy * 8);
+      ctx.lineTo(cx - ux * 7 + nx * chW, cy - uy * 7 + ny * chW);
+      ctx.stroke();
+    }
+  });
 }
 function railOf(L, ent, t) {
   const o = ent.orbit;
@@ -1465,18 +2014,20 @@ function railOf(L, ent, t) {
 }
 function drawBody(L, b, t, lit) {
   const p = at(L, b, t), x = sx(p.x), y = sy(p.y), z = cam.zoom, r = Math.max(2, b.radius * z);
-  // Where this body's pull equals the ship's engine. Inside it you cannot hover, only orbit.
-  if (b.mass < 0) { // a repulsor pushes only inside this circle
-    const R = S.pushRange(b) * z;
-    ctx.strokeStyle = ochreA(0.55); ctx.lineWidth = 1; ctx.setLineDash([3, 4]);
+  const fs = b.kind === 'flip' ? S.flipState(b, t) : null;
+  const effMass = fs ? fs.effMass : b.mass;
+  // Where this body's pull equals the ship's engine (or push range for repulsors & white holes).
+  if (effMass < 0) {
+    const R = (fs ? fs.pushR : S.pushRange(b)) * z;
+    ctx.strokeStyle = ochreA(fs && fs.warning ? (0.45 + 0.4 * Math.sin(t * 16)) : 0.55); ctx.lineWidth = 1; ctx.setLineDash([3, 4]);
     ring(x, y, R); ctx.stroke(); ctx.setLineDash([]);
-    if (R > 40) text('PUSH RANGE', x, y - R - 9, ochreA(0.7), 'center', 9);
-  } else if (b.mass) {
-    const lim = Math.sqrt(Math.abs(b.mass) / S.SHIP.thrust) * z;
+    if (R > 40) text(fs ? 'WHITE HOLE' : 'PUSH RANGE', x, y - R - 9, ochreA(0.75), 'center', 9);
+  } else if (effMass > 0) {
+    const lim = Math.sqrt(effMass / S.SHIP.thrust) * z;
     if (lim > r + 8) {
-      ctx.strokeStyle = b.mass > 0 ? chalkA(0.3) : ochreA(0.35); ctx.lineWidth = 1; ctx.setLineDash([1, 5]);
+      ctx.strokeStyle = fs && fs.warning ? ochreA(0.55 + 0.35 * Math.sin(t * 16)) : chalkA(0.3); ctx.lineWidth = 1; ctx.setLineDash([1, 5]);
       ring(x, y, lim); ctx.stroke(); ctx.setLineDash([]);
-      if (lim > 70 && b.mass > 0) text('ENGINE LIMIT', x, y - lim - 9, chalkA(0.42), 'center', 9);
+      if (lim > 70) text(fs ? 'BLACK HOLE' : 'ENGINE LIMIT', x, y - lim - 9, chalkA(0.42), 'center', 9);
     }
   }
   if (b.kind === 'star') {
@@ -1496,6 +2047,81 @@ function drawBody(L, b, t, lit) {
     }
     ctx.fillStyle = '#02050b'; ring(x, y, r); ctx.fill();
     ctx.strokeStyle = C.chalk; ctx.lineWidth = 1.5; ring(x, y, r); ctx.stroke();
+  } else if (b.kind === 'flip') {
+    const warnPulse = fs.warning ? (0.5 + 0.5 * Math.sin(t * 20)) : 0;
+    if (fs.isWhite) {
+      // White Hole phase: radiant inverted core + outward expanding pulse rings
+      const pulse = (t * 1.1) % 1;
+      ctx.strokeStyle = ochreA(0.65 * (1 - pulse)); ctx.lineWidth = 1.3;
+      ring(x, y, r + pulse * 38 * z); ctx.stroke();
+      ctx.strokeStyle = chalkA(0.45 * (1 - ((t * 1.1 + 0.5) % 1)));
+      ring(x, y, r + ((t * 1.1 + 0.5) % 1) * 38 * z); ctx.stroke();
+      ctx.fillStyle = C.chalk; ring(x, y, r); ctx.fill();
+      ctx.strokeStyle = C.ochre; ctx.lineWidth = 1.8; ring(x, y, r + 2); ctx.stroke();
+    } else {
+      // Black Hole phase: dark event horizon + inward swirling accretion arcs
+      ctx.strokeStyle = chalkA(0.55); ctx.lineWidth = 1.1;
+      for (let k = 0; k < 4; k++) {
+        const rr = r + 6 + k * 8.5 * z, a0 = -t * (1.8 - k * 0.3) + k;
+        ctx.beginPath(); ctx.arc(x, y, rr, a0, a0 + 1.8); ctx.stroke();
+        ctx.beginPath(); ctx.arc(x, y, rr, a0 + Math.PI, a0 + Math.PI + 1.8); ctx.stroke();
+      }
+      ctx.fillStyle = '#02050b'; ring(x, y, r); ctx.fill();
+      ctx.strokeStyle = fs.warning ? C.ochre : C.chalk; ctx.lineWidth = 1.6; ring(x, y, r); ctx.stroke();
+    }
+    // Clean countdown phase arc around the singularity showing exact time until polarity flip
+    const arcR = r + 7 + 2 * z;
+    ctx.strokeStyle = fs.warning ? ochreA(0.65 + 0.35 * warnPulse) : (fs.isWhite ? ochreA(0.8) : chalkA(0.75));
+    ctx.lineWidth = fs.warning ? 2.6 : 1.8;
+    ctx.beginPath();
+    ctx.arc(x, y, arcR, -Math.PI / 2, -Math.PI / 2 + (1 - fs.frac) * TAU);
+    ctx.stroke();
+  } else if (b.kind === 'pulsar') {
+    const ps = S.pulsarState(b, t);
+    const ux = Math.cos(ps.angle), uy = Math.sin(ps.angle), span = (L.bounds || 1200) * 2.4 * z;
+    if (ps.mode === 'warn') {
+      // Telegraph twin 180° dashed beams + charging ring
+      const a = 0.25 + 0.65 * ps.warnFrac;
+      ctx.strokeStyle = ochreA(a); ctx.lineWidth = Math.max(1.2, (1.5 + ps.warnFrac * 2) * z);
+      ctx.setLineDash([8, 7]);
+      ctx.beginPath();
+      ctx.moveTo(x - ux * span, y - uy * span); ctx.lineTo(x + ux * span, y + uy * span);
+      ctx.stroke(); ctx.setLineDash([]);
+      // Beam edge corridor preview
+      const hw = (ps.width / 2) * z;
+      ctx.strokeStyle = ochreA(0.16 * ps.warnFrac); ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x - ux * span - uy * hw, y - uy * span + ux * hw); ctx.lineTo(x + ux * span - uy * hw, y + uy * span + ux * hw);
+      ctx.moveTo(x - ux * span + uy * hw, y - uy * span - ux * hw); ctx.lineTo(x + ux * span + uy * hw, y + uy * span - ux * hw);
+      ctx.stroke();
+      ctx.strokeStyle = C.ochre; ctx.lineWidth = 2.4;
+      ctx.beginPath(); ctx.arc(x, y, r + 9, -Math.PI / 2, -Math.PI / 2 + ps.warnFrac * TAU); ctx.stroke();
+    } else if (ps.mode === 'fire') {
+      // Lethal twin opposite kill beams
+      const fade = ps.fireFrac > 0.8 ? 1 - (ps.fireFrac - 0.8) / 0.2 : 1;
+      const bw = Math.max(4, ps.width * z);
+      ctx.save();
+      ctx.lineCap = 'butt';
+      ctx.strokeStyle = ochreA(0.32 * fade); ctx.lineWidth = bw * 1.9;
+      ctx.beginPath(); ctx.moveTo(x - ux * span, y - uy * span); ctx.lineTo(x + ux * span, y + uy * span); ctx.stroke();
+      ctx.strokeStyle = ochreA(0.88 * fade); ctx.lineWidth = bw;
+      ctx.beginPath(); ctx.moveTo(x - ux * span, y - uy * span); ctx.lineTo(x + ux * span, y + uy * span); ctx.stroke();
+      ctx.strokeStyle = chalkA(0.95 * fade); ctx.lineWidth = Math.max(2, bw * 0.42);
+      ctx.beginPath(); ctx.moveTo(x - ux * span, y - uy * span); ctx.lineTo(x + ux * span, y + uy * span); ctx.stroke();
+      ctx.restore();
+    } else {
+      // Subtle orientation ticks hinting the next firing axis
+      ctx.strokeStyle = chalkA(0.35); ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(x + ux * (r + 5), y + uy * (r + 5)); ctx.lineTo(x + ux * (r + 16), y + uy * (r + 16));
+      ctx.moveTo(x - ux * (r + 5), y - uy * (r + 5)); ctx.lineTo(x - ux * (r + 16), y - uy * (r + 16));
+      ctx.stroke();
+    }
+    // Compact brilliant neutron core + spinning magnetic rings
+    ctx.strokeStyle = ps.mode === 'fire' ? C.ochre : chalkA(0.75); ctx.lineWidth = 1.3;
+    ring(x, y, r + 4); ctx.stroke();
+    ctx.fillStyle = C.chalk; ring(x, y, r); ctx.fill();
+    ctx.fillStyle = ps.mode === 'fire' ? C.ochre : C.deep; ring(x, y, r * 0.42); ctx.fill();
   } else if (b.kind === 'repulsor') {
     ctx.strokeStyle = C.ochre; ctx.lineWidth = 1.25;
     ring(x, y, r); ctx.stroke();
@@ -1532,6 +2158,48 @@ function drawRock(L, a, i, t) {
   ctx.closePath();
   ctx.fillStyle = C.deep; ctx.fill(); ctx.strokeStyle = C.chalk; ctx.lineWidth = 1.25; ctx.stroke();
   ctx.beginPath(); ctx.moveTo(x - r * 0.3, y - r * 0.1); ctx.lineTo(x + r * 0.1, y + r * 0.3); ctx.strokeStyle = chalkA(0.6); ctx.stroke();
+}
+function drawWormholes(L, t, st) {
+  const whs = L.wormholes || [];
+  if (!whs.length) return;
+  const z = cam.zoom;
+  const romans = ['I', 'II', 'III', 'IV'];
+  whs.forEach((wh, wi) => {
+    const col = wh.color || (wi % 2 === 0 ? '#72d8ff' : '#f0c35a');
+    const r = (wh.r || S.DEFAULT_WORMHOLE_R) * z;
+    const cool = st && st.wormCool && st.wormCool[wi] > 0;
+    const pa = at(L, wh.a, t), ax = sx(pa.x), ay = sy(pa.y);
+    const pb = at(L, wh.b, t), bx = sx(pb.x), by = sy(pb.y);
+    // Very faint blueprint chord linking the pair so players can immediately read which portals connect
+    ctx.strokeStyle = col === '#f0c35a' ? 'rgba(240,195,90,0.12)' : 'rgba(114,216,255,0.14)';
+    ctx.lineWidth = 1; ctx.setLineDash([3, 9]);
+    ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke(); ctx.setLineDash([]);
+
+    [[ax, ay, 1], [bx, by, -1]].forEach(([x, y, dir]) => {
+      ctx.save();
+      ctx.globalAlpha = cool ? 0.55 : 1;
+      // Soft aperture aura
+      ctx.fillStyle = col === '#f0c35a' ? 'rgba(240,195,90,0.09)' : 'rgba(114,216,255,0.1)';
+      ring(x, y, r * 1.15); ctx.fill();
+      // Outer counter-rotating vortex arcs
+      ctx.strokeStyle = col; ctx.lineWidth = 1.8;
+      for (let k = 0; k < 3; k++) {
+        const a0 = dir * t * 1.4 + k * TAU / 3;
+        ctx.beginPath(); ctx.arc(x, y, r, a0, a0 + 1.45); ctx.stroke();
+      }
+      // Inner chalk swirl
+      ctx.strokeStyle = chalkA(0.72); ctx.lineWidth = 1.15;
+      for (let k = 0; k < 2; k++) {
+        const a0 = -dir * t * 2.1 + k * Math.PI;
+        ctx.beginPath(); ctx.arc(x, y, r * 0.64, a0, a0 + 1.75); ctx.stroke();
+      }
+      // Deep void pupil
+      ctx.fillStyle = '#040a16'; ring(x, y, r * 0.36); ctx.fill();
+      ctx.strokeStyle = col; ctx.lineWidth = 1.1; ring(x, y, r * 0.36); ctx.stroke();
+      if (whs.length > 1) text(romans[wi] || String(wi + 1), x, y + r + 11, col, 'center', 9);
+      ctx.restore();
+    });
+  });
 }
 function drawTargets(L, t, st) {
   const z = cam.zoom;
@@ -1610,9 +2278,13 @@ function drawShip() {
       const i0 = Math.floor(n * band / 4), i1 = Math.min(n - 1, Math.floor(n * (band + 1) / 4));
       if (i1 <= i0) continue;
       ctx.strokeStyle = chalkA(0.08 + 0.12 * band); ctx.lineWidth = 1; ctx.beginPath();
-      ctx.moveTo(sx(trail[i0 * 2]), sy(trail[i0 * 2 + 1]));
-      for (let i = i0 + 1; i <= i1; i++) ctx.lineTo(sx(trail[i * 2]), sy(trail[i * 2 + 1]));
-      if (band === 3) ctx.lineTo(x, y);
+      let pen = false;
+      for (let i = i0; i <= i1; i++) {
+        const tx = trail[i * 2], ty = trail[i * 2 + 1];
+        if (!Number.isFinite(tx) || !Number.isFinite(ty)) { pen = false; continue; }
+        if (!pen) { ctx.moveTo(sx(tx), sy(ty)); pen = true; } else ctx.lineTo(sx(tx), sy(ty));
+      }
+      if (band === 3 && pen) ctx.lineTo(x, y);
       ctx.stroke();
     }
   }
@@ -1643,13 +2315,14 @@ function drawShip() {
 // The orbit you are on right now around whatever pulls hardest: an ellipse while you are captured,
 // with the low and high points marked, and flagged when its low point is inside the body.
 function strongestPull(L, t, x, y) {
-  let best = null, bestA = 0;
+  let best = null, bestA = 0, bestM = 0;
   for (const b of L.bodies || []) {
-    if (!(b.mass > 0)) continue;
-    const p = at(L, b, t), d2 = (p.x - x) ** 2 + (p.y - y) ** 2, acc = b.mass / (d2 + S.SHIP.soft);
-    if (acc > bestA) { bestA = acc; best = b; }
+    const m = b.kind === 'flip' ? S.flipState(b, t).effMass : b.mass;
+    if (!(m > 0)) continue;
+    const p = at(L, b, t), d2 = (p.x - x) ** 2 + (p.y - y) ** 2, acc = m / (d2 + S.SHIP.soft);
+    if (acc > bestA) { bestA = acc; best = b; bestM = m; }
   }
-  return { body: best, acc: bestA };
+  return { body: best, acc: bestA, mass: bestM };
 }
 function drawGuide() {
   if (!save.guide || !sim || (phase !== 'fly' && phase !== 'replay')) return;
@@ -1657,7 +2330,7 @@ function drawGuide() {
   if (!b || pull.acc < 6) return;
   const p0 = at(L, b, sim.t), bx = p0.x, by = p0.y, p1 = at(L, b, sim.t + 0.02);
   const bvx = (p1.x - bx) / 0.02, bvy = (p1.y - by) / 0.02;
-  const rx = sh.x - bx, ry = sh.y - by, vx = sh.vx - bvx, vy = sh.vy - bvy, mu = b.mass;
+  const rx = sh.x - bx, ry = sh.y - by, vx = sh.vx - bvx, vy = sh.vy - bvy, mu = pull.mass;
   const r = Math.hypot(rx, ry), v2 = vx * vx + vy * vy, eps = v2 / 2 - mu / r;
   const z = cam.zoom;
   if (eps >= 0) return; // escaping: no closed orbit to show
@@ -1687,7 +2360,9 @@ function drawGhost() {
   const f = (phase === 'won' ? finalTime : sim.t) / (DT * REC_EVERY) - 1, i = Math.floor(f), n = ghost.length / 3;
   if (i < 0 || i >= n - 1) return;
   const u = f - i, a0 = ghost[i * 3 + 2], a1 = a0 + S.wrap(ghost[i * 3 + 5] - a0);
-  const gx = ghost[i * 3] + (ghost[i * 3 + 3] - ghost[i * 3]) * u, gy = ghost[i * 3 + 1] + (ghost[i * 3 + 4] - ghost[i * 3 + 1]) * u;
+  const x0 = ghost[i * 3], y0 = ghost[i * 3 + 1], x1 = ghost[i * 3 + 3], y1 = ghost[i * 3 + 4];
+  const jump = Math.hypot(x1 - x0, y1 - y0) > 90;
+  const gx = jump ? x1 : x0 + (x1 - x0) * u, gy = jump ? y1 : y0 + (y1 - y0) * u;
   shipPath(sx(gx), sy(gy), a0 + (a1 - a0) * u, Math.max(0.85, cam.zoom));
   ctx.strokeStyle = chalkA(0.4); ctx.lineWidth = 1; ctx.setLineDash([3, 3]); ctx.stroke(); ctx.setLineDash([]);
 }
@@ -1732,6 +2407,10 @@ function drawPointers() {
   labelSpots = [];
   if (phase === 'ready') return;
   if (sim.gateOpen && L.gate) { const p = at(L, L.gate, sim.t), wx = p.x, wy = p.y; pointer(wx, wy, C.ochre, 'GATE', L.gate.r || S.DEFAULT_GATE_R); }
+  if (sim.gateOpen && L.breach) {
+    const ba = L.breach.angle || 0;
+    pointer(Math.cos(ba) * L.bounds, Math.sin(ba) * L.bounds, C.ochre, 'SECTOR ' + (['II', 'III', 'IV'][sim.stage] || 'II'), 60);
+  }
   (L.beacons || []).forEach((b, i) => {
     if (sim.got[i]) return;
     const p = at(L, b, sim.t), wx = p.x, wy = p.y;
@@ -1742,10 +2421,24 @@ function drawMap() {
   const L = sim.level, mg = mapGeom(), R = mg.R, cx = mg.cx, cy = mg.cy, k = R / L.bounds;
   ctx.fillStyle = W < 500 ? 'rgba(8,17,31,0.5)' : 'rgba(8,17,31,0.72)'; ring(cx, cy, R); ctx.fill();
   ctx.strokeStyle = chalkA(0.6); ctx.lineWidth = 1; ring(cx, cy, R); ctx.stroke();
+  if (L.breach) {
+    const ba = L.breach.angle || 0, ha = L.breach.halfArc || 0.24;
+    ctx.strokeStyle = sim.gateOpen ? C.ochre : ochreA(0.4); ctx.lineWidth = sim.gateOpen ? 2.6 : 1.5;
+    ctx.beginPath(); ctx.arc(cx, cy, R, ba - ha, ba + ha); ctx.stroke();
+  }
   for (const b of L.bodies || []) {
     const p = at(L, b, sim.t);
-    ctx.fillStyle = b.kind === 'repulsor' ? ochreA(0.6) : C.chalk;
+    const isPush = b.kind === 'repulsor' || (b.kind === 'flip' && S.flipState(b, sim.t).isWhite);
+    ctx.fillStyle = isPush ? ochreA(0.75) : (b.kind === 'pulsar' ? '#72d8ff' : C.chalk);
     ring(cx + p.x * k, cy + p.y * k, Math.max(1.5, b.radius * k)); ctx.fill();
+  }
+  for (const wh of L.wormholes || []) {
+    const col = wh.color || '#72d8ff';
+    ctx.strokeStyle = col; ctx.lineWidth = 1.2;
+    [wh.a, wh.b].forEach((end) => {
+      const p = at(L, end, sim.t);
+      ring(cx + p.x * k, cy + p.y * k, 3.2); ctx.stroke();
+    });
   }
   (L.beacons || []).forEach((b, i) => {
     if (sim.got[i]) return;
@@ -1762,12 +2455,16 @@ function drawMap() {
   ctx.moveTo(mx - 4, my); ctx.lineTo(mx + 4, my); ctx.moveTo(mx, my - 4); ctx.lineTo(mx, my + 4); ctx.stroke();
 }
 function drawWorld(L, t, st) {
-  drawChart(L);
-  const all = [].concat(L.bodies || [], L.beacons || [], L.cells || [], L.asteroids || [], L.gate ? [L.gate] : []);
+  drawChart(L, st);
+  drawWinds(L, t, st);
+  const whEnds = [];
+  (L.wormholes || []).forEach((w) => { if (w.a) whEnds.push(w.a); if (w.b) whEnds.push(w.b); });
+  const all = [].concat(L.bodies || [], L.beacons || [], L.cells || [], L.asteroids || [], whEnds, L.gate ? [L.gate] : []);
   for (const e of all) railOf(L, e, t);
   let star = null;
   for (const b of L.bodies || []) if (b.kind === 'star' && (!star || b.mass > star.mass)) star = b;
   const lit = star ? { x: at(L, star, t).x, y: P.y } : null;
+  drawWormholes(L, t, st);
   drawTargets(L, t, st);
   (L.asteroids || []).forEach((a, i) => drawRock(L, a, i, t));
   for (const b of L.bodies || []) drawBody(L, b, t, lit);
@@ -1867,20 +2564,37 @@ function drawMapBackdrop() {
       svgScale = sunR / 21;
     }
   }
-  // Subtle blueprint rings radiating from the central sun (scale & pan in lockstep with the SVG constellations)
+  // Subtle blueprint rings radiating from the central anchor (scale & pan in lockstep with the SVG constellations)
   ctx.strokeStyle = chalkA(0.06); ctx.lineWidth = 1;
   for (let k = 1; k <= 4; k++) { ring(cx, cy, (portrait ? 92 : 118) * k * svgScale); ctx.stroke(); }
-  // Animated solar rays + chalk sun core (matched proportions to Title Screen sun, spinning at SUN_SPIN)
-  const spin = reduced ? 0 : menuT * SUN_SPIN;
-  ctx.strokeStyle = chalkA(0.78); ctx.lineWidth = Math.max(1, 1.05 * Math.min(1.6, mapCam.zoom)); ctx.beginPath();
-  for (let i = 0; i < 24; i++) {
-    const a = i * TAU / 24 + spin, c = Math.cos(a), sn = Math.sin(a);
-    const r0 = sunR * 1.14, r1 = sunR * (i % 2 ? 1.42 : 1.65);
-    ctx.moveTo(cx + c * r0, cy + sn * r0);
-    ctx.lineTo(cx + c * r1, cy + sn * r1);
+  if (activeChart === 1) {
+    // Chart II centerpiece: Deep-space Black Hole Singularity with rotating accretion arcs
+    const holeR = sunR * 0.72;
+    const lw = Math.max(1, 1.15 * Math.min(1.6, mapCam.zoom));
+    for (let k = 0; k < 4; k++) {
+      const rr = holeR + (5 + k * 7.5) * svgScale;
+      const a0 = (reduced ? 0 : -menuT * (0.36 - k * 0.06)) + k * 1.1;
+      ctx.strokeStyle = k === 0 ? 'rgba(114,216,255,0.58)' : chalkA(0.5 - k * 0.09);
+      ctx.lineWidth = lw;
+      ctx.beginPath(); ctx.arc(cx, cy, rr, a0, a0 + 1.85); ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, cy, rr, a0 + Math.PI, a0 + Math.PI + 1.85); ctx.stroke();
+    }
+    ctx.fillStyle = '#02050b'; ring(cx, cy, holeR); ctx.fill();
+    ctx.strokeStyle = C.chalk; ctx.lineWidth = Math.max(1.4, 1.6 * Math.min(1.5, mapCam.zoom));
+    ring(cx, cy, holeR); ctx.stroke();
+  } else {
+    // Chart I centerpiece: Animated solar rays + chalk sun core (matched proportions to Title Screen sun, spinning at SUN_SPIN)
+    const spin = reduced ? 0 : menuT * SUN_SPIN;
+    ctx.strokeStyle = chalkA(0.78); ctx.lineWidth = Math.max(1, 1.05 * Math.min(1.6, mapCam.zoom)); ctx.beginPath();
+    for (let i = 0; i < 24; i++) {
+      const a = i * TAU / 24 + spin, c = Math.cos(a), sn = Math.sin(a);
+      const r0 = sunR * 1.14, r1 = sunR * (i % 2 ? 1.42 : 1.65);
+      ctx.moveTo(cx + c * r0, cy + sn * r0);
+      ctx.lineTo(cx + c * r1, cy + sn * r1);
+    }
+    ctx.stroke();
+    ctx.fillStyle = C.chalk; ring(cx, cy, sunR); ctx.fill();
   }
-  ctx.stroke();
-  ctx.fillStyle = C.chalk; ring(cx, cy, sunR); ctx.fill();
 }
 
 // Live miniature orbital system lens inside the Star Map launch dock
@@ -1900,17 +2614,28 @@ function drawMiniLens() {
   miniCtx.beginPath(); miniCtx.arc(cx, cy, rad, 0, TAU); miniCtx.stroke();
 
   const L = LV[selectedIdx], t = reduced ? 0 : menuT * 1.1, k = rad / (L.bounds || 800);
+  // Wormholes
+  for (const wh of L.wormholes || []) {
+    miniCtx.strokeStyle = wh.color || '#72d8ff'; miniCtx.lineWidth = 1.1;
+    [wh.a, wh.b].forEach((end) => {
+      const p = at(L, end, t);
+      miniCtx.beginPath(); miniCtx.arc(cx + p.x * k, cy + p.y * k, 2.6, 0, TAU); miniCtx.stroke();
+    });
+  }
   // Bodies using real orbital mechanics from sim.js
   for (const b of L.bodies || []) {
     const p = at(L, b, t);
     const bx = cx + p.x * k, by = cy + p.y * k;
     const br = Math.max(2, Math.min(7, (b.radius || 20) * k * 1.45));
-    if (b.kind === 'hole') {
+    if (b.kind === 'hole' || (b.kind === 'flip' && !S.flipState(b, t).isWhite)) {
       miniCtx.fillStyle = '#02050b'; miniCtx.strokeStyle = C.chalk; miniCtx.lineWidth = 1.2;
       miniCtx.beginPath(); miniCtx.arc(bx, by, br, 0, TAU); miniCtx.fill(); miniCtx.stroke();
-    } else if (b.kind === 'repulsor') {
+    } else if (b.kind === 'repulsor' || b.kind === 'flip') {
       miniCtx.strokeStyle = C.ochre; miniCtx.lineWidth = 1.2;
       miniCtx.beginPath(); miniCtx.arc(bx, by, Math.max(2.5, br), 0, TAU); miniCtx.stroke();
+    } else if (b.kind === 'pulsar') {
+      miniCtx.fillStyle = '#72d8ff';
+      miniCtx.beginPath(); miniCtx.arc(bx, by, Math.max(2.2, br), 0, TAU); miniCtx.fill();
     } else if (b.kind === 'star') {
       miniCtx.fillStyle = C.chalk;
       miniCtx.beginPath(); miniCtx.arc(bx, by, br, 0, TAU); miniCtx.fill();
@@ -1950,7 +2675,7 @@ function frameBody(now) {
   const dt = Math.min(0.1, (now - last) / 1000 || 0);
   last = now;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  drawPaper();
+  drawPaper(now);
 
   if (screen === 'menu' || !sim) {
     menuT += dt;
@@ -2013,6 +2738,11 @@ function frameBody(now) {
   drawSparks(paused ? 0 : dt);
   drawPointers();
   drawMap();
+  if (stageFlash > 0.01) {
+    ctx.fillStyle = ochreA(0.28 * stageFlash);
+    ctx.fillRect(0, 0, W, H);
+    stageFlash *= Math.pow(0.015, dt);
+  }
   cam.x -= ox / cam.zoom; cam.y -= oy / cam.zoom;
 
   tutorialTick(paused ? 0 : dt);

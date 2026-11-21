@@ -192,13 +192,16 @@ button:disabled { opacity: 0.42; cursor: default; }
   width: 100%; height: 100%; max-width: 1160px; max-height: 100%; display: block; overflow: visible;
   transform-origin: center center;
 }
-#constellation-svg .c-node { cursor: pointer; outline: none; }
-#constellation-svg .c-node:focus-visible .c-focus { stroke: var(--ochre); stroke-width: 2; opacity: 1; }
+#constellation-svg .c-node, #constellation-svg .wh-portal { cursor: pointer; outline: none; }
+#constellation-svg .c-node:focus-visible .c-focus, #constellation-svg .wh-portal:focus-visible .c-focus { stroke: var(--ochre); stroke-width: 2; opacity: 1; }
 @keyframes reticle-spin { to { transform: rotate(360deg); } }
+@keyframes reticle-spin-rev { to { transform: rotate(-360deg); } }
 .c-reticle { animation: reticle-spin 18s linear infinite; transform-box: fill-box; transform-origin: center; }
+.wh-spin { animation: reticle-spin 14s linear infinite; transform-box: fill-box; transform-origin: center; }
+.wh-spin-rev { animation: reticle-spin-rev 9s linear infinite; transform-box: fill-box; transform-origin: center; }
 @keyframes star-pulse { 0%, 100% { opacity: 0.9; transform: scale(1); } 50% { opacity: 0.28; transform: scale(1.38); } }
 .c-pulse { animation: star-pulse 2.3s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
-@media (prefers-reduced-motion: reduce) { .c-reticle, .c-pulse { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .c-reticle, .c-pulse, .wh-spin, .wh-spin-rev { animation: none; } }
 
 /* Floating bottom launch dock */
 #dock {
@@ -491,7 +494,7 @@ body.touch .panel { top: calc(50% + 16px); max-height: calc(100% - 96px); }
     <div class="map-top">
       <div class="map-top-left">
         <button type="button" id="map-back" aria-label="Back to Title"><span class="long">← Title</span><span class="short">←</span></button>
-        <h2 class="map-heading">Star Map</h2>
+        <h2 class="map-heading" id="map-heading">Star Map</h2>
       </div>
       <div id="map-tally" class="tally-pill"></div>
       <div class="map-top-right">
@@ -610,6 +613,7 @@ body.touch .panel { top: calc(50% + 16px); max-height: calc(100% - 96px); }
         <button type="button" id="save-send" class="primary">Send</button>
         <button type="button" id="save-copy">Copy</button>
         <button type="button" id="save-load">Load</button>
+        <button type="button" id="save-replace">Replace</button>
       </div>
       <p id="save-note" role="status" aria-live="polite"></p>
     </div>
@@ -636,10 +640,10 @@ body.touch .panel { top: calc(50% + 16px); max-height: calc(100% - 96px); }
   <span class="keys" id="keys-hint">Arrows fly · R restart · G orbit guide</span>
 </div>
 
-<script src="sim.js?v=20261120k"></script>
-<script src="levels.js?v=20261120k"></script>
-<script src="solutions.js?v=20261120k"></script>
-<script src="audio.js?v=20261120k"></script>
-<script src="game.js?v=20261120k"></script>
+<script src="sim.js?v=20261121f"></script>
+<script src="levels.js?v=20261121f"></script>
+<script src="solutions.js?v=20261121f"></script>
+<script src="audio.js?v=20261121f"></script>
+<script src="game.js?v=20261121f"></script>
 </body>
 </html>

@@ -50,7 +50,7 @@
       {
         name: 'Rail Riders',
         hint: 'The beacons orbit the star, so match their speed instead of chasing them.',
-        bounds: 800, fuel: 105,
+        bounds: 800, fuel: 120,
         start: { x: -560, y: 320, vx: 0, vy: 0, angle: 0 },
         bodies: [{ id: 'sun', kind: 'star', mass: 3.6e6 * K, radius: 36, x: 0, y: 0 }],
         beacons: [rail('sun', 210, 0.5, 1), rail('sun', 210, 2.6, 1), rail('sun', 210, 4.7, 1), rail('sun', 340, 3.5, -1)],
@@ -79,7 +79,7 @@
       {
         name: 'Dry Tanks',
         hint: 'You cannot finish on the fuel you start with, so detour for the cells.',
-        bounds: 780, fuel: 35,
+        bounds: 780, fuel: 42,
         start: { x: 0, y: 470, vx: 0, vy: 0, angle: -Math.PI / 2 },
         bodies: [
           { id: 'sun', kind: 'star', mass: 3e6 * K, radius: 40, x: 0, y: 0 },
@@ -364,5 +364,1119 @@
       }
     ];
   })();
-  return first.concat(second);
+  // Chart II — Constellation V (21–25): Wormholes (mixed with prior mechanics, tuned for expert pilots).
+  var third = (function () {
+    var TAU = Math.PI * 2;
+    function ring(cx, cy, r, mass, dir, slots, skip, radius, phase) {
+      var out = [];
+      for (var i = 0; i < slots; i++) {
+        if (skip.indexOf(i) >= 0) continue;
+        out.push({ orbit: { cx: cx, cy: cy, r: r, mass: mass, dir: dir, phase: (phase || 0) + TAU * i / slots }, radius: radius });
+      }
+      return out;
+    }
+    function rail(around, r, phase, dir, hold, br) {
+      var b = { orbit: { around: around, r: r, phase: phase, dir: dir || 1 } };
+      if (hold) { b.hold = hold; b.r = br || 34; }
+      return b;
+    }
+    function prail(cx, cy, mass, r, phase, dir, hold, br) {
+      var b = { orbit: { cx: cx, cy: cy, r: r, mass: mass, phase: phase, dir: dir || 1 } };
+      if (hold) { b.hold = hold; b.r = br || 34; }
+      return b;
+    }
+    var K = 1.3;
+    var TWIN_M = 2.6e6 * K;
+
+    return [
+      // 21 — The Momentum Cannon: ultra-low fuel forces you to dive past the star and carry gravity speed through the wormhole
+      {
+        name: 'Through the Glass',
+        hint: 'Low fuel. Fall under the star for free speed, then carry that slingshot straight through the wormhole.',
+        bounds: 1150, fuel: 110,
+        start: { x: -800, y: -260, vx: 0, vy: 0, angle: 0.45 },
+        bodies: [
+          { id: 'sun', kind: 'star', mass: 5.5e6 * K, radius: 42, x: -360, y: 0 },
+          { id: 'world', kind: 'planet', mass: 1.5e6 * K, radius: 24, x: 640, y: 40 }
+        ],
+        wormholes: [
+          { a: { x: -160, y: 180 }, b: { x: 220, y: -340 }, r: 30, color: '#72d8ff' }
+        ],
+        beacons: [
+          { x: -360, y: 195 },
+          { x: 560, y: -330 },
+          { x: 680, y: 245 },
+          { x: 300, y: 310 }
+        ],
+        cells: [{ x: 840, y: 40, amount: 32 }],
+        asteroids: [],
+        gate: { x: -680, y: 460 },
+        par: { gold: 24, silver: 31, bronze: 43 }
+      },
+      // 22 — The Gravity Well Escape: inner beacons sit inside the Black Hole's Engine Limit; only the periapsis wormhole breaks you out
+      {
+        name: 'Horizon Jump',
+        hint: 'The inner beacons sit inside the black hole\'s engine limit. Dive in, claim them, and escape through the wormhole.',
+        bounds: 1180, fuel: 180,
+        start: { x: -860, y: -320, vx: 0, vy: 0, angle: 0 },
+        bodies: [
+          { id: 'hole', kind: 'hole', mass: 7.5e6, radius: 14, x: -240, y: 0 },
+          { id: 'world', kind: 'planet', mass: 1.5e6 * K, radius: 24, x: 560, y: 120 },
+          { id: 'guard', kind: 'repulsor', mass: -1.8e6, radius: 14, orbit: { around: 'world', r: 195, period: 10, phase: 0 } }
+        ],
+        wormholes: [
+          { a: { x: -240, y: 165 }, b: { x: 540, y: -290 }, r: 30, color: '#72d8ff' }
+        ],
+        beacons: [
+          rail('hole', 160, 0.8, 1),
+          rail('hole', 160, 3.9, 1),
+          rail('world', 120, 2.2, 1, 2),
+          { x: 780, y: 340 }
+        ],
+        cells: [{ x: 820, y: -140, amount: 42 }, { x: 160, y: 460, amount: 42 }],
+        asteroids: [],
+        gate: { x: -740, y: 480 },
+        par: { gold: 40, silver: 51, bronze: 71 }
+      },
+      // 23 — The Vault: completely sealed 38-rock fortress; align your entry velocity so you emerge inside already in orbit
+      {
+        name: 'Sealed Ring',
+        hint: 'The rock wall has no gaps. Enter the outer wormhole heading up so you emerge inside already in orbit.',
+        bounds: 1120, fuel: 212,
+        start: { x: -760, y: 180, vx: 0, vy: 0, angle: -1.2 },
+        bodies: [
+          { id: 'sun', kind: 'star', mass: 2.2e6 * K, radius: 28, x: 0, y: 0 },
+          { id: 'guard', kind: 'repulsor', mass: -1.9e6, radius: 14, orbit: { cx: 0, cy: 0, r: 515, period: -16, phase: 1.2 } }
+        ],
+        wormholes: [
+          { a: { x: 190, y: 0 }, b: { x: -580, y: -320 }, r: 28, color: '#72d8ff' }
+        ],
+        beacons: [
+          { x: 540, y: -330 },
+          prail(0, 0, 2.2e6 * K, 490, 0.7, 1),
+          rail('sun', 180, 4.7, 1, 2, 36),
+          { x: -185, y: 0 }
+        ],
+        cells: [{ x: 0, y: 190, amount: 45 }, { x: 470, y: 360, amount: 45 }],
+        asteroids: ring(0, 0, 325, 2.2e6 * K, 1, 38, [], 22, 0),
+        gate: { orbit: { cx: 0, cy: 0, r: 690, period: 34, phase: 0.4 } },
+        par: { gold: 39, silver: 51, bronze: 70 }
+      },
+      // 24 — Twin Vaults: TWO completely sealed rock rings linked in series (Outside -> Cyan -> Star Vault -> Ochre -> Black Hole Vault -> back out!)
+      {
+        name: 'Twin Vaults',
+        hint: 'Two sealed vaults linked in series. Chain the cyan and gold wormholes to reach the black hole core and return.',
+        bounds: 1320, fuel: 235,
+        start: { x: -940, y: -510, vx: 0, vy: 0, angle: 0 },
+        bodies: [
+          { id: 'sun', kind: 'star', mass: 2.0e6 * K, radius: 26, x: -480, y: 0 },
+          { id: 'hole', kind: 'hole', mass: 2.8e6, radius: 12, x: 480, y: 0 }
+        ],
+        wormholes: [
+          { a: { x: -480, y: -175 }, b: { x: -480, y: -510 }, r: 28, color: '#72d8ff' },
+          { a: { x: -480, y: 175 }, b: { x: 480, y: 175 }, r: 28, color: '#f0c35a' }
+        ],
+        beacons: [
+          rail('sun', 175, 0.4, 1),
+          rail('hole', 175, 4.7, 1, 2, 36),
+          { x: 480, y: -175 },
+          { x: 0, y: -510 },
+          { x: 0, y: 520 }
+        ],
+        cells: [
+          { x: -655, y: 0, amount: 45 },
+          { x: 655, y: 0, amount: 45 },
+          { x: 480, y: -510, amount: 45 }
+        ],
+        asteroids: ring(-480, 0, 310, 2.0e6 * K, 1, 36, [], 22, 0).concat(ring(480, 0, 310, 2.8e6, 1, 36, [], 22, 0.4)),
+        gate: { x: 920, y: 460 },
+        par: { gold: 70, silver: 90, bronze: 125 }
+      },
+      // 25 — Klein Loop: sealed Black Hole core whose ONLY entrance is a moving wormhole orbiting inside the ring, paired with a moving wormhole on the outer planet!
+      {
+        name: 'Klein Loop',
+        hint: 'The black hole vault is sealed. Catch the moving wormhole orbiting the outer planet to fold inside the core.',
+        bounds: 1300, fuel: 268,
+        start: { x: -940, y: -420, vx: 0, vy: 0, angle: 0 },
+        bodies: [
+          { id: 'hole', kind: 'hole', mass: 3.1e6, radius: 12, x: 0, y: 0 },
+          { id: 'world', kind: 'planet', mass: 1.1e6 * K, radius: 22, orbit: { around: 'hole', r: 660, phase: 2.3 } },
+          { id: 'guard', kind: 'repulsor', mass: -1.6e6, radius: 14, orbit: { cx: 0, cy: 0, r: 460, period: -16, phase: 0.4 } }
+        ],
+        wormholes: [
+          { a: { orbit: { around: 'hole', r: 178, phase: 0.2 } }, b: { orbit: { around: 'world', r: 135, phase: 0 } }, r: 28, color: '#72d8ff' },
+          { a: { x: -780, y: 380 }, b: { x: 780, y: -380 }, r: 28, color: '#f0c35a' }
+        ],
+        beacons: [
+          rail('hole', 178, 3.3, 1, 2, 36),
+          rail('hole', 178, 5.2, 1),
+          rail('world', 95, 2.4, 1),
+          { x: 660, y: 440 },
+          { x: -640, y: 560 }
+        ],
+        cells: [
+          { orbit: { around: 'hole', r: 178, phase: 1.8 }, amount: 45 },
+          { x: -460, y: -480, amount: 45 },
+          { x: 460, y: -480, amount: 45 }
+        ],
+        asteroids: ring(0, 0, 315, 3.1e6, 1, 36, [], 22, 0),
+        gate: { orbit: { cx: 0, cy: 0, r: 880, period: 38, phase: -0.6 } },
+        par: { gold: 56, silver: 72, bronze: 100 }
+      }
+    ];
+  })();
+  // Chart II — Constellation VI (26–30): Pulsars (180° twin kill beams rotating 90° every pulse, mixed with prior mechanics).
+  var fourth = (function () {
+    var TAU = Math.PI * 2;
+    function ring(cx, cy, r, mass, dir, slots, skip, radius, phase) {
+      var out = [];
+      for (var i = 0; i < slots; i++) {
+        if (skip.indexOf(i) >= 0) continue;
+        out.push({ orbit: { cx: cx, cy: cy, r: r, mass: mass, dir: dir, phase: (phase || 0) + TAU * i / slots }, radius: radius });
+      }
+      return out;
+    }
+    function rail(around, r, phase, dir, hold, br) {
+      var b = { orbit: { around: around, r: r, phase: phase, dir: dir || 1 } };
+      if (hold) { b.hold = hold; b.r = br || 34; }
+      return b;
+    }
+    var K = 1.3;
+
+    return [
+      // 26 — Lighthouse: cardinal pulsar beams alternate horizontal and vertical; ride the dark quadrants around the star
+      {
+        name: 'Lighthouse',
+        hint: 'Pulsars fire twin opposite beams, rotating 90° each pulse. Orbit in the shadow between sweeps.',
+        bounds: 1050, fuel: 175,
+        start: { x: 220, y: 620, vx: 0, vy: 0, angle: -1.85 },
+        bodies: [
+          { id: 'p1', kind: 'pulsar', mass: 3.4e6 * K, radius: 22, x: 0, y: 0, pulse: { period: 4.5, warn: 1.3, fire: 0.55, angle: 0, width: 18 } }
+        ],
+        beacons: [
+          { x: 0, y: -250 },
+          { x: 260, y: 0 },
+          { x: 0, y: 250 },
+          { x: -260, y: 0 },
+          rail('p1', 410, 5.5, 1, 2, 36)
+        ],
+        cells: [{ x: 390, y: -360, amount: 52 }],
+        asteroids: [],
+        gate: { x: -240, y: -640 },
+        par: { gold: 43, silver: 55, bronze: 76 }
+      },
+      // 27 — Crossfire: two alternating pulsars (+ and ×) carve shifting safe corridors across the arena
+      {
+        name: 'Crossfire',
+        hint: 'Two pulsars beat out of phase — one cardinal, one diagonal. Weave through the shifting dark lanes.',
+        bounds: 1220, fuel: 195,
+        start: { x: 880, y: 340, vx: 0, vy: 0, angle: Math.PI },
+        bodies: [
+          { id: 'p1', kind: 'pulsar', mass: 2.3e6 * K, radius: 20, x: -340, y: 0, pulse: { period: 4.8, warn: 1.35, fire: 0.52, angle: 0, width: 16, phase: 0 } },
+          { id: 'p2', kind: 'pulsar', mass: 2.3e6 * K, radius: 20, x: 340, y: 0, pulse: { period: 4.8, warn: 1.35, fire: 0.52, angle: Math.PI / 4, width: 16, phase: 2.4 } },
+          { id: 'guard', kind: 'repulsor', mass: -1.5e6, radius: 14, orbit: { cx: 0, cy: 0, r: 220, period: 14, phase: 0 } }
+        ],
+        beacons: [
+          { x: -340, y: -220 },
+          { x: 0, y: -330 },
+          { x: 340, y: -220 },
+          { x: 340, y: 230 },
+          { x: -340, y: 230 }
+        ],
+        cells: [{ x: 0, y: 420, amount: 42 }, { x: -740, y: 320, amount: 42 }],
+        asteroids: [],
+        gate: { x: -820, y: -380 },
+        par: { gold: 45, silver: 57, bronze: 79 }
+      },
+      // 28 — Beam Blink: a pulsar sealed inside a solid rock vault, with TWO diagonal wormhole pairs letting you blink in & out across its beams
+      {
+        name: 'Beam Blink',
+        hint: 'The pulsar sits inside a sealed vault. Fold in through cyan, dodge the cross-beams, and blink out through gold.',
+        bounds: 1180, fuel: 165,
+        start: { x: -780, y: 440, vx: 0, vy: 0, angle: -0.9 },
+        bodies: [
+          { id: 'p1', kind: 'pulsar', mass: 2.5e6 * K, radius: 20, x: 0, y: 0, pulse: { period: 4.4, warn: 1.3, fire: 0.52, angle: 0, width: 16 } },
+          { id: 'world', kind: 'planet', mass: 1.1e6 * K, radius: 22, x: 640, y: -280 }
+        ],
+        wormholes: [
+          { a: { x: 175, y: -125 }, b: { x: -560, y: -360 }, r: 28, color: '#72d8ff' },
+          { a: { x: -175, y: 125 }, b: { x: 560, y: 360 }, r: 28, color: '#f0c35a' }
+        ],
+        beacons: [
+          { x: 0, y: -185 },
+          { x: 0, y: 185 },
+          rail('p1', 180, 3.6, 1),
+          rail('world', 105, 1.0, 1, 2, 36),
+          { x: -540, y: 420 }
+        ],
+        cells: [{ x: 185, y: 80, amount: 42 }, { x: 360, y: -460, amount: 42 }],
+        asteroids: ring(0, 0, 320, 2.5e6 * K, 1, 38, [], 22, 0),
+        gate: { x: 840, y: -420 },
+        par: { gold: 30, silver: 39, bronze: 54 }
+      },
+      // 29 — Binary Beacon: an ORBITING pulsar revolves around a central black hole, sweeping shifting beams across the whole chart
+      {
+        name: 'Binary Beacon',
+        hint: 'The pulsar orbits the black hole, sweeping its rotating crosshairs across the chart. Watch the charge lines.',
+        bounds: 1280, fuel: 195,
+        start: { x: 0, y: -820, vx: 0, vy: 0, angle: Math.PI / 2 },
+        bodies: [
+          { id: 'hole', kind: 'hole', mass: 4.2e6, radius: 12, x: 0, y: 0 },
+          { id: 'p1', kind: 'pulsar', mass: 1.6e6 * K, radius: 18, orbit: { around: 'hole', r: 360, phase: 0.4 }, pulse: { period: 4.5, warn: 1.35, fire: 0.52, angle: 0, width: 16 } }
+        ],
+        wormholes: [
+          { a: { x: -740, y: 360 }, b: { x: 740, y: -360 }, r: 28, color: '#72d8ff' }
+        ],
+        beacons: [
+          rail('hole', 185, 1.6, 1),
+          rail('hole', 185, 4.7, 1),
+          rail('hole', 540, 2.6, 1, 2, 38),
+          { x: 640, y: 440 },
+          { x: -340, y: -620 }
+        ],
+        cells: [{ x: -540, y: 120, amount: 42 }, { x: 540, y: -120, amount: 42 }],
+        asteroids: [],
+        gate: { x: 760, y: 560 },
+        par: { gold: 36, silver: 46, bronze: 64 }
+      },
+      // 30 — Magnetar (Constellation VI Capstone): three staggered pulsars in a giant triad around a central black hole, bridged by twin wormholes
+      {
+        name: 'Magnetar',
+        hint: 'Three pulsars ring the black hole in a three-beat wave. Ride the center sling and fold across the firing triad.',
+        bounds: 1320, fuel: 240,
+        start: { x: 880, y: 480, vx: 0, vy: 0, angle: -2.6 },
+        bodies: [
+          { id: 'hole', kind: 'hole', mass: 3.6e6, radius: 12, x: 0, y: 0 },
+          { id: 'p1', kind: 'pulsar', mass: 1.7e6 * K, radius: 18, x: 0, y: -490, pulse: { period: 5.1, warn: 1.35, fire: 0.5, angle: 0, width: 16, phase: 0 } },
+          { id: 'p2', kind: 'pulsar', mass: 1.7e6 * K, radius: 18, x: 470, y: 290, pulse: { period: 5.1, warn: 1.35, fire: 0.5, angle: Math.PI / 6, width: 16, phase: 1.7 } },
+          { id: 'p3', kind: 'pulsar', mass: 1.7e6 * K, radius: 18, x: -470, y: 290, pulse: { period: 5.1, warn: 1.35, fire: 0.5, angle: -Math.PI / 6, width: 16, phase: 3.4 } }
+        ],
+        wormholes: [
+          { a: { x: -740, y: 280 }, b: { x: 740, y: -280 }, r: 28, color: '#72d8ff' },
+          { a: { x: 0, y: -790 }, b: { x: 0, y: 740 }, r: 28, color: '#f0c35a' }
+        ],
+        beacons: [
+          { x: 0, y: -670 },
+          { x: 640, y: 400 },
+          { x: -640, y: 400 },
+          rail('hole', 195, 1.2, 1),
+          rail('hole', 195, 4.3, 1, 2, 36)
+        ],
+        cells: [
+          { x: -340, y: -320, amount: 45 },
+          { x: 340, y: -320, amount: 45 },
+          { x: 0, y: 480, amount: 45 }
+        ],
+        asteroids: [],
+        gate: { x: -880, y: -480 },
+        par: { gold: 52, silver: 67, bronze: 93 }
+      }
+    ];
+  })();
+
+  // ---------- CONSTELLATION VII (Levels 31–35): Polarity-Flipping Black & White Holes ----------
+  var fifth = (function () {
+    function ring(cx, cy, r, mass, dir, n, gaps, halfGap, phase0) {
+      var out = [], h = halfGap || 2, p0 = phase0 || 0;
+      for (var i = 0; i < n; i++) {
+        var skip = false;
+        for (var g = 0; g < (gaps || []).length; g++) {
+          var d = Math.abs(i - gaps[g]); d = Math.min(d, n - d);
+          if (d <= h) { skip = true; break; }
+        }
+        if (!skip) out.push({ radius: 11, orbit: { cx: cx, cy: cy, r: r, mass: mass, dir: dir, phase: p0 + i * Math.PI * 2 / n } });
+      }
+      return out;
+    }
+    function rail(around, r, phase, dir, hold, br) {
+      var b = { orbit: { around: around, r: r, phase: phase, dir: dir || 1 } };
+      if (hold) { b.hold = hold; b.r = br || 34; }
+      return b;
+    }
+    var K = 1.3;
+
+    return [
+      // 31 — Event Inversion: dive from top-right deep inside the black hole's engine limit to sweep inner beacons, then ride the white hole flip as a zero-fuel catapult
+      {
+        name: 'Event Inversion',
+        hint: 'Dive inside the black hole as its phase arc runs out — when it inverts to a white hole, ride the outward blast.',
+        bounds: 1120, fuel: 140,
+        start: { x: 740, y: -420, vx: 0, vy: 0, angle: 2.55 },
+        bodies: [
+          { id: 'flip1', kind: 'flip', mass: 4.8e6, radius: 14, x: 0, y: 0, flip: { period: 8.0, warn: 1.25, phase: 4.5, pushMult: 1.15, range: 360 } }
+        ],
+        beacons: [
+          { x: 135, y: -75 },
+          { x: -115, y: -115 },
+          { x: -135, y: 95 },
+          { x: -480, y: 240, hold: 2, r: 38 },
+          { x: 480, y: 360 }
+        ],
+        cells: [{ x: -155, y: 0, amount: 48 }],
+        asteroids: [],
+        gate: { x: -740, y: 420 },
+        par: { gold: 32, silver: 41, bronze: 56 }
+      },
+      // 32 — Bipolar: start at bottom-center between twin singularities locked 180° out of phase
+      {
+        name: 'Bipolar',
+        hint: 'Twin singularities beat out of phase. Fall into the black pole, then let its white-hole flip launch you into its twin.',
+        bounds: 1240, fuel: 195,
+        start: { x: 0, y: 680, vx: 0, vy: 0, angle: -Math.PI / 2 },
+        bodies: [
+          { id: 'flipL', kind: 'flip', mass: 4.2e6, radius: 14, x: -350, y: 0, flip: { period: 8.0, warn: 1.2, phase: 0.8, pushMult: 1.1, range: 330 } },
+          { id: 'flipR', kind: 'flip', mass: 4.2e6, radius: 14, x: 350, y: 0, flip: { period: 8.0, warn: 1.2, phase: 4.8, pushMult: 1.1, range: 330 } }
+        ],
+        beacons: [
+          { x: -350, y: 155 },
+          { x: -195, y: -60 },
+          { x: 195, y: 60 },
+          { x: 350, y: -155 },
+          { x: 560, y: -240, hold: 2, r: 38 }
+        ],
+        cells: [{ x: 0, y: -340, amount: 50 }, { x: 0, y: 340, amount: 50 }],
+        asteroids: [
+          { x: 0, y: -210, radius: 14 },
+          { x: 0, y: -150, radius: 13 },
+          { x: 0, y: 150, radius: 13 },
+          { x: 0, y: 210, radius: 14 }
+        ],
+        gate: { x: 0, y: -740 },
+        par: { gold: 31, silver: 40, bronze: 56 }
+      },
+      // 33 — White Ejector: START TRAPPED INSIDE the sealed 38-rock fortress; sweep the inner beacons and let the white hole blast you out through the gold wormhole
+      {
+        name: 'White Ejector',
+        hint: 'You start trapped inside the sealed vault. Sweep the inner beacons during the black-hole pull, then escape through the wormhole.',
+        bounds: 1220, fuel: 165,
+        start: { x: -175, y: 115, vx: 0, vy: 0, angle: -1.1 },
+        bodies: [
+          { id: 'flip1', kind: 'flip', mass: 3.6e6, radius: 14, x: 0, y: 0, flip: { period: 8.2, warn: 1.2, phase: 0.0, pushMult: 0.9, range: 250 } },
+          { id: 'world', kind: 'planet', mass: 1.2e6 * K, radius: 22, x: 660, y: -300 }
+        ],
+        wormholes: [
+          { a: { x: 175, y: 115 }, b: { x: -580, y: -320 }, r: 28, color: '#72d8ff' },
+          { a: { x: -175, y: -115 }, b: { x: 560, y: 340 }, r: 28, color: '#f0c35a' }
+        ],
+        beacons: [
+          { x: 120, y: -105 },
+          { x: -110, y: -115 },
+          rail('flip1', 175, 1.8, 1),
+          rail('world', 110, 1.2, 1, 2, 36),
+          { x: -520, y: 400 }
+        ],
+        cells: [{ x: 0, y: -165, amount: 52 }, { x: 380, y: -440, amount: 52 }],
+        asteroids: ring(0, 0, 345, 3.2e6, 1, 40, [], 22, 0),
+        gate: { x: 860, y: -420 },
+        par: { gold: 30, silver: 39, bronze: 54 }
+      },
+      // 34 — Syzygy Flip: start on the far right flying left into a central star with two orbiting antiphase singularities
+      {
+        name: 'Syzygy Flip',
+        hint: 'Two orbiting singularities trade black and white polarity across the star. Surf the white-hole wave into the inner rail.',
+        bounds: 1280, fuel: 215,
+        start: { x: 920, y: -140, vx: 0, vy: 0, angle: Math.PI },
+        bodies: [
+          { id: 'sun', kind: 'star', mass: 3.1e6 * K, radius: 28, x: 0, y: 0 },
+          { id: 'flip1', kind: 'flip', mass: 3.2e6, radius: 13, orbit: { around: 'sun', r: 410, phase: 0.4, dir: 1 }, flip: { period: 7.6, warn: 1.15, phase: 0, pushMult: 1.1, range: 290 } },
+          { id: 'flip2', kind: 'flip', mass: 3.2e6, radius: 13, orbit: { around: 'sun', r: 410, phase: 0.4 + Math.PI, dir: 1 }, flip: { period: 7.6, warn: 1.15, phase: 3.8, pushMult: 1.1, range: 290 } }
+        ],
+        beacons: [
+          rail('sun', 180, 1.0, 1),
+          rail('sun', 180, 4.14, 1),
+          rail('sun', 610, 2.3, -1, 2, 38),
+          { x: -640, y: 420 },
+          { x: 640, y: 420 }
+        ],
+        cells: [{ x: 0, y: -260, amount: 50 }, { x: 0, y: 260, amount: 50 }],
+        asteroids: [],
+        gate: { x: -840, y: -460 },
+        par: { gold: 47, silver: 60, bronze: 83 }
+      },
+      // 35 — Kerr Engine (Constellation VII Capstone): plunge from top-center into a massive central flipping singularity flanked by twin staggered pulsars
+      {
+        name: 'Kerr Engine',
+        hint: 'A central flipping singularity drives two flanking pulsars. Catch the black-hole whip, then ride the white-hole surge clear of the beams.',
+        bounds: 1320, fuel: 285,
+        start: { x: -120, y: -860, vx: 0, vy: 0, angle: 1.45 },
+        bodies: [
+          { id: 'core', kind: 'flip', mass: 4.8e6, radius: 15, x: 0, y: 0, flip: { period: 8.0, warn: 1.25, phase: 0.8, pushMult: 1.15, range: 350 } },
+          { id: 'p1', kind: 'pulsar', mass: 1.8e6 * K, radius: 18, x: -460, y: 240, pulse: { period: 4.8, warn: 1.35, fire: 0.5, angle: 0, width: 16, phase: 0 } },
+          { id: 'p2', kind: 'pulsar', mass: 1.8e6 * K, radius: 18, x: 460, y: -240, pulse: { period: 4.8, warn: 1.35, fire: 0.5, angle: Math.PI / 4, width: 16, phase: 2.4 } }
+        ],
+        wormholes: [
+          { a: { x: -210, y: -140 }, b: { x: 740, y: 340 }, r: 28, color: '#72d8ff' },
+          { a: { x: 210, y: 140 }, b: { x: -740, y: 340 }, r: 28, color: '#f0c35a' }
+        ],
+        beacons: [
+          { x: -135, y: 110 },
+          { x: 135, y: -110 },
+          { x: -640, y: 420 },
+          { x: 640, y: 420 },
+          rail('core', 340, 1.5, 1, 2, 38)
+        ],
+        cells: [
+          { x: 0, y: -220, amount: 55 },
+          { x: 0, y: 220, amount: 55 }
+        ],
+        asteroids: [],
+        gate: { x: 140, y: 840 },
+        par: { gold: 63, silver: 81, bronze: 113 }
+      }
+    ];
+  })();
+
+  // ---------- CONSTELLATION VIII (Levels 36–40): Solar Winds & Multi-Sector Rim Breaches ----------
+  var sixth = (function () {
+    function ring(cx, cy, r, mass, dir, n, gaps, halfGap, phase0) {
+      var out = [], h = halfGap || 2, p0 = phase0 || 0;
+      for (var i = 0; i < n; i++) {
+        var skip = false;
+        for (var g = 0; g < (gaps || []).length; g++) {
+          var d = Math.abs(i - gaps[g]); d = Math.min(d, n - d);
+          if (d <= h) { skip = true; break; }
+        }
+        if (!skip) out.push({ radius: 11, orbit: { cx: cx, cy: cy, r: r, mass: mass, dir: dir, phase: p0 + i * Math.PI * 2 / n } });
+      }
+      return out;
+    }
+    function rail(around, r, phase, dir, hold, br) {
+      var b = { orbit: { around: around, r: r, phase: phase, dir: dir || 1 } };
+      if (hold) { b.hold = hold; b.r = br || 34; }
+      return b;
+    }
+    var K = 1.3;
+
+    return [
+      // 36 — Solar Sail: clear Sector I through the rotating asteroid ring to tear open the east rim breach & ride the solar flare into Sector II's pulsar slipstreams
+      {
+        name: 'Solar Sail',
+        hint: 'Thread the rotating asteroid ring in Sector I to breach the east rim, then ride Sector II’s opposing slipstreams past the pulsar.',
+        bounds: 1160, fuel: 215,
+        start: { x: -720, y: 460, vx: 0, vy: 0, angle: -0.65 },
+        bodies: [
+          { id: 'sun', kind: 'star', mass: 3.4e6 * K, radius: 28, x: 0, y: 0 },
+          { id: 'guard', kind: 'repulsor', mass: -1.6e6, radius: 14, orbit: { around: 'sun', r: 530, period: 18, phase: 0.8 } }
+        ],
+        winds: [
+          { kind: 'stream', x0: 70, y0: 0, x1: 1200, y1: 0, width: 250, force: 84, onlyWhenOpen: true }
+        ],
+        beacons: [
+          { x: -240, y: -180 },
+          rail('sun', 200, 3.6, 1),
+          { x: 460, y: -320 },
+          { x: 420, y: 340 }
+        ],
+        cells: [{ x: -420, y: -440, amount: 52 }, { x: 200, y: 180, amount: 46 }],
+        asteroids: ring(0, 0, 345, 3.4e6 * K, 1, 28, [0, 14], 2, 0.3),
+        breach: { angle: 0, halfArc: 0.25 },
+        stage2: {
+          bounds: 1260, fuel: 235, fuelBonus: 135,
+          start: { x: -1060, y: 0, vx: 185, vy: 0, angle: 0 },
+          bodies: [
+            { id: 'pMid', kind: 'pulsar', mass: 2.1e6 * K, radius: 19, x: 0, y: 0, pulse: { period: 4.8, warn: 1.35, fire: 0.5, angle: 0, width: 16 } },
+            { id: 'p1', kind: 'planet', mass: 1.4e6 * K, radius: 22, x: -260, y: -460 },
+            { id: 'p2', kind: 'planet', mass: 1.7e6 * K, radius: 24, x: 320, y: 470 }
+          ],
+          winds: [
+            { kind: 'stream', x0: -1100, y0: -230, x1: 1060, y1: -230, width: 210, force: 70 },
+            { kind: 'stream', x0: 1020, y0: 230, x1: -1020, y1: 230, width: 210, force: 70 }
+          ],
+          beacons: [
+            { x: 420, y: -230 },
+            { x: -420, y: 230 },
+            { x: -260, y: -610 },
+            rail('p2', 130, 0.9, 1, 2, 40)
+          ],
+          cells: [{ x: 680, y: -230, amount: 55 }, { x: -640, y: 230, amount: 50 }],
+          asteroids: [],
+          gate: { x: 880, y: 340 }
+        },
+        par: { gold: 79, silver: 101, bronze: 141 }
+      },
+      // 37 — Trade Winds: hold orbit under intermittent global solar gusts & pulsar crossfire in Sector I -> south rim breach -> black hole + orbiting repulsors in Sector II
+      {
+        name: 'Trade Winds',
+        hint: 'Hold orbit against intermittent solar gusts and pulsar beams in Sector I, then breach south into the black-hole slipstreams.',
+        bounds: 1220, fuel: 230,
+        start: { x: 780, y: -440, vx: 0, vy: 0, angle: 2.55 },
+        bodies: [
+          { id: 'p1', kind: 'pulsar', mass: 2.5e6 * K, radius: 20, x: -220, y: -40, pulse: { period: 4.7, warn: 1.35, fire: 0.5, angle: 0, width: 16 } },
+          { id: 'world', kind: 'planet', mass: 1.4e6 * K, radius: 22, x: 440, y: 220 }
+        ],
+        winds: [
+          { kind: 'global', angle: 2.35, force: 36, pulse: { period: 7.8, warn: 1.4, on: 2.6, phase: 2.0 } },
+          { kind: 'stream', x0: 0, y0: -240, x1: 0, y1: 1260, width: 250, force: 86, onlyWhenOpen: true }
+        ],
+        beacons: [
+          { x: -220, y: -280 },
+          { x: -480, y: 140 },
+          rail('world', 125, 1.0, 1, 2, 40),
+          { x: 460, y: 480 }
+        ],
+        cells: [{ x: 180, y: -380, amount: 55 }, { x: -160, y: 340, amount: 50 }],
+        asteroids: [
+          { x: 110, y: -110, radius: 14 },
+          { x: 110, y: 0, radius: 15 },
+          { x: 110, y: 110, radius: 14 }
+        ],
+        breach: { angle: Math.PI / 2, halfArc: 0.25 },
+        stage2: {
+          bounds: 1260, fuel: 235, fuelBonus: 110,
+          start: { x: 0, y: -1060, vx: 0, vy: 175, angle: Math.PI / 2 },
+          bodies: [
+            { id: 'hole', kind: 'hole', mass: 4.3e6, radius: 13, x: 0, y: 0 },
+            { id: 'r1', kind: 'repulsor', mass: -1.6e6, radius: 14, orbit: { around: 'hole', r: 420, period: 16, phase: 0.4 } },
+            { id: 'r2', kind: 'repulsor', mass: -1.6e6, radius: 14, orbit: { around: 'hole', r: 420, period: 16, phase: 0.4 + Math.PI } }
+          ],
+          winds: [
+            { kind: 'stream', x0: -1000, y0: -360, x1: 1000, y1: -360, width: 210, force: 74 },
+            { kind: 'stream', x0: 1000, y0: 360, x1: -1000, y1: 360, width: 210, force: 74 }
+          ],
+          beacons: [
+            { x: 580, y: -360 },
+            rail('hole', 190, 1.4, 1),
+            rail('hole', 190, 4.54, 1),
+            { x: -580, y: 360 }
+          ],
+          cells: [{ x: 520, y: 280, amount: 55 }, { x: -520, y: -280, amount: 50 }],
+          asteroids: [],
+          gate: { x: -840, y: -440 }
+        },
+        par: { gold: 89, silver: 114, bronze: 159 }
+      },
+      // 38 — Squall Line: alternating intermittent crosswinds + flipping black/white hole -> west rim breach -> sealed vault under solar gusts
+      {
+        name: 'Squall Line',
+        hint: 'Alternating crosswind corridors batter the flipping singularity. Breach the west rim to reach the sealed vault in Sector II.',
+        bounds: 1220, fuel: 215,
+        start: { x: 860, y: 220, vx: 0, vy: 0, angle: -2.85 },
+        bodies: [
+          { id: 'flip1', kind: 'flip', mass: 4.2e6, radius: 14, x: 0, y: 0, flip: { period: 8.2, warn: 1.2, phase: 0.6, pushMult: 1.05, range: 320 } }
+        ],
+        winds: [
+          { kind: 'stream', x0: -380, y0: 820, x1: -380, y1: -820, width: 210, force: 66, pulse: { period: 7.4, warn: 1.3, on: 2.6, phase: 0 } },
+          { kind: 'stream', x0: 380, y0: -820, x1: 380, y1: 820, width: 210, force: 66, pulse: { period: 7.4, warn: 1.3, on: 2.6, phase: 3.7 } },
+          { kind: 'stream', x0: 80, y0: 0, x1: -1260, y1: 0, width: 250, force: 86, onlyWhenOpen: true }
+        ],
+        beacons: [
+          { x: 380, y: -320 },
+          { x: -135, y: -115 },
+          { x: -380, y: 340 }
+        ],
+        cells: [{ x: 140, y: 140, amount: 55 }],
+        asteroids: [],
+        breach: { angle: Math.PI, halfArc: 0.25 },
+        stage2: {
+          bounds: 1260, fuel: 230, fuelBonus: 115,
+          start: { x: 1040, y: 0, vx: -185, vy: 0, angle: Math.PI },
+          bodies: [
+            { id: 'sun', kind: 'star', mass: 2.8e6 * K, radius: 24, x: 0, y: 0 }
+          ],
+          wormholes: [
+            { a: { x: 175, y: -115 }, b: { x: 640, y: -380 }, r: 28, color: '#72d8ff' },
+            { a: { x: 175, y: 115 }, b: { x: -640, y: 380 }, r: 28, color: '#f0c35a' }
+          ],
+          winds: [
+            { kind: 'global', angle: Math.PI, force: 32, pulse: { period: 8.6, warn: 1.4, on: 2.4, phase: 2.5 } }
+          ],
+          beacons: [
+            { x: 0, y: -185 },
+            { x: 0, y: 185 },
+            { x: -560, y: -360 },
+            { x: 560, y: 380 }
+          ],
+          cells: [{ x: 180, y: 80, amount: 52 }, { x: -460, y: 100, amount: 52 }],
+          asteroids: ring(0, 0, 325, 2.8e6 * K, 1, 38, [], 22, 0),
+          gate: { x: -860, y: -420 }
+        },
+        par: { gold: 72, silver: 93, bronze: 129 }
+      },
+      // 39 — Jetstream: twin staggered pulsars inside opposing high-speed slipstreams -> NE rim breach -> flipping core + orbiting wormhole + gusts
+      {
+        name: 'Jetstream',
+        hint: 'Ride the opposing jetstreams past twin staggered pulsars, then breach the northeast rim into the shifting core.',
+        bounds: 1260, fuel: 225,
+        start: { x: -180, y: -860, vx: 0, vy: 0, angle: 1.2 },
+        bodies: [
+          { id: 'p1', kind: 'pulsar', mass: 2.1e6 * K, radius: 19, x: -340, y: 0, pulse: { period: 4.9, warn: 1.35, fire: 0.5, angle: 0, width: 16, phase: 0 } },
+          { id: 'p2', kind: 'pulsar', mass: 2.1e6 * K, radius: 19, x: 340, y: 0, pulse: { period: 4.9, warn: 1.35, fire: 0.5, angle: Math.PI / 4, width: 16, phase: 2.45 } }
+        ],
+        winds: [
+          { kind: 'stream', x0: -980, y0: -380, x1: 980, y1: -380, width: 220, force: 76 },
+          { kind: 'stream', x0: 980, y0: 380, x1: -980, y1: 380, width: 220, force: 76 },
+          { kind: 'stream', x0: -120, y0: 120, x1: 940, y1: -940, width: 250, force: 86, onlyWhenOpen: true }
+        ],
+        beacons: [
+          { x: 460, y: -380 },
+          { x: 640, y: 120 },
+          { x: -460, y: 380 },
+          { x: -640, y: -120 }
+        ],
+        cells: [{ x: 0, y: -380, amount: 52 }, { x: 0, y: 380, amount: 52 }],
+        asteroids: [],
+        breach: { angle: -Math.PI / 4, halfArc: 0.25 },
+        stage2: {
+          bounds: 1280, fuel: 235, fuelBonus: 120,
+          start: { x: -780, y: 740, vx: 135, vy: -130, angle: -0.76 },
+          bodies: [
+            { id: 'core', kind: 'flip', mass: 4.5e6, radius: 15, x: 0, y: 0, flip: { period: 8.0, warn: 1.2, phase: 0.8, pushMult: 1.1, range: 340 } },
+            { id: 'shep', kind: 'planet', mass: 1.2e6 * K, radius: 22, x: 620, y: -340 }
+          ],
+          wormholes: [
+            { a: { orbit: { around: 'core', r: 210, period: 16, phase: 0.4 } }, b: { x: -640, y: -420 }, r: 28, color: '#72d8ff' }
+          ],
+          winds: [
+            { kind: 'global', angle: -0.65, force: 34, pulse: { period: 8.4, warn: 1.4, on: 2.5, phase: 1.8 } }
+          ],
+          beacons: [
+            { x: -135, y: 105 },
+            { x: 135, y: -105 },
+            { x: -660, y: -220 },
+            rail('shep', 135, 1.0, 1, 2, 40)
+          ],
+          cells: [{ x: 340, y: 380, amount: 55 }, { x: -240, y: -480, amount: 55 }],
+          asteroids: [],
+          gate: rail('core', 620, 2.6, 1)
+        },
+        par: { gold: 88, silver: 114, bronze: 158 }
+      },
+      // 40 — Heliopause (Chart II Grand Finale — Locked until all 39 prior charts are completed!):
+      // Massive 2-sector epic uniting EVERY mechanic in the game (10 beacons total)
+      {
+        name: 'Heliopause',
+        hint: 'Every celestial hazard across two vast sectors. Clear Sector I to ride the northern solar flare through the breach into the inner sanctum.',
+        bounds: 1460, fuel: 265,
+        start: { x: 0, y: 1120, vx: 0, vy: 0, angle: -Math.PI / 2 },
+        bodies: [
+          { id: 'core', kind: 'flip', mass: 4.5e6, radius: 15, x: 0, y: 0, flip: { period: 8.4, warn: 1.25, phase: 0.8, pushMult: 1.1, range: 340 } },
+          { id: 'sun', kind: 'star', mass: 2.3e6 * K, radius: 24, orbit: { around: 'core', r: 580, period: 36, phase: 0.2 } },
+          { id: 'moon', kind: 'moon', mass: 0.42e6 * K, radius: 11, orbit: { around: 'sun', r: 120, phase: 1.0 } },
+          { id: 'p1', kind: 'pulsar', mass: 1.7e6 * K, radius: 18, orbit: { around: 'core', r: 520, period: 36, phase: 0.2 + Math.PI }, pulse: { period: 5.0, warn: 1.35, fire: 0.5, angle: 0, width: 16 } },
+          { id: 'rep', kind: 'repulsor', mass: -1.8e6, radius: 14, x: 640, y: 420 }
+        ],
+        wormholes: [
+          { a: { x: -860, y: 420 }, b: { x: 860, y: -420 }, r: 28, color: '#72d8ff' }
+        ],
+        winds: [
+          { kind: 'stream', x0: -620, y0: 820, x1: -620, y1: -820, width: 220, force: 74 },
+          { kind: 'global', angle: 0, force: 30, pulse: { period: 9.0, warn: 1.4, on: 2.4, phase: 3.0 } },
+          { kind: 'stream', x0: 0, y0: 140, x1: 0, y1: -1500, width: 260, force: 90, onlyWhenOpen: true }
+        ],
+        beacons: [
+          { x: -620, y: 460 },
+          { x: -620, y: -460 },
+          { x: 140, y: -120 },
+          { x: 820, y: -220 },
+          { x: 640, y: 640, hold: 2, r: 40 }
+        ],
+        cells: [
+          { x: -340, y: 680, amount: 58 },
+          { x: 380, y: -560, amount: 58 },
+          { x: 340, y: 420, amount: 58 }
+        ],
+        asteroids: [],
+        breach: { angle: -Math.PI / 2, halfArc: 0.25 },
+        stage2: {
+          bounds: 1480, fuel: 285, fuelBonus: 165,
+          start: { x: 0, y: 1260, vx: 0, vy: -190, angle: -Math.PI / 2 },
+          bodies: [
+            { id: 'hole', kind: 'hole', mass: 3.8e6, radius: 13, x: 0, y: 0 },
+            { id: 'pL', kind: 'pulsar', mass: 1.7e6 * K, radius: 18, x: -720, y: -120, pulse: { period: 5.0, warn: 1.35, fire: 0.5, angle: 0, width: 16, phase: 0 } },
+            { id: 'pR', kind: 'pulsar', mass: 1.7e6 * K, radius: 18, x: 720, y: 120, pulse: { period: 5.0, warn: 1.35, fire: 0.5, angle: Math.PI / 4, width: 16, phase: 2.5 } },
+            { id: 'flipN', kind: 'flip', mass: 3.8e6, radius: 14, x: 0, y: -780, flip: { period: 8.2, warn: 1.2, phase: 1.2, pushMult: 1.08, range: 310 } }
+          ],
+          wormholes: [
+            { a: { x: 185, y: -155 }, b: { x: -640, y: 540 }, r: 28, color: '#72d8ff' },
+            { a: { x: 185, y: 155 }, b: { x: 640, y: -540 }, r: 28, color: '#f0c35a' }
+          ],
+          winds: [
+            { kind: 'stream', x0: -1020, y0: -480, x1: 1020, y1: -480, width: 220, force: 74 },
+            { kind: 'stream', x0: 1020, y0: 520, x1: -1020, y1: 520, width: 220, force: 74 },
+            { kind: 'global', angle: -Math.PI / 2, force: 28, pulse: { period: 9.2, warn: 1.4, on: 2.4, phase: 2.0 } }
+          ],
+          beacons: [
+            { x: 0, y: -195 },
+            { x: 0, y: 195 },
+            { x: -860, y: -480 },
+            { x: 0, y: -960 },
+            { x: 860, y: 520 }
+          ],
+          cells: [
+            { x: 185, y: 95, amount: 60 },
+            { x: -460, y: -480, amount: 60 },
+            { x: 460, y: 520, amount: 60 }
+          ],
+          asteroids: ring(0, 0, 345, 3.8e6, 1, 40, [], 22, 0),
+          gate: rail('hole', 680, 0.8, 1)
+        },
+        par: { gold: 119, silver: 153, bronze: 212 }
+      },
+      // 41 — Corona Storm (40-tier 2-sector epic): Binary stars + flanking pulsars + global gusts -> East Breach -> Antiphase twin flipping poles in triple alternating jetstreams
+      {
+        name: 'Corona Storm',
+        hint: 'Twin binary stars and flanking pulsars guard Sector I. Breach east into the antiphase dipole swept by triple alternating jetstreams.',
+        bounds: 1420, fuel: 260,
+        start: { x: -860, y: -520, vx: 0, vy: 0, angle: 0.45 },
+        bodies: [
+          { id: 's1', kind: 'star', mass: 2.3e6 * K, radius: 24, orbit: { cx: 0, cy: 0, r: 210, period: 19, phase: 0 } },
+          { id: 's2', kind: 'star', mass: 2.3e6 * K, radius: 24, orbit: { cx: 0, cy: 0, r: 210, period: 19, phase: Math.PI } },
+          { id: 'pN', kind: 'pulsar', mass: 1.7e6 * K, radius: 18, x: 0, y: -660, pulse: { period: 4.9, warn: 1.35, fire: 0.5, angle: 0, width: 16, phase: 0 } },
+          { id: 'pS', kind: 'pulsar', mass: 1.7e6 * K, radius: 18, x: 0, y: 660, pulse: { period: 4.9, warn: 1.35, fire: 0.5, angle: Math.PI / 4, width: 16, phase: 2.45 } }
+        ],
+        wormholes: [
+          { a: { x: -720, y: 420 }, b: { x: 720, y: -420 }, r: 28, color: '#72d8ff' }
+        ],
+        winds: [
+          { kind: 'global', angle: -0.5, force: 32, pulse: { period: 8.6, warn: 1.4, on: 2.5, phase: 2.2 } },
+          { kind: 'stream', x0: 140, y0: 0, x1: 1460, y1: 0, width: 260, force: 90, onlyWhenOpen: true }
+        ],
+        beacons: [
+          { x: -320, y: -660 },
+          { x: -580, y: 380 },
+          { x: 580, y: -380 },
+          { x: 320, y: 660 },
+          { x: 640, y: 360, hold: 2, r: 40 }
+        ],
+        cells: [
+          { x: -460, y: -120, amount: 58 },
+          { x: 460, y: 120, amount: 58 },
+          { x: 0, y: 920, amount: 58 }
+        ],
+        asteroids: [],
+        breach: { angle: 0, halfArc: 0.25 },
+        stage2: {
+          bounds: 1440, fuel: 275, fuelBonus: 70,
+          start: { x: -1220, y: 0, vx: 190, vy: 0, angle: 0 },
+          bodies: [
+            { id: 'flipL', kind: 'flip', mass: 4.3e6, radius: 14, x: -440, y: 0, flip: { period: 8.0, warn: 1.2, phase: 0.8, pushMult: 1.1, range: 330 } },
+            { id: 'flipR', kind: 'flip', mass: 4.3e6, radius: 14, x: 440, y: 0, flip: { period: 8.0, warn: 1.2, phase: 4.8, pushMult: 1.1, range: 330 } },
+            { id: 'rep', kind: 'repulsor', mass: -1.7e6, radius: 14, orbit: { cx: 0, cy: 0, r: 240, period: 14, phase: 0 } }
+          ],
+          winds: [
+            { kind: 'stream', x0: -1020, y0: -480, x1: 1020, y1: -480, width: 210, force: 76 },
+            { kind: 'stream', x0: 960, y0: 0, x1: -960, y1: 0, width: 190, force: 64, pulse: { period: 7.4, warn: 1.3, on: 2.6, phase: 1.5 } },
+            { kind: 'stream', x0: -1020, y0: 480, x1: 1020, y1: 480, width: 210, force: 76 }
+          ],
+          beacons: [
+            { x: -440, y: -210 },
+            { x: -440, y: 210 },
+            { x: 440, y: -210 },
+            { x: 440, y: 210 },
+            { x: 0, y: -480 }
+          ],
+          cells: [
+            { x: 0, y: -740, amount: 60 },
+            { x: 0, y: 480, amount: 60 },
+            { x: 780, y: -480, amount: 55 }
+          ],
+          asteroids: [
+            { x: 0, y: -240, radius: 14 },
+            { x: 0, y: -175, radius: 13 },
+            { x: 0, y: 175, radius: 13 },
+            { x: 0, y: 240, radius: 14 }
+          ],
+          gate: { x: 960, y: 480 }
+        },
+        par: { gold: 98, silver: 126, bronze: 175 }
+      },
+      // 42 — Twin Breach (40-tier 2-sector epic): START TRAPPED INSIDE the left sealed flip-vault, warp into the right pulsar-vault, escape -> SW Breach -> Black hole orbited by BOTH a pulsar & a flip-hole
+      {
+        name: 'Twin Breach',
+        hint: 'You start trapped in the left flip-vault. Warp through the right pulsar-vault to escape, then breach southwest into the binary abyss.',
+        bounds: 1440, fuel: 265,
+        start: { x: -625, y: -95, vx: 0, vy: 0, angle: -0.35 },
+        bodies: [
+          { id: 'flipL', kind: 'flip', mass: 3.3e6, radius: 14, x: -440, y: 0, flip: { period: 8.2, warn: 1.2, phase: 0, pushMult: 0.9, range: 240 } },
+          { id: 'pR', kind: 'pulsar', mass: 2.2e6 * K, radius: 19, x: 440, y: 0, pulse: { period: 4.8, warn: 1.35, fire: 0.5, angle: 0, width: 16 } }
+        ],
+        wormholes: [
+          { a: { x: -270, y: 115 }, b: { x: 605, y: -115 }, r: 28, color: '#72d8ff' },
+          { a: { x: 605, y: 115 }, b: { x: -780, y: -480 }, r: 28, color: '#f0c35a' }
+        ],
+        winds: [
+          { kind: 'global', angle: 0.8, force: 30, pulse: { period: 8.8, warn: 1.4, on: 2.4, phase: 2.0 } },
+          { kind: 'stream', x0: 80, y0: -80, x1: -1060, y1: 1060, width: 260, force: 90, onlyWhenOpen: true }
+        ],
+        beacons: [
+          { x: -440, y: -185 },
+          { x: -440, y: 185 },
+          { x: 440, y: -185 },
+          { x: 440, y: 185 },
+          { x: 0, y: 660, hold: 2, r: 40 }
+        ],
+        cells: [
+          { x: -285, y: -115, amount: 58 },
+          { x: 260, y: 0, amount: 58 },
+          { x: 0, y: -420, amount: 58 }
+        ],
+        asteroids: ring(-440, 0, 330, 3.3e6, 1, 38, [], 22, 0).concat(ring(440, 0, 330, 2.2e6 * K, -1, 38, [], 22, 0)),
+        breach: { angle: 2.356, halfArc: 0.25 },
+        stage2: {
+          bounds: 1460, fuel: 280, fuelBonus: 165,
+          start: { x: 880, y: -860, vx: -135, vy: 135, angle: 2.356 },
+          bodies: [
+            { id: 'hole', kind: 'hole', mass: 4.5e6, radius: 13, x: 0, y: 0 },
+            { id: 'p1', kind: 'pulsar', mass: 1.7e6 * K, radius: 18, orbit: { around: 'hole', r: 460, period: 30, phase: 0.2 }, pulse: { period: 4.9, warn: 1.35, fire: 0.5, angle: 0, width: 16 } },
+            { id: 'f1', kind: 'flip', mass: 3.1e6, radius: 13, orbit: { around: 'hole', r: 460, period: 30, phase: 0.2 + Math.PI }, flip: { period: 7.8, warn: 1.2, phase: 0.8, pushMult: 1.1, range: 290 } }
+          ],
+          winds: [
+            { kind: 'stream', x0: 820, y0: -520, x1: -520, y1: 820, width: 220, force: 72 },
+            { kind: 'stream', x0: -820, y0: 520, x1: 520, y1: -820, width: 220, force: 72 }
+          ],
+          beacons: [
+            rail('hole', 195, 1.0, 1),
+            rail('hole', 195, 4.14, 1),
+            { x: -660, y: -420 },
+            { x: 660, y: 420 },
+            { x: -460, y: 740 }
+          ],
+          cells: [
+            { x: 460, y: -460, amount: 60 },
+            { x: -460, y: 460, amount: 60 },
+            { x: 0, y: 720, amount: 58 }
+          ],
+          asteroids: [],
+          gate: rail('hole', 680, 2.2, 1)
+        },
+        par: { gold: 105, silver: 135, bronze: 188 }
+      },
+      // 43 — Solar Crucible (40-tier 2-sector epic): 3-Pulsar Triad around a central Flipping Singularity + alternating crosswinds + moving wormhole -> NW Breach -> Sealed Flip Fortress + Binary Escorts
+      {
+        name: 'Solar Crucible',
+        hint: 'A 3-pulsar triad and alternating crosswinds ring the flipping core. Breach northwest into the sealed flip fortress.',
+        bounds: 1460, fuel: 275,
+        start: { x: 1040, y: 360, vx: 0, vy: 0, angle: 2.95 },
+        bodies: [
+          { id: 'core', kind: 'flip', mass: 4.4e6, radius: 14, x: 0, y: 0, flip: { period: 8.2, warn: 1.2, phase: 0.6, pushMult: 1.1, range: 330 } },
+          { id: 'p1', kind: 'pulsar', mass: 1.6e6 * K, radius: 18, x: 0, y: -560, pulse: { period: 5.1, warn: 1.35, fire: 0.5, angle: 0, width: 16, phase: 0 } },
+          { id: 'p2', kind: 'pulsar', mass: 1.6e6 * K, radius: 18, x: 540, y: 340, pulse: { period: 5.1, warn: 1.35, fire: 0.5, angle: Math.PI / 6, width: 16, phase: 1.7 } },
+          { id: 'p3', kind: 'pulsar', mass: 1.6e6 * K, radius: 18, x: -540, y: 340, pulse: { period: 5.1, warn: 1.35, fire: 0.5, angle: -Math.PI / 6, width: 16, phase: 3.4 } }
+        ],
+        wormholes: [
+          { a: { orbit: { around: 'core', r: 220, period: 16, phase: 0.6 } }, b: { x: -780, y: -480 }, r: 28, color: '#72d8ff' }
+        ],
+        winds: [
+          { kind: 'stream', x0: -460, y0: 880, x1: -460, y1: -880, width: 210, force: 70, pulse: { period: 7.6, warn: 1.3, on: 2.6, phase: 0 } },
+          { kind: 'stream', x0: 460, y0: -880, x1: 460, y1: 880, width: 210, force: 70, pulse: { period: 7.6, warn: 1.3, on: 2.6, phase: 3.8 } },
+          { kind: 'stream', x0: 100, y0: 100, x1: -1080, y1: -1080, width: 260, force: 90, onlyWhenOpen: true }
+        ],
+        beacons: [
+          { x: 0, y: -780 },
+          { x: 740, y: 460 },
+          { x: -740, y: 460 },
+          { x: 145, y: -120 },
+          { x: -145, y: 120 }
+        ],
+        cells: [
+          { x: 380, y: -380, amount: 60 },
+          { x: -380, y: -380, amount: 60 },
+          { x: 0, y: 580, amount: 60 }
+        ],
+        asteroids: [],
+        breach: { angle: -2.356, halfArc: 0.25 },
+        stage2: {
+          bounds: 1460, fuel: 285, fuelBonus: 170,
+          start: { x: 940, y: 820, vx: -135, vy: -135, angle: -2.356 },
+          bodies: [
+            { id: 'core2', kind: 'flip', mass: 3.8e6, radius: 14, x: 0, y: 0, flip: { period: 8.0, warn: 1.2, phase: 0.4, pushMult: 0.95, range: 265 } },
+            { id: 'sW', kind: 'star', mass: 2.1e6 * K, radius: 22, x: -740, y: -240 },
+            { id: 'sE', kind: 'star', mass: 2.1e6 * K, radius: 22, x: 680, y: 180 },
+            { id: 'repW', kind: 'repulsor', mass: -1.6e6, radius: 14, orbit: { around: 'sW', r: 320, period: 16, phase: 0 } }
+          ],
+          wormholes: [
+            { a: { x: 185, y: -155 }, b: { x: 640, y: -560 }, r: 28, color: '#72d8ff' },
+            { a: { x: 185, y: 155 }, b: { x: -640, y: 560 }, r: 28, color: '#f0c35a' }
+          ],
+          winds: [
+            { kind: 'global', angle: -2.35, force: 32, pulse: { period: 8.6, warn: 1.4, on: 2.5, phase: 1.8 } }
+          ],
+          beacons: [
+            { x: 0, y: -190 },
+            { x: 0, y: 190 },
+            { x: -740, y: -460 },
+            { x: 520, y: 620 },
+            rail('sW', 225, 2.0, 1, 2, 42)
+          ],
+          cells: [
+            { x: -185, y: 0, amount: 58 },
+            { x: 420, y: -620, amount: 60 },
+            { x: -420, y: 620, amount: 60 }
+          ],
+          asteroids: ring(0, 0, 345, 3.6e6, 1, 40, [], 22, 0),
+          gate: { x: -960, y: -560 }
+        },
+        par: { gold: 117, silver: 151, bronze: 210 }
+      },
+      // 44 — Event Tempest (40-tier 2-sector epic): Nested Star-Planet-Moon + Twin Antiphase Flipping Holes + Opposing Jetstreams -> South Breach -> 4-Corner Crucible (2 Pulsars + 2 Flip Holes around Central Black Hole)
+      {
+        name: 'Event Tempest',
+        hint: 'Two antiphase singularities orbit the nested system in Sector I. Breach south into the four-corner crucible around the black hole.',
+        bounds: 1460, fuel: 275,
+        start: { x: 960, y: -560, vx: 0, vy: 0, angle: 2.65 },
+        bodies: [
+          { id: 'sun', kind: 'star', mass: 3.1e6 * K, radius: 26, x: 0, y: 0 },
+          { id: 'pl', kind: 'planet', mass: 1.1e6 * K, radius: 20, orbit: { around: 'sun', r: 640, period: 36, phase: 2.2 } },
+          { id: 'mn', kind: 'moon', mass: 0.36e6 * K, radius: 10, orbit: { around: 'pl', r: 105, phase: 0.5 } },
+          { id: 'f1', kind: 'flip', mass: 3.3e6, radius: 13, orbit: { around: 'sun', r: 440, period: 28, phase: 0.4 }, flip: { period: 7.8, warn: 1.2, phase: 0, pushMult: 1.1, range: 290 } },
+          { id: 'f2', kind: 'flip', mass: 3.3e6, radius: 13, orbit: { around: 'sun', r: 440, period: 28, phase: 0.4 + Math.PI }, flip: { period: 7.8, warn: 1.2, phase: 3.9, pushMult: 1.1, range: 290 } }
+        ],
+        wormholes: [
+          { a: { x: -860, y: -420 }, b: { x: 860, y: 420 }, r: 28, color: '#72d8ff' }
+        ],
+        winds: [
+          { kind: 'stream', x0: -1020, y0: -560, x1: 1020, y1: -560, width: 210, force: 74 },
+          { kind: 'stream', x0: 1020, y0: 560, x1: -1020, y1: 560, width: 210, force: 74 },
+          { kind: 'stream', x0: 0, y0: -120, x1: 0, y1: 1500, width: 260, force: 90, onlyWhenOpen: true }
+        ],
+        beacons: [
+          rail('sun', 195, 1.0, 1),
+          rail('sun', 195, 4.14, 1),
+          { x: -660, y: -560 },
+          { x: 660, y: 560 },
+          rail('pl', 145, 1.2, 1, 2, 42)
+        ],
+        cells: [
+          { x: 0, y: -320, amount: 60 },
+          { x: 0, y: 320, amount: 60 },
+          { x: -780, y: 260, amount: 58 }
+        ],
+        asteroids: [],
+        breach: { angle: Math.PI / 2, halfArc: 0.25 },
+        stage2: {
+          bounds: 1480, fuel: 295, fuelBonus: 215,
+          start: { x: 0, y: -1260, vx: 0, vy: 190, angle: Math.PI / 2 },
+          bodies: [
+            { id: 'hole', kind: 'hole', mass: 4.4e6, radius: 13, x: 0, y: 0 },
+            { id: 'pNW', kind: 'pulsar', mass: 1.7e6 * K, radius: 18, x: -580, y: -360, pulse: { period: 4.9, warn: 1.35, fire: 0.5, angle: 0, width: 16, phase: 0 } },
+            { id: 'pSE', kind: 'pulsar', mass: 1.7e6 * K, radius: 18, x: 580, y: 360, pulse: { period: 4.9, warn: 1.35, fire: 0.5, angle: Math.PI / 4, width: 16, phase: 2.45 } },
+            { id: 'fNE', kind: 'flip', mass: 3.6e6, radius: 14, x: 580, y: -360, flip: { period: 8.0, warn: 1.2, phase: 0.6, pushMult: 1.1, range: 310 } },
+            { id: 'fSW', kind: 'flip', mass: 3.6e6, radius: 14, x: -580, y: 360, flip: { period: 8.0, warn: 1.2, phase: 4.6, pushMult: 1.1, range: 310 } }
+          ],
+          winds: [
+            { kind: 'global', angle: 0.4, force: 34, pulse: { period: 8.4, warn: 1.4, on: 2.5, phase: 2.0 } }
+          ],
+          beacons: [
+            rail('hole', 195, 0.8, 1),
+            { x: -580, y: -580 },
+            { x: 580, y: -580 },
+            { x: 580, y: 580 },
+            { x: -580, y: 580 }
+          ],
+          cells: [
+            { x: 0, y: -580, amount: 62 },
+            { x: 0, y: 580, amount: 62 },
+            { x: -580, y: 0, amount: 60 }
+          ],
+          asteroids: [],
+          gate: rail('hole', 690, 3.6, 1)
+        },
+        par: { gold: 136, silver: 175, bronze: 243 }
+      },
+      // 45 — Singularity's End (LOCKED CHART II GRAND FINALE — THREE CONTINUOUS SECTORS, 14 BEACONS! Sector III is BRUTALLY HARD!)
+      {
+        name: "Singularity's End",
+        hint: 'Three continuous sectors to the edge of the cosmos. Survive the Outer Belt and Inversion Vault to face the brutal Event Horizon Sanctum.',
+        bounds: 1420, fuel: 265,
+        start: { x: -940, y: 620, vx: 0, vy: 0, angle: -0.55 },
+        bodies: [
+          { id: 'sun', kind: 'star', mass: 3.2e6 * K, radius: 26, x: 0, y: 0 },
+          { id: 'p1', kind: 'pulsar', mass: 1.7e6 * K, radius: 18, orbit: { around: 'sun', r: 440, period: 30, phase: 0.4 }, pulse: { period: 4.9, warn: 1.35, fire: 0.5, angle: 0, width: 16 } },
+          { id: 'rep', kind: 'repulsor', mass: -1.8e6, radius: 14, orbit: { around: 'sun', r: 440, period: 30, phase: 0.4 + Math.PI } }
+        ],
+        wormholes: [
+          { a: { x: -760, y: -420 }, b: { x: 760, y: 420 }, r: 28, color: '#72d8ff' }
+        ],
+        winds: [
+          { kind: 'stream', x0: -980, y0: -520, x1: 980, y1: -520, width: 210, force: 74 },
+          { kind: 'global', angle: -0.35, force: 30, pulse: { period: 8.6, warn: 1.4, on: 2.4, phase: 2.0 } },
+          { kind: 'stream', x0: 120, y0: 0, x1: 1460, y1: 0, width: 260, force: 90, onlyWhenOpen: true }
+        ],
+        beacons: [
+          { x: -640, y: -520 },
+          { x: 640, y: -520 },
+          rail('sun', 195, 1.5, 1),
+          { x: 680, y: 520 }
+        ],
+        cells: [
+          { x: -340, y: 440, amount: 58 },
+          { x: 0, y: -520, amount: 58 },
+          { x: 340, y: 440, amount: 58 }
+        ],
+        asteroids: [],
+        breach: { angle: 0, halfArc: 0.25 },
+        stage2: {
+          // SECTOR II: The Inversion Vault -> North Rim Breach into Sector III
+          bounds: 1460, fuel: 285, fuelBonus: 180,
+          start: { x: -1240, y: 0, vx: 190, vy: 0, angle: 0 },
+          bodies: [
+            { id: 'flip2', kind: 'flip', mass: 3.8e6, radius: 14, x: 0, y: 0, flip: { period: 8.0, warn: 1.2, phase: 0.4, pushMult: 0.95, range: 265 } },
+            { id: 'pL2', kind: 'pulsar', mass: 1.7e6 * K, radius: 18, x: -720, y: -180, pulse: { period: 4.8, warn: 1.35, fire: 0.5, angle: 0, width: 16, phase: 0 } },
+            { id: 'pR2', kind: 'pulsar', mass: 1.7e6 * K, radius: 18, x: 720, y: 180, pulse: { period: 4.8, warn: 1.35, fire: 0.5, angle: Math.PI / 4, width: 16, phase: 2.4 } }
+          ],
+          wormholes: [
+            { a: { x: 185, y: -155 }, b: { x: -640, y: 540 }, r: 28, color: '#72d8ff' },
+            { a: { x: 185, y: 155 }, b: { x: 640, y: -540 }, r: 28, color: '#f0c35a' }
+          ],
+          winds: [
+            { kind: 'stream', x0: -1020, y0: -500, x1: 1020, y1: -500, width: 210, force: 76 },
+            { kind: 'stream', x0: 1020, y0: 520, x1: -1020, y1: 520, width: 210, force: 76 },
+            { kind: 'stream', x0: 0, y0: -380, x1: 0, y1: -1500, width: 260, force: 92, onlyWhenOpen: true }
+          ],
+          beacons: [
+            { x: 0, y: -190 },
+            { x: 0, y: 190 },
+            { x: -860, y: -500 },
+            { x: 860, y: 520 },
+            { x: 0, y: -740 }
+          ],
+          cells: [
+            { x: -185, y: 0, amount: 58 },
+            { x: 460, y: 520, amount: 62 },
+            { x: -460, y: -500, amount: 62 }
+          ],
+          asteroids: ring(0, 0, 345, 3.6e6, 1, 40, [], 22, 0),
+          breach: { angle: -Math.PI / 2, halfArc: 0.25 },
+          stage2: {
+            // SECTOR III (BRUTALLY HARD): Event Horizon Sanctum — Sealed Fast-Flipping Core with ORBITING Entry Wormhole + 3-Beat Pulsar Triad + Northern Flip Singularity + Opposing Jetstreams + Rapid Global Gusts + Orbiting Gate!
+            bounds: 1560, fuel: 310, fuelBonus: 210,
+            start: { x: 0, y: 1340, vx: 0, vy: -195, angle: -Math.PI / 2 },
+            bodies: [
+              { id: 'core3', kind: 'flip', mass: 4.2e6, radius: 14, x: 0, y: 0, flip: { period: 7.4, warn: 1.15, phase: 0.3, pushMult: 0.95, range: 260 } },
+              { id: 'pA', kind: 'pulsar', mass: 1.8e6 * K, radius: 18, x: -760, y: -220, pulse: { period: 4.5, warn: 1.25, fire: 0.5, angle: 0, width: 17, phase: 0 } },
+              { id: 'pB', kind: 'pulsar', mass: 1.8e6 * K, radius: 18, x: 760, y: -220, pulse: { period: 4.5, warn: 1.25, fire: 0.5, angle: Math.PI / 6, width: 17, phase: 1.5 } },
+              { id: 'pC', kind: 'pulsar', mass: 1.8e6 * K, radius: 18, x: 0, y: 760, pulse: { period: 4.5, warn: 1.25, fire: 0.5, angle: -Math.PI / 6, width: 17, phase: 3.0 } },
+              { id: 'flipTop', kind: 'flip', mass: 4.4e6, radius: 14, x: 0, y: -880, flip: { period: 7.6, warn: 1.15, phase: 3.8, pushMult: 1.15, range: 330 } }
+            ],
+            wormholes: [
+              { a: { orbit: { around: 'core3', r: 195, period: 16, phase: 5.5 } }, b: { x: -680, y: 540 }, r: 28, color: '#72d8ff' },
+              { a: { x: 185, y: 165 }, b: { x: 680, y: -560 }, r: 28, color: '#f0c35a' }
+            ],
+            winds: [
+              { kind: 'stream', x0: -1120, y0: -520, x1: 1120, y1: -520, width: 220, force: 82 },
+              { kind: 'stream', x0: 1120, y0: 540, x1: -1120, y1: 540, width: 220, force: 82 },
+              { kind: 'global', angle: -0.6, force: 36, pulse: { period: 7.2, warn: 1.3, on: 2.5, phase: 1.4 } }
+            ],
+            beacons: [
+              { x: 0, y: -195 },
+              { x: 0, y: 195 },
+              { x: 0, y: -1050 },
+              { x: -940, y: -520 },
+              { x: 940, y: 540, hold: 2, r: 40 }
+            ],
+            cells: [
+              { x: -185, y: 0, amount: 65 },
+              { x: 480, y: 540, amount: 68 },
+              { x: -480, y: -520, amount: 68 },
+              { x: 380, y: -920, amount: 65 }
+            ],
+            asteroids: ring(0, 0, 355, 4.0e6, 1, 42, [], 22, 0),
+            gate: rail('core3', 680, 0.6, 1)
+          }
+        },
+        par: { gold: 188, silver: 241, bronze: 335 }
+      }
+    ];
+  })();
+  return first.concat(second, third, fourth, fifth, sixth);
 });

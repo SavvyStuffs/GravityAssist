@@ -183,6 +183,31 @@
       tone(220, t, 0.28, { endFreq: 520, gain: 0.16, type: 'triangle', attack: 0.004 });
       tone(440, t + 0.02, 0.22, { endFreq: 900, gain: 0.05, attack: 0.004 });
     },
+    // Wormhole warp: resonant spatial fold chime + soft air whoosh.
+    wormhole: function (t) {
+      tone(260, t, 0.36, { endFreq: 780, gain: 0.15, type: 'sine', attack: 0.006 });
+      tone(520, t + 0.03, 0.34, { endFreq: 390, gain: 0.1, type: 'triangle', attack: 0.01 });
+      tone(1040, t + 0.05, 0.28, { endFreq: 660, gain: 0.05, type: 'sine', attack: 0.01 });
+      noise(t, 0.24, { type: 'bandpass', freq: 650, endFreq: 2100, gain: 0.09, q: 1.8 });
+    },
+    // Pulsar beam fire: crisp low thump + brief high discharge zap.
+    pulsar: function (t) {
+      tone(120, t, 0.22, { endFreq: 52, gain: 0.12, type: 'triangle', attack: 0.003 });
+      tone(980, t, 0.14, { endFreq: 340, gain: 0.055, type: 'sawtooth', attack: 0.002 });
+      noise(t, 0.16, { type: 'bandpass', freq: 1800, endFreq: 620, gain: 0.075, q: 2.2 });
+    },
+    // Solar wind gust: soft airy bandpass whoosh.
+    wind: function (t) {
+      noise(t, 0.65, { type: 'bandpass', freq: 380, endFreq: 1150, gain: 0.085, q: 1.4, attack: 0.12 });
+      tone(210, t, 0.55, { endFreq: 320, gain: 0.04, type: 'sine', attack: 0.1 });
+    },
+    // Boundary breach / Sector II transition: sweeping golden rush + chord.
+    breach: function (t) {
+      noise(t, 0.55, { type: 'bandpass', freq: 520, endFreq: 2200, gain: 0.12, q: 1.5, attack: 0.04 });
+      [0, 2, 4, 5].forEach(function (n, i) {
+        tone(pent(330, n), t + i * 0.055, 0.65, { gain: 0.09, type: 'triangle', attack: 0.01 });
+      });
+    },
     // Two dull low ticks.
     empty: function (t) {
       [0, 0.16].forEach(function (d) {
